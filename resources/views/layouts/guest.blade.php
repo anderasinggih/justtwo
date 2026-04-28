@@ -5,6 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        <!-- PWA Meta Tags -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-title" content="GalleryTwo">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <link rel="manifest" href="/manifest.json">
+
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
@@ -31,5 +37,27 @@
             </div>
         </div>
         @livewireScripts
+
+        <script>
+            // Mencegah link membuka Safari browser (tetap di dalam Web App)
+            document.addEventListener('click', function(event) {
+                var element = event.target;
+                while (element && element.tagName !== 'A') {
+                    element = element.parentNode;
+                }
+
+                if (element && element.tagName === 'A' && element.hasAttribute('href')) {
+                    var href = element.getAttribute('href');
+                    // Jika link internal (berawal dengan / atau mengandung hostname), cegah perilaku default
+                    if (href.startsWith('/') || href.includes(window.location.hostname)) {
+                        // Jangan cegah jika itu adalah link Livewire navigate (biarkan Livewire yang handle)
+                        if (element.hasAttribute('wire:navigate')) return;
+                        
+                        event.preventDefault();
+                        window.location.href = href;
+                    }
+                }
+            }, false);
+        </script>
     </body>
 </html>
