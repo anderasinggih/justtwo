@@ -30,10 +30,10 @@
                 <div class="text-2xl font-bold tracking-tighter lowercase">gallery for two.</div>
                 <div class="space-x-4">
                     @auth
-                        <a href="/dashboard" class="text-sm font-medium hover:text-brand-500 lowercase">dashboard</a>
+                        <a href="/dashboard" wire:navigate class="text-sm font-medium hover:text-brand-500 lowercase">dashboard</a>
                     @else
-                        <a href="{{ route('login', [], false) }}" class="text-sm font-medium hover:text-brand-500 lowercase">login</a>
-                        <a href="{{ route('register', [], false) }}" class="inline-flex items-center justify-center rounded-full bg-brand-500 px-6 py-2 text-sm font-medium text-white hover:bg-brand-600 shadow-lg shadow-brand-200 transition-all lowercase">start your space</a>
+                        <a href="{{ route('login', [], false) }}" wire:navigate class="text-sm font-medium hover:text-brand-500 lowercase">login</a>
+                        <a href="{{ route('register', [], false) }}" wire:navigate class="inline-flex items-center justify-center rounded-full bg-brand-500 px-6 py-2 text-sm font-medium text-white hover:bg-brand-600 shadow-lg shadow-brand-200 transition-all lowercase">start your space</a>
                     @endauth
                 </div>
             </nav>
@@ -50,7 +50,7 @@
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-                    <a href="{{ route('register', [], false) }}" class="w-full sm:w-auto rounded-full bg-brand-500 px-10 py-5 text-lg font-medium text-white hover:bg-brand-600 shadow-2xl shadow-brand-300 transition-all animate-bounce-subtle lowercase">
+                    <a href="{{ route('register', [], false) }}" wire:navigate class="w-full sm:w-auto rounded-full bg-brand-500 px-10 py-5 text-lg font-medium text-white hover:bg-brand-600 shadow-2xl shadow-brand-300 transition-all animate-bounce-subtle lowercase">
                         create your shared space
                     </a>
                     <a href="#features" class="w-full sm:w-auto rounded-full bg-white border border-gray-100 px-10 py-5 text-lg font-medium hover:bg-gray-50 transition-all lowercase">
@@ -112,9 +112,5 @@
                 animation: bounce-subtle 3s ease-in-out infinite;
             }
         </style>
-        <script>
-            // Force standalone mode to stay in-app on iOS
-            (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
-        </script>
     </body>
 </html>
