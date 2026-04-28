@@ -12,145 +12,309 @@
     <link rel="manifest" href="{{ asset('manifest.json') }}" type="application/manifest+json">
     <link rel="apple-touch-icon" href="{{ asset('images/auth-bg.png') }}">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
-    <title>memories for two / private couple gallery</title>
+    @php
+        $settings = \App\Models\PublicSetting::getSettings();
+        $banners = $settings->banner_paths ?? [];
+        $bannerData = $settings->banner_data ?? [];
+        $spaceName = \App\Models\Relationship::orderBy('id', 'desc')->first()?->name ?? 'justtwo';
+    @endphp
+
+    <title>{{ $settings->hero_title }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600&display=swap"
         rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 
-<body class="antialiased bg-[#fdfaf6] text-gray-900 font-sans">
+<body class="antialiased font-sans theme-text theme-bg transition-colors duration-500"
+    data-theme="{{ $settings->theme ?? 'light' }}">
     <div class="relative min-h-screen overflow-hidden">
-        {{-- Decorative Blobs --}}
-        <div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-100 rounded-full blur-3xl opacity-30 animate-pulse">
-        </div>
-        <div
-            class="absolute -bottom-24 -right-24 w-96 h-96 bg-romantic-rose rounded-full blur-3xl opacity-30 animate-pulse">
+        {{-- Decorative Atmospheric Glows --}}
+        <div class="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
+            <div
+                class="absolute top-[20%] left-[20%] w-96 h-96 bg-brand-400 rounded-full blur-[100px] animate-float animate-soft-pulse">
+            </div>
+            <div
+                class="absolute top-[40%] right-[15%] w-72 h-72 bg-brand-500 rounded-full blur-[80px] animate-float-reverse opacity-20">
+            </div>
+            <div
+                class="absolute bottom-[20%] left-[30%] w-80 h-80 bg-brand-300 rounded-full blur-[90px] animate-float opacity-15">
+            </div>
         </div>
 
         {{-- Nav --}}
-        <nav class="relative z-10 max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
-            <div class="text-2xl font-bold tracking-tighter lowercase">gallery for two.</div>
+        <nav
+            class="relative z-10 max-w-7xl mx-auto px-4 md:px-12 lg:px-24 py-8 flex justify-between items-center mix-blend-difference text-white">
+            <div class="text-xl font-bold tracking-tighter lowercase">{{ $spaceName }}</div>
             <div class="space-x-4">
                 @auth
                     <a href="{{ route('dashboard') }}" wire:navigate
-                        class="text-sm font-medium hover:text-brand-500 lowercase">dashboard</a>
+                        class="text-sm font-medium hover:text-brand-200 transition-colors lowercase">dashboard</a>
                 @else
                     <a href="{{ route('login') }}" wire:navigate
-                        class="text-sm font-medium hover:text-brand-500 lowercase">login</a>
-                    <a href="{{ route('register') }}" wire:navigate
-                        class="inline-flex items-center justify-center rounded-full bg-brand-500 px-6 py-2 text-sm font-medium text-white hover:bg-brand-600 shadow-lg shadow-brand-200 transition-all lowercase">start
-                        your space</a>
+                        class="text-sm font-medium hover:text-brand-200 transition-colors lowercase">login</a>
                 @endauth
             </div>
         </nav>
 
-        {{-- Hero --}}
-        <main class="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-32 text-center">
-            <x-ui.badge variant="secondary" class="mb-6 px-4 py-1">designed for couples</x-ui.badge>
-            <h1 class="text-6xl md:text-8xl font-medium tracking-tighter mb-8 leading-tight lowercase">
-                every memory <br>
-                <span class="text-brand-500 italic">shared only by two.</span>
-            </h1>
-            <p class="text-xl text-gray-500 max-w-2xl mx-auto mb-12 lowercase leading-relaxed">
-                a beautiful, private space to preserve your photos, journals, and milestones. no public feeds, no noise.
-                just you and your partner, forever.
-            </p>
+        {{-- Hero Section with Background Carousel --}}
+        <main
+            class="relative h-[35vh] md:h-[80vh] w-full flex flex-col items-center justify-center text-center overflow-hidden"
+            x-data="{ 
+                active: 0,
+                banners: {{ json_encode($banners) }},
+                bannerData: {{ json_encode($bannerData) }},
+                timer: null,
+                showTitle: true,
+                titleTimer: null,
+                isVideo(path) {
+                    if (!path) return false;
+                    const ext = path.split('.').pop().toLowerCase();
+                    return ['mp4', 'webm', 'mov', 'ogg'].includes(ext);
+                },
+                next() { 
+                    this.active = (this.active + 1) % this.banners.length;
+                    this.startRotation();
+                },
+                startRotation() {
+                    clearTimeout(this.timer);
+                    clearTimeout(this.titleTimer);
+                    this.showTitle = true;
+                    
+                    if (this.banners.length <= 1 && !this.isVideo(this.banners[this.active])) return;
+                    
+                    const currentPath = this.banners[this.active];
+                    if (this.isVideo(currentPath)) {
+                        // Hide title after 4 seconds for videos
+                        this.titleTimer = setTimeout(() => {
+                            this.showTitle = false;
+                        }, 4000);
+                    } else {
+                        // Regular rotation for images
+                        this.timer = setTimeout(() => this.next(), 5000);
+                    }
+                },
+                init() { 
+                    this.startRotation();
+                }
+            }">
+            {{-- Banners Carousel as Background --}}
+            <div class="absolute inset-0 z-0 h-full w-full">
+                @forelse($banners as $index => $banner)
+                    <div x-show="active === {{ $index }}" x-transition:enter="transition opacity duration-1000 ease-in-out"
+                        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition opacity duration-1000 ease-in-out"
+                        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                        class="absolute inset-0 w-full h-full">
+                        @php
+                            $extension = pathinfo($banner, PATHINFO_EXTENSION);
+                            $isVideo = in_array(strtolower($extension), ['mp4', 'webm', 'ogg', 'mov']);
+                        @endphp
 
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <a href="{{ route('register') }}" wire:navigate
-                    class="w-full sm:w-auto rounded-full bg-brand-500 px-10 py-5 text-lg font-medium text-white hover:bg-brand-600 shadow-2xl shadow-brand-300 transition-all animate-bounce-subtle lowercase">
-                    create your shared space
-                </a>
-                <a href="#features"
-                    class="w-full sm:w-auto rounded-full bg-white border border-gray-100 px-10 py-5 text-lg font-medium hover:bg-gray-50 transition-all lowercase">
-                    explore features
-                </a>
+                        @if ($isVideo)
+                            <video src="{{ Storage::disk('public')->url($banner) }}" class="w-full h-full object-cover" autoplay
+                                muted playsinline @ended="next()"></video>
+                        @else
+                            <img src="{{ Storage::disk('public')->url($banner) }}" class="w-full h-full object-cover">
+                        @endif
+                    </div>
+                @empty
+                    <div class="absolute inset-0 bg-[#fdfaf6]"></div>
+                @endforelse
             </div>
 
-            {{-- Mockup --}}
-            <div class="mt-24 relative max-w-4xl mx-auto">
-                <div class="absolute inset-0 bg-brand-200 rounded-[3rem] rotate-2 scale-105 opacity-20 blur-xl"></div>
-                <div class="relative bg-white p-4 rounded-[4rem] shadow-2xl border border-gray-100/50">
-                    <div
-                        class="bg-gray-50 rounded-[3.5rem] aspect-[16/9] flex items-center justify-center overflow-hidden">
-                        <div class="text-center p-12">
-                            <p class="text-gray-300 lowercase italic">dashboard preview coming soon</p>
-                        </div>
+            {{-- Content Overlay --}}
+            <div class="relative z-10 w-full px-3 md:px-12 lg:px-24 pt-24 md:pt-0 max-h-full overflow-hidden" x-data="{ 
+                    fullText: '',
+                    index: 0,
+                    typingInterval: null,
+                    isErasing: false,
+                    targetText: '',
+                    type() {
+                        if (this.isErasing) {
+                            if (this.index > 0) {
+                                let prevSpace = this.fullText.lastIndexOf(' ', this.index - 1);
+                                let prevNewline = this.fullText.lastIndexOf('\n', this.index - 1);
+                                let nextIdx = Math.max(prevSpace, prevNewline);
+                                this.index = nextIdx === -1 ? 0 : nextIdx;
+                                this.typingInterval = setTimeout(() => this.type(), 100);
+                            } else {
+                                this.isErasing = false;
+                                this.fullText = this.targetText;
+                                this.type();
+                            }
+                        } else {
+                            if (this.index < this.fullText.length) {
+                                let nextSpace = this.fullText.indexOf(' ', this.index + 1);
+                                let nextNewline = this.fullText.indexOf('\n', this.index + 1);
+                                let nextIndex = (nextSpace !== -1 && nextNewline !== -1) ? Math.min(nextSpace, nextNewline) : 
+                                                (nextSpace !== -1 ? nextSpace : (nextNewline !== -1 ? nextNewline : this.fullText.length));
+                                this.index = nextIndex;
+                                this.typingInterval = setTimeout(() => this.type(), 200);
+                            }
+                        }
+                    },
+                    startAnimation(newText) {
+                        clearTimeout(this.typingInterval);
+                        this.targetText = newText || '';
+                        if (this.fullText && this.index > 0) {
+                            this.isErasing = true;
+                            this.type();
+                        } else {
+                            this.isErasing = false;
+                            this.fullText = this.targetText;
+                            this.index = 0;
+                            this.type();
+                        }
+                    }
+                 }" x-init="$watch('active', val => {
+                    let currentBanner = bannerData[val];
+                    startAnimation(currentBanner ? currentBanner.title : '');
+                 }); 
+                 startAnimation(bannerData[active] ? bannerData[active].title : '');">
+                @foreach($bannerData as $index => $data)
+                    <div x-show="active === {{ $index }} && showTitle" 
+                         x-transition:enter="transition opacity duration-1000"
+                         x-transition:leave="transition opacity duration-1000"
+                         class="space-y-4">
+                        <h1 class="text-sm md:text-3xl font-medium tracking-tight text-white drop-shadow-2xl text-justify"
+                            style="text-align-last: justify;">
+                            <template x-for="(line, i) in fullText.substring(0, index).split('\n')" :key="i">
+                                <div x-text="line" class="w-full" style="text-align-last: justify;"></div>
+                            </template>
+                        </h1>
+                    </div>
+                @endforeach
+                
+                <div x-show="fullText && index === fullText.length && showTitle"
+                     x-transition:enter="transition all duration-1000 delay-500 opacity-0 translate-y-4"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition all duration-1000 opacity-0 translate-y-4"
+                     class="text-sm md:text-lg opacity-40 lowercase italic tracking-tight">
+                    {{ $settings->hero_subtitle }}
+                </div>
+            </div>
+
+            {{-- Media Carousel --}}
+            <div class="max-w-7xl mx-auto px-4 md:px-12 mb-20">
+                <div
+                    class="relative aspect-[16/9] md:aspect-[21/9] rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden bg-gray-100 shadow-2xl">
+                    @foreach($banners as $index => $banner)
+                        @php
+                            $extension = pathinfo($banner, PATHINFO_EXTENSION);
+                            $isVideo = in_array(strtolower($extension), ['mp4', 'webm', 'ogg', 'mov']);
+                        @endphp
+
+                        @if ($isVideo)
+                            <video src="{{ Storage::disk('public')->url($banner) }}"
+                                x-show="active === {{ $index }}" x-transition:enter="transition opacity duration-1000"
+                                x-transition:leave="transition opacity duration-1000"
+                                class="absolute inset-0 w-full h-full object-cover" autoplay muted
+                                playsinline @ended="next()"></video>
+                        @else
+                            <img src="{{ Storage::disk('public')->url($banner) }}" x-show="active === {{ $index }}"
+                                x-transition:enter="transition opacity duration-1000"
+                                x-transition:leave="transition opacity duration-1000"
+                                class="absolute inset-0 w-full h-full object-cover">
+                        @endif
+                    @endforeach
+
+                    {{-- Navigation Dots --}}
+                    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+                        @foreach($banners as $index => $banner)
+                            <button @click="active = {{ $index }}"
+                                class="w-1.5 h-1.5 rounded-full transition-all duration-500"
+                                :class="active === {{ $index }} ? 'bg-white w-8' : 'bg-white/30'"></button>
+                        @endforeach
                     </div>
                 </div>
             </div>
         </main>
 
-        {{-- Features --}}
-        <section id="features" class="relative z-10 max-w-7xl mx-auto px-6 py-24">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-                <div class="space-y-4">
-                    <div class="w-16 h-16 bg-white rounded-3xl shadow-sm flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-medium tracking-tight lowercase">private gallery</h3>
-                    <p class="text-gray-500 lowercase">store all your photos in a beautiful masonry grid. only for your
-                        eyes.</p>
-                </div>
-                <div class="space-y-4">
-                    <div class="w-16 h-16 bg-white rounded-3xl shadow-sm flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-medium tracking-tight lowercase">shared journal</h3>
-                    <p class="text-gray-500 lowercase">write letters, share thoughts, and record your moods together.
-                    </p>
-                </div>
-                <div class="space-y-4">
-                    <div class="w-16 h-16 bg-white rounded-3xl shadow-sm flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-medium tracking-tight lowercase">milestones</h3>
-                    <p class="text-gray-500 lowercase">track every significant date and count down to upcoming
-                        celebrations.</p>
-                </div>
+        {{-- Public Feed --}}
+        <section class="relative z-10 max-w-7xl mx-auto px-4 py-8 md:px-6 md:py-24 bg-transparent">
+            <div class="text-center mb-6 md:mb-16">
+                <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">public stories</h2>
             </div>
+            <livewire:publicfeed />
         </section>
-
-        <footer class="relative z-10 max-w-7xl mx-auto px-6 py-20 text-center border-t border-gray-100">
-            <p class="text-gray-400 text-sm lowercase">&copy; {{ date('Y') }} gallery for two. made with love for
-                couples.</p>
+        <footer class="py-8 text-center border-t theme-border bg-transparent">
+            <p class="text-[10px] opacity-40 uppercase tracking-tight">
+                All Rights Reserved ©Copyright {{ $spaceName }}
+            </p>
         </footer>
     </div>
 
     <style>
-        @keyframes bounce-subtle {
+        @keyframes float {
 
             0%,
             100% {
-                transform: translateY(0);
+                transform: translate(0, 0);
+            }
+
+            33% {
+                transform: translate(150px, -200px);
+            }
+
+            66% {
+                transform: translate(-120px, 150px);
+            }
+        }
+
+        @keyframes float-reverse {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            33% {
+                transform: translate(-180px, 150px);
+            }
+
+            66% {
+                transform: translate(120px, -180px);
+            }
+        }
+
+        @keyframes soft-pulse {
+
+            0%,
+            100% {
+                opacity: 0.15;
+                transform: scale(1);
             }
 
             50% {
-                transform: translateY(-5px);
+                opacity: 0.3;
+                transform: scale(1.1);
             }
         }
 
-        .animate-bounce-subtle {
-            animation: bounce-subtle 3s ease-in-out infinite;
+        .animate-float {
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .animate-float-reverse {
+            animation: float-reverse 25s ease-in-out infinite;
+        }
+
+        .animate-soft-pulse {
+            animation: soft-pulse 10s ease-in-out infinite;
+        }
+
+        .animate-blink {
+            animation: blink 0.8s step-end infinite;
         }
     </style>
+    @livewireScripts
 </body>
 
 </html>

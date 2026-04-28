@@ -13,9 +13,9 @@
         </div>
 
         <div class="w-10 flex justify-end">
-            <button class="theme-text hover:opacity-70 transition-opacity">
+            <a href="{{ route('app-settings') }}" wire:navigate class="theme-text hover:opacity-70 transition-opacity">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-            </button>
+            </a>
         </div>
     </header>
 

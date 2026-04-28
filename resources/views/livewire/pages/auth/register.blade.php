@@ -14,6 +14,7 @@ new #[Layout('layouts.guest')] class extends Component
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public string $registration_token = '';
 
     /**
      * Handle an incoming registration request.
@@ -24,6 +25,9 @@ new #[Layout('layouts.guest')] class extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'registration_token' => ['required', 'string', 'in:LVNPC2026'],
+        ], [
+            'registration_token.in' => 'The registration token is invalid. Please contact support.',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -75,7 +79,16 @@ new #[Layout('layouts.guest')] class extends Component
                             type="password"
                             name="password_confirmation" required autocomplete="new-password"
                             placeholder="repeat your password" />
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2 ml-2" />
+            </div>
+        
+        <!-- Registration Token -->
+        <div class="space-y-2">
+            <x-input-label for="registration_token" :value="__('registration token')" class="lowercase ml-2 text-xs font-semibold text-gray-500" />
+            <x-ui.input wire:model="registration_token" id="registration_token"
+                            type="text"
+                            name="registration_token" required
+                            placeholder="enter invitation token" />
+            <x-input-error :messages="$errors->get('registration_token')" class="mt-2 ml-2" />
         </div>
 
         <div class="pt-4">

@@ -16,6 +16,7 @@ class CreatePost extends Component
     public $caption = '';
     public $location = '';
     public $mood = 'happy';
+    public $is_public = false;
 
     public function updatedPhotos()
     {
@@ -39,6 +40,7 @@ class CreatePost extends Component
             'location' => $this->location,
             'mood' => $this->mood,
             'type' => 'memory',
+            'is_public' => $this->is_public,
             'published_at' => now(),
         ]);
 

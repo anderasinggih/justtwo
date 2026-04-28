@@ -12,7 +12,7 @@
     <link rel="manifest" href="/manifest.json" type="application/manifest+json">
     <link rel="apple-touch-icon" href="/images/auth-bg.png">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
@@ -25,7 +25,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-    @livewireStyles
 
 </head>
 
@@ -42,7 +41,6 @@
             {{ $slot }}
         </div>
     </div>
-    @livewireScripts
 
 </body>
 

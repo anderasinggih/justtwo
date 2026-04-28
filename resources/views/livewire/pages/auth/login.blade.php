@@ -16,7 +16,11 @@ new #[Layout('layouts.guest')] class extends Component
     {
         $this->validate();
 
+        \Illuminate\Support\Facades\Log::info('Login attempt from ca69eda', ['email' => $this->form->email]);
+
         $this->form->authenticate();
+
+        \Illuminate\Support\Facades\Log::info('Login successful');
 
         Session::regenerate();
 
@@ -34,6 +38,7 @@ new #[Layout('layouts.guest')] class extends Component
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <form wire:submit="login" class="space-y-6">
+        @csrf
         <!-- Email Address -->
         <div class="space-y-2">
             <x-input-label for="email" :value="__('email')" class="lowercase ml-2 text-xs font-semibold text-gray-500" />

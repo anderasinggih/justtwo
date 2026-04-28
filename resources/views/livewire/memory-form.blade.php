@@ -162,6 +162,16 @@
                     <option value="travel">travel</option>
                     <option value="note">note</option>
                 </select>
+                <div class="h-6 w-px bg-gray-100 mx-2"></div>
+
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <div class="relative">
+                        <input type="checkbox" wire:model="is_public" class="sr-only">
+                        <div class="w-8 h-4 bg-gray-100 rounded-full transition-colors group-hover:bg-gray-200" :class="{ 'bg-brand-500': @entangle('is_public') }"></div>
+                        <div class="absolute left-1 top-1 w-2 h-2 bg-white rounded-full transition-transform" :class="{ 'translate-x-4': @entangle('is_public') }"></div>
+                    </div>
+                    <span class="text-[10px] font-bold theme-text opacity-40 lowercase tracking-tight">share to public</span>
+                </label>
             </div>
 
             <div class="flex items-center gap-4">

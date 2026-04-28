@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
+Route::view('/', 'welcome')->name('welcome');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified', 'relationship'])
@@ -42,6 +42,14 @@ Route::get('profile', \App\Livewire\Profile::class)
 Route::get('settings', \App\Livewire\Settings::class)
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('settings');
+
+Route::get('public-settings', \App\Livewire\PublicSettings::class)
+    ->middleware(['auth', 'verified', 'relationship'])
+    ->name('public-settings');
+
+Route::get('app-settings', \App\Livewire\AppSettings::class)
+    ->middleware(['auth', 'verified', 'relationship'])
+    ->name('app-settings');
 
 Route::view('onboarding', 'onboarding')
     ->middleware(['auth'])

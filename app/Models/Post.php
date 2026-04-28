@@ -20,12 +20,14 @@ class Post extends Model
         'location',
         'is_pinned',
         'is_archived',
+        'is_public',
         'published_at',
     ];
 
     protected $casts = [
         'is_pinned' => 'boolean',
         'is_archived' => 'boolean',
+        'is_public' => 'boolean',
         'published_at' => 'datetime',
     ];
 
