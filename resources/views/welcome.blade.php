@@ -8,8 +8,8 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="apple-mobile-web-app-title" content="GalleryTwo">
         <meta name="mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="/manifest.json" type="application/manifest+json">
-        <link rel="apple-touch-icon" href="/images/auth-bg.png">
+        <link rel="manifest" href="{{ asset('manifest.json') }}" type="application/manifest+json">
+        <link rel="apple-touch-icon" href="{{ asset('images/auth-bg.png') }}">
         
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
@@ -30,10 +30,10 @@
                 <div class="text-2xl font-bold tracking-tighter lowercase">gallery for two.</div>
                 <div class="space-x-4">
                     @auth
-                        <a href="/dashboard" wire:navigate class="text-sm font-medium hover:text-brand-500 lowercase">dashboard</a>
+                        <a href="{{ route('dashboard') }}" wire:navigate class="text-sm font-medium hover:text-brand-500 lowercase">dashboard</a>
                     @else
-                        <a href="{{ route('login', [], false) }}" wire:navigate class="text-sm font-medium hover:text-brand-500 lowercase">login</a>
-                        <a href="{{ route('register', [], false) }}" wire:navigate class="inline-flex items-center justify-center rounded-full bg-brand-500 px-6 py-2 text-sm font-medium text-white hover:bg-brand-600 shadow-lg shadow-brand-200 transition-all lowercase">start your space</a>
+                        <a href="{{ route('login') }}" wire:navigate class="text-sm font-medium hover:text-brand-500 lowercase">login</a>
+                        <a href="{{ route('register') }}" wire:navigate class="inline-flex items-center justify-center rounded-full bg-brand-500 px-6 py-2 text-sm font-medium text-white hover:bg-brand-600 shadow-lg shadow-brand-200 transition-all lowercase">start your space</a>
                     @endauth
                 </div>
             </nav>
@@ -50,7 +50,7 @@
                 </p>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-                    <a href="{{ route('register', [], false) }}" wire:navigate class="w-full sm:w-auto rounded-full bg-brand-500 px-10 py-5 text-lg font-medium text-white hover:bg-brand-600 shadow-2xl shadow-brand-300 transition-all animate-bounce-subtle lowercase">
+                    <a href="{{ route('register') }}" wire:navigate class="w-full sm:w-auto rounded-full bg-brand-500 px-10 py-5 text-lg font-medium text-white hover:bg-brand-600 shadow-2xl shadow-brand-300 transition-all animate-bounce-subtle lowercase">
                         create your shared space
                     </a>
                     <a href="#features" class="w-full sm:w-auto rounded-full bg-white border border-gray-100 px-10 py-5 text-lg font-medium hover:bg-gray-50 transition-all lowercase">
