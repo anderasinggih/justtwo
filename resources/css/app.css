@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+        --bg-primary: #ffffff;
+        --card-bg: #ffffff;
+        --text-primary: #111827;
+        --accent-color: #f43f5e;
+    }
+
+    [data-theme="dark"] {
+        --bg-primary: #000000;
+        --card-bg: #0a0a0a;
+        --text-primary: #ffffff;
+        --accent-color: #f43f5e;
+    }
+
+    [data-theme="rose"] {
+        --bg-primary: #fff1f2;
+        --card-bg: #fffbfb;
+        --text-primary: #4c0519;
+        --accent-color: #e11d48;
+    }
+
+    [data-theme="midnight"] {
+        --bg-primary: #020617;
+        --card-bg: #0f172a;
+        --text-primary: #f1f5f9;
+        --accent-color: #38bdf8;
+    }
+
+
+    body {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+
+    /* Enforce no uppercase globally for specific elements if needed, but components handle it mostly */
+    h1, h2, h3, h4, h5, h6, button, label {
+        @apply tracking-tight;
+    }
+
+    .theme-bg { background-color: var(--bg-primary) !important; }
+    .theme-card { background-color: var(--card-bg) !important; }
+    .theme-text { color: var(--text-primary) !important; }
+    .theme-accent { color: var(--accent-color) !important; }
+    .theme-accent-bg { background-color: var(--accent-color) !important; }
+    .theme-border { border-color: rgba(255, 255, 255, 0.1) !important; }
+}
+
+@layer components {
+    .glass {
+        @apply bg-white/70 backdrop-blur-md border border-white/20;
+    }
+}
+@layer utilities {
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+
+/* Global scrollbar hide */
+html, body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+    display: none;
+}
