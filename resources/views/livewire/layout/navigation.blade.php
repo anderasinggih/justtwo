@@ -13,7 +13,7 @@ new class extends Component {
 
 <div class="contents">
     {{-- Bottom Navigation Bar --}}
-    <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md" wire:persist="main-nav">
+    <div class="fixed bottom-1 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md" wire:persist="main-nav">
         <nav x-data="{ 
                 active: @js(
                     request()->routeIs('dashboard') ? 0 : 
@@ -23,21 +23,8 @@ new class extends Component {
                 ),
                 ready: false,
                 init() {
-                    const saved = sessionStorage.getItem('nav-active');
-                    if (saved !== null) {
-                        const target = this.active;
-                        this.active = parseInt(saved);
-                        requestAnimationFrame(() => {
-                            this.ready = true;
-                            requestAnimationFrame(() => {
-                                this.active = target;
-                                sessionStorage.setItem('nav-active', target);
-                            });
-                        });
-                    } else {
-                        this.ready = true;
-                        sessionStorage.setItem('nav-active', this.active);
-                    }
+                    this.ready = true;
+                    sessionStorage.setItem('nav-active', this.active);
                 },
                 setPage(index) {
                     this.active = index;
@@ -47,8 +34,8 @@ new class extends Component {
             class="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-full p-1 flex items-center ring-1 ring-white/10 text-white overflow-hidden">
             
             {{-- Sliding Bubble Indicator --}}
-            <div class="absolute inset-y-1.5 w-[calc(20%-1.6px)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] pointer-events-none opacity-0 flex justify-center"
-                 :class="ready ? 'opacity-100' : 'opacity-0'"
+            <div class="absolute inset-y-1.5 w-[calc(20%-1.6px)] pointer-events-none flex justify-center"
+                 :class="ready ? 'opacity-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]' : 'opacity-0'"
                  :style="`transform: translateX(${active * 100}%)`"
                  style="transform: translateX({{ 
                     request()->routeIs('dashboard') ? '0' : 
