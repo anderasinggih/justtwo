@@ -2,14 +2,16 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ Auth::user()->relationship->theme ?? 'light' }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <!-- PWA Meta Tags -->
+        <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-title" content="GalleryTwo">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <link rel="manifest" href="/manifest.json">
+        <link rel="manifest" href="{{ asset('manifest.json') }}">
+        <link rel="apple-touch-icon" href="{{ asset('images/auth-bg.png') }}"> {{-- Using auth-bg as temporary icon if no other exists --}}
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 

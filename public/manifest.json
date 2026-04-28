@@ -1,9 +1,19 @@
 {
   "name": "Gallery For Two",
   "short_name": "GalleryTwo",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
-  "scope": "/",
+  "background_color": "#ffffff",
   "theme_color": "#ffffff",
-  "background_color": "#ffffff"
+  "description": "Private gallery for couples",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/images/auth-bg.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
