@@ -1,45 +1,49 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        
-        <!-- PWA Meta Tags (Must be at the top) -->
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="GalleryTwo">
-        <meta name="mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="/manifest.json" type="application/manifest+json">
-        <link rel="apple-touch-icon" href="/images/auth-bg.png">
-        
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+<head>
+    <meta charset="utf-8">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <!-- PWA Meta Tags (Must be at the top) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GalleryTwo">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="/manifest.json" type="application/manifest+json">
+    <link rel="apple-touch-icon" href="/images/auth-bg.png">
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-        @livewireStyles
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    </head>
-    <body class="font-sans text-gray-900 antialiased bg-[#fdfaf6]">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-            <div class="w-full sm:max-w-md mt-6 px-10 py-12 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden rounded-[2.5rem] border border-gray-100">
-                <div class="flex justify-center mb-10">
-                    <a href="/" wire:navigate>
-                        <x-application-logo class="w-20 h-20 fill-current text-brand-500" />
-                    </a>
-                </div>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-                {{ $slot }}
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    @livewireStyles
+
+</head>
+
+<body class="font-sans text-gray-900 antialiased bg-[#fdfaf6]">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
+        <div
+            class="w-full sm:max-w-md mt-6 px-10 py-12 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden rounded-[2.5rem] border border-gray-100">
+            <div class="flex justify-center mb-10">
+                <a href="/" wire:navigate>
+                    <x-application-logo class="w-20 h-20 fill-current text-brand-500" />
+                </a>
             </div>
-        </div>
-        @livewireScripts
 
-    </body>
+            {{ $slot }}
+        </div>
+    </div>
+    @livewireScripts
+
+</body>
+
 </html>
