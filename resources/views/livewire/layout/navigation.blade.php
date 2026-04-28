@@ -13,7 +13,7 @@ new class extends Component {
 
 <div class="contents">
     {{-- Bottom Navigation Bar --}}
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md" wire:persist="main-nav">
+    <div class="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md" wire:persist="main-nav">
         <nav x-data="{ 
                 active: @js(
                     request()->routeIs('dashboard') ? 0 : 
@@ -44,7 +44,7 @@ new class extends Component {
                     sessionStorage.setItem('nav-active', index);
                 }
             }" 
-            class="relative bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_15px_40px_rgba(0,0,0,0.3)] rounded-full p-1 flex items-center ring-1 ring-white/10 text-white overflow-hidden">
+            class="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-full p-1 flex items-center ring-1 ring-white/10 text-white overflow-hidden">
             
             {{-- Sliding Bubble Indicator --}}
             <div class="absolute inset-y-1.5 w-[calc(20%-1.6px)] transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] pointer-events-none opacity-0 flex justify-center"
@@ -73,7 +73,7 @@ new class extends Component {
 
             <div class="relative z-10 flex-1 flex justify-center">
                 <a href="{{ route('memories.create') }}" wire:navigate
-                    class="bg-brand-500 text-white p-2.5 rounded-full hover:scale-110 active:scale-95 transition-all duration-300 shadow-lg shadow-brand-500/40">
+                    class="bg-brand-500 text-white p-2.5 rounded-full hover:scale-110 active:scale-95 transition-all duration-300">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 </a>
             </div>
