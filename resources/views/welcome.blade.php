@@ -2,15 +2,16 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         
-        <!-- PWA Meta Tags -->
-        <meta name="mobile-web-app-capable" content="yes">
+        <!-- PWA Meta Tags (Must be at the top) -->
         <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-title" content="GalleryTwo">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <link rel="manifest" href="{{ asset('manifest.json') }}">
-        <link rel="apple-touch-icon" href="{{ asset('images/auth-bg.png') }}">
+        <meta name="apple-mobile-web-app-title" content="GalleryTwo">
+        <meta name="mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="/manifest.json" type="application/manifest+json">
+        <link rel="apple-touch-icon" href="/images/auth-bg.png">
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
         <title>memories for two / private couple gallery</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -112,25 +113,8 @@
             }
         </style>
         <script>
-            // Mencegah link membuka Safari browser (tetap di dalam Web App)
-            document.addEventListener('click', function(event) {
-                var element = event.target;
-                while (element && element.tagName !== 'A') {
-                    element = element.parentNode;
-                }
-
-                if (element && element.tagName === 'A' && element.hasAttribute('href')) {
-                    var href = element.getAttribute('href');
-                    // Jika link internal (berawal dengan / atau mengandung hostname), cegah perilaku default
-                    if (href.startsWith('/') || href.includes(window.location.hostname)) {
-                        // Jangan cegah jika itu adalah link Livewire navigate (biarkan Livewire yang handle)
-                        if (element.hasAttribute('wire:navigate')) return;
-                        
-                        event.preventDefault();
-                        window.location.href = href;
-                    }
-                }
-            }, false);
+            // Force standalone mode to stay in-app on iOS
+            (function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone");
         </script>
     </body>
 </html>
