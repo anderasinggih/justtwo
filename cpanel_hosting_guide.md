@@ -17,7 +17,7 @@ Dokumen ini menjelaskan langkah-langkah untuk melakukan hosting project Laravel 
 1. Cari menu **Git™ Version Control** di cPanel.
 2. Klik **Create**.
 3. **Clone URL**: Masukkan URL repository kamu (misal: `git@github.com:username/justtwo.git`).
-4. **Repository Path**: Masukkan nama folder (misal: `repositories/justtwo`). *Jangan langsung ke public_html agar aman.*
+4. **Repository Path**: `public_html`
 5. **Repository Name**: `justtwo`.
 6. Klik **Create**.
 
@@ -33,9 +33,10 @@ Buat file baru bernama `.cpanel.yml` di folder `justtwo` kamu dengan isi berikut
 ```yaml
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/username_cpanel/public_html/
-    - /bin/cp -R public/* $DEPLOYPATH
-    - /bin/cp public/.htaccess $DEPLOYPATH
+    - echo "Deployment started"
+    # Catatan: Karena repo di public_html, file index.php ada di public_html/public/
+    # Jika ingin domain langsung ke sana, kamu perlu setting Document Root di cPanel (jika bisa)
+    # atau ikuti langkah "Cara B" di bawah.
 ```
 *Ganti `username_cpanel` dengan username cPanel kamu.*
 
@@ -66,19 +67,20 @@ Jika cPanel kamu mengizinkan, hapus folder `public_html` (backup dulu!) lalu bua
 ln -s /home/username/repositories/justtwo/public /home/username/public_html
 ```
 
-### Cara B: Edit `index.php`
-Jika ingin file project ada di luar dan hanya isi folder `public` yang ada di `public_html`:
-1. Pastikan `.cpanel.yml` sudah mengcopy isi folder `public` ke `public_html`.
-2. Edit file `public_html/index.php`, ubah path berikut:
+### Cara B: Pindahkan isi `public` ke `public_html`
+Jika kamu ingin domain langsung mengarah ke Laravel:
+1. Pindahkan (move) semua file di dalam folder `public/` ke root `public_html/`.
+2. Edit file `public_html/index.php`, ubah path agar menunjuk ke vendor dan bootstrap yang sekarang ada di folder yang sama:
 ```php
 // Dari:
 require __DIR__.'/../vendor/autoload.php';
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-// Menjadi (sesuaikan dengan lokasi folder project kamu):
-require __DIR__.'/../repositories/justtwo/vendor/autoload.php';
-$app = require_once __DIR__.'/../repositories/justtwo/bootstrap/app.php';
+// Menjadi:
+require __DIR__.'/vendor/autoload.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 ```
+3. Jangan lupa copy juga file `.htaccess` dari folder `public` ke root `public_html`.
 
 ---
 
