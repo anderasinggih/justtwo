@@ -68,12 +68,20 @@
     }
 }
 
-/* Global scrollbar hide */
+/* Global scrollbar hide and disable pull-to-refresh */
 html, body {
     -ms-overflow-style: none;
     scrollbar-width: none;
+    overscroll-behavior-y: contain; /* Disable pull-to-refresh */
 }
+
 
 html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: none;
 }
+
+/* Hide Livewire 3 Navigation Progress Bar */
+.livewire-progress-bar {
+    display: none !important;
+}
+
