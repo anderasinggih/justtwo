@@ -27,6 +27,7 @@ class PublicSettings extends Component
     public $youtube_url;
     public $journey_video_url;
     public $journey_video_url_2;
+    public $spotify_url;
 
     public function mount()
     {
@@ -40,6 +41,7 @@ class PublicSettings extends Component
         $this->youtube_url = $settings->youtube_url;
         $this->journey_video_url = $settings->journey_video_url;
         $this->journey_video_url_2 = $settings->journey_video_url_2;
+        $this->spotify_url = $settings->spotify_url;
         $this->theme = $settings->theme ?? 'light';
         $this->existing_banners = $settings->banner_paths ?? [];
         
@@ -104,6 +106,7 @@ class PublicSettings extends Component
             'youtube_url' => 'nullable|url|max:255',
             'journey_video_url' => 'nullable|url|max:255',
             'journey_video_url_2' => 'nullable|url|max:255',
+            'spotify_url' => 'nullable|url|max:500',
             'theme' => 'required|in:light,dark,rose,midnight',
         ]);
 
@@ -117,6 +120,7 @@ class PublicSettings extends Component
                     'youtube_url' => $this->youtube_url,
                     'journey_video_url' => $this->journey_video_url,
                     'journey_video_url_2' => $this->journey_video_url_2,
+                    'spotify_url' => $this->spotify_url,
                     'theme' => $this->theme,
                     'updated_at' => now(),
                 ]

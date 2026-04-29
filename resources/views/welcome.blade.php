@@ -34,6 +34,13 @@
             preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $settings->journey_video_url_2, $match);
             $journeyVideoId2 = $match[1] ?? null;
         }
+
+        $spotifyEmbedUrl = null;
+        if ($settings->spotify_url) {
+            if (preg_match('/spotify\.com\/(playlist|track|album|artist)\/([a-zA-Z0-9]+)/', $settings->spotify_url, $matches)) {
+                $spotifyEmbedUrl = "https://open.spotify.com/embed/{$matches[1]}/{$matches[2]}?utm_source=generator&autoplay=1";
+            }
+        }
     @endphp
 
     <title>{{ $settings->hero_title }}</title>
@@ -109,7 +116,7 @@
 
             {{-- Hero Section --}}
             <main
-                class="relative h-[35vh] md:h-[80vh] w-full flex flex-col items-center justify-center text-center overflow-hidden">
+                class="relative h-[30vh] md:h-[45vh] lg:h-[80vh] w-full flex flex-col items-center justify-center text-center overflow-hidden">
                 {{-- Banners Carousel as Background --}}
                 <div class="absolute inset-0 z-0 h-full w-full">
                     @forelse($banners as $index => $banner)
@@ -190,7 +197,7 @@
                         <div x-show="active === {{ $index }} && showTitle"
                             x-transition:enter="transition opacity duration-1000"
                             x-transition:leave="transition opacity duration-1000" class="space-y-4">
-                            <h1 class="text-sm md:text-3xl font-medium tracking-tight text-white drop-shadow-2xl text-justify"
+                            <h1 class="text-sm md:text-4xl lg:text-6xl font-medium tracking-tight text-white drop-shadow-2xl text-justify"
                                 style="text-align-last: justify;">
                                 <template x-for="(line, i) in fullText.substring(0, index).split('\n')" :key="i">
                                     <div x-text="line" class="w-full" style="text-align-last: justify;"></div>
@@ -206,43 +213,53 @@
             {{-- Media Carousel Section --}}
             <div class="max-w-7xl mx-auto px-2 md:px-12 mt-12 md:mt-24 mb-12 md:mb-20">
                 @if($settings->about_us)
-                    <div class="text-center mb-6 md:mb-12 page-reveal reveal-delay-1">
+                    <div class="text-center mb-8 md:mb-12 page-reveal reveal-delay-1 reveal">
                         <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">description</h2>
                     </div>
-                    <div class="max-w-2xl mx-auto mb-12 md:mb-24 px-4 page-reveal reveal-delay-2">
-                        <div class="text-xs md:text-sm theme-text opacity-60 font-medium tracking-tighter lowercase text-justify" style="text-align-last: justify;">
+                    <div class="max-w-5xl mx-auto mb-12 md:mb-24 px-4 md:px-30 lg:px-50 page-reveal reveal-delay-2 reveal">
+                        <div class="text-xs md:text-lg theme-text opacity-60 font-medium tracking-tighter lowercase text-justify leading-relaxed"
+                            style="text-align-last: justify;">
                             {!! nl2br(e($settings->about_us)) !!}
                         </div>
                     </div>
                 @endif
 
-                <div class="text-center mb-8 md:mb-16 page-reveal reveal-delay-3">
-                    <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">our journey</h2>
+                <div class="text-center mb-8 md:mb-12 page-reveal reveal-delay-3 reveal">
+                    <h2 class="text-xl md:text-4xl font-bold tracking-tighter lowercase">our journey</h2>
                 </div>
                 @if($journeyVideoId || $journeyVideoId2)
                     {{-- YouTube Embed replaces Carousel --}}
-                    <div
-                        class="grid {{ ($journeyVideoId && $journeyVideoId2) ? 'grid-cols-2' : 'grid-cols-1' }} gap-2 md:gap-8">
-                        @if($journeyVideoId)
-                            <div
-                                class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden bg-black shadow-2xl border border-white/5">
-                                <iframe class="absolute inset-0 w-full h-full"
-                                    src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=1&loop=1&playlist={{ $journeyVideoId }}&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1"
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen></iframe>
-                            </div>
-                        @endif
-                        @if($journeyVideoId2)
-                            <div
-                                class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden bg-black shadow-2xl border border-white/5">
-                                <iframe class="absolute inset-0 w-full h-full"
-                                    src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=1&loop=1&playlist={{ $journeyVideoId2 }}&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1"
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen></iframe>
-                            </div>
-                        @endif
+                    <div class="max-w-6xl mx-auto px-2">
+                        @php
+                            $embedBg = match ($settings->theme ?? 'light') {
+                                'dark', 'midnight' => 'bg-black',
+                                'rose' => 'bg-rose-200/50',
+                                default => 'bg-white',
+                            };
+                        @endphp
+                        <div
+                            class="grid {{ ($journeyVideoId && $journeyVideoId2) ? 'grid-cols-2' : 'grid-cols-1' }} gap-2 md:gap-8">
+                            @if($journeyVideoId)
+                                <div
+                                    class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl border theme-border">
+                                    <iframe class="absolute inset-0 w-full h-full"
+                                        src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=1&loop=1&playlist={{ $journeyVideoId }}&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+                                </div>
+                            @endif
+                            @if($journeyVideoId2)
+                                <div
+                                    class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl border theme-border">
+                                    <iframe class="absolute inset-0 w-full h-full"
+                                        src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=1&loop=1&playlist={{ $journeyVideoId2 }}&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 @else
                     {{-- Original Carousel --}}
@@ -289,40 +306,101 @@
                 @endif
             </div>
         </div>
-        
+
         @if($anniversaryDate)
-        {{-- Times Fly Section --}}
-        <section class="relative z-10 max-w-7xl mx-auto px-4 py-8 md:py-16 text-center page-reveal reveal-delay-4">
-            <div class="mb-6 md:mb-12">
-                <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">times fly</h2>
-            </div>
-            <div x-data="{
-                start: new Date('{{ $anniversaryDate }}').getTime(),
-                days: 0, hours: 0, minutes: 0, seconds: 0,
-                update() {
-                    const now = new Date().getTime();
-                    const diff = Math.abs(now - this.start);
-                    this.days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    this.hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    this.minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    this.seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                }
-            }" x-init="update(); setInterval(() => update(), 1000)" 
-            class="flex flex-wrap justify-center gap-x-4 md:gap-x-8 theme-text">
-                <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="days + 'd'"></span>
-                <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="hours + 'h'"></span>
-                <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="minutes + 'm'"></span>
-                <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="seconds + 's'"></span>
-            </div>
-            <div class="mt-4 md:mt-8 text-[10px] md:text-sm theme-text opacity-40 lowercase italic tracking-tight">
-                and counting every second together...
-            </div>
-        </section>
+            {{-- Times Fly Section --}}
+            <section class="relative z-10 max-w-7xl mx-auto px-4 py-12 md:py-20 text-center page-reveal reveal-delay-4 reveal">
+                <div class="mb-8 md:mb-12">
+                    <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">times fly</h2>
+                </div>
+                <div x-data="{
+                                start: new Date('{{ $anniversaryDate }}').getTime(),
+                                days: 0, hours: 0, minutes: 0, seconds: 0,
+                                actualTotalSeconds: 0,
+                                animated: false,
+                                blur: 0,
+                                updateActual() {
+                                    const now = new Date().getTime();
+                                    const diff = Math.abs(now - this.start);
+                                    this.actualTotalSeconds = Math.floor(diff / 1000);
+                                    
+                                    // Current values (for real-time ticking)
+                                    this.days = Math.floor(this.actualTotalSeconds / (60 * 60 * 24));
+                                    this.hours = Math.floor((this.actualTotalSeconds % (60 * 60 * 24)) / (60 * 60));
+                                    this.minutes = Math.floor((this.actualTotalSeconds % (60 * 60)) / 60);
+                                    this.seconds = this.actualTotalSeconds % 60;
+                                },
+                                animate() {
+                                    if (this.animated) return;
+                                    this.animated = true;
+                                    
+                                    const now = new Date().getTime();
+                                    const diff = Math.abs(now - this.start);
+                                    const targetTotal = Math.floor(diff / 1000);
+                                    
+                                    const duration = 4000; // 4 seconds
+                                    const startTime = performance.now();
+                                    
+                                    const step = (timestamp) => {
+                                        const progress = Math.min((timestamp - startTime) / duration, 1);
+                                        const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                                        
+                                        this.blur = (1 - progress) * 2;
+                                        
+                                        const currentTotal = Math.floor(ease * targetTotal);
+                                        
+                                        this.days = Math.floor(currentTotal / (60 * 60 * 24));
+                                        this.hours = Math.floor((currentTotal % (60 * 60 * 24)) / (60 * 60));
+                                        this.minutes = Math.floor((currentTotal % (60 * 60)) / 60);
+                                        this.seconds = currentTotal % 60;
+                                        
+                                        if (progress < 1) {
+                                            requestAnimationFrame(step);
+                                        } else {
+                                            this.blur = 0;
+                                            setInterval(() => this.updateActual(), 1000);
+                                        }
+                                    };
+                                    requestAnimationFrame(step);
+                                }
+                            }" 
+                            x-init="
+                                const observer = new IntersectionObserver((entries) => {
+                                    if (entries[0].isIntersecting) animate();
+                                }, { threshold: 0.5 });
+                                observer.observe($el);
+                            "
+                    class="flex flex-wrap justify-center gap-x-4 md:gap-x-8 theme-text"
+                    :style="'filter: blur(' + blur + 'px); transition: filter 0.3s ease;'">
+                    <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="days + 'd'"></span>
+                    <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="hours + 'h'"></span>
+                    <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="minutes + 'm'"></span>
+                    <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="seconds + 's'"></span>
+                </div>
+                <div class="mt-4 md:mt-8 text-[10px] md:text-sm theme-text opacity-40 lowercase italic tracking-tight">
+                    and counting every second together...
+                </div>
+            </section>
+        @endif
+
+        @if($spotifyEmbedUrl)
+            {{-- Spotify Soundtrack Section --}}
+            <section class="relative z-10 max-w-2xl mx-auto px-4 py-12 md:py-20 page-reveal reveal-delay-5 reveal">
+                <div class="text-center mb-8 md:mb-12">
+                    <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">our soundtrack</h2>
+                </div>
+                <div class="rounded-3xl overflow-hidden shadow-2xl border theme-border">
+                    <iframe style="border-radius:12px" src="{{ $spotifyEmbedUrl }}" width="100%" height="152"
+                        frameBorder="0" allowfullscreen=""
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"></iframe>
+                </div>
+            </section>
         @endif
 
         {{-- Public Feed --}}
-        <section class="relative z-10 max-w-7xl mx-auto px-0 py-8 md:px-4 md:py-24 bg-transparent">
-            <div class="text-center mb-6 md:mb-16">
+        <section class="relative z-10 max-w-7xl mx-auto px-0 py-12 md:px-4 md:py-20 bg-transparent reveal">
+            <div class="text-center mb-8 md:mb-12">
                 <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">public stories</h2>
             </div>
             <livewire:publicfeed />
@@ -397,6 +475,42 @@
             animation: blink 0.8s step-end infinite;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // Optional: stop observing once revealed
+                        // observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        // For Livewire navigations
+        document.addEventListener('livewire:navigated', () => {
+            document.querySelectorAll('.reveal').forEach(el => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active');
+                        }
+                    });
+                }, { threshold: 0.1 });
+                observer.observe(el);
+            });
+        });
+    </script>
     @livewireScripts
 </body>
 

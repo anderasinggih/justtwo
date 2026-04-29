@@ -78,6 +78,16 @@
                         @error('journey_video_url_2') <p class="text-[10px] text-red-500 mt-1 lowercase">{{ $message }}</p> @enderror
                     </div>
                 </div>
+                <div class="space-y-1.5 md:space-y-3">
+                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 ml-2">spotify playlist/song link</label>
+                    <div class="ml-2">
+                        <input type="url" 
+                               wire:model="spotify_url" 
+                               placeholder="https://open.spotify.com/..." 
+                               class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-6 py-3 text-xs theme-text focus:ring-brand-500/20 focus:border-brand-500/30 transition-all lowercase">
+                        @error('spotify_url') <p class="text-[10px] text-red-500 mt-1 lowercase">{{ $message }}</p> @enderror
+                    </div>
+                </div>
                 <div class="col-span-full ml-3">
                     <p class="text-[8px] md:text-[9px] theme-text opacity-30 lowercase italic">
                         *journey link will be used for the button. embed links will replace the image banner if provided. you can provide one or two videos.

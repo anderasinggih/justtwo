@@ -7,6 +7,14 @@ use Livewire\WithPagination;
 new class extends Component {
     use WithPagination;
 
+    public $limit = 4;
+    public $hasMore = false;
+
+    public function showMore()
+    {
+        $this->limit = 999;
+    }
+
     public function with(): array
     {
         $allPosts = Post::where('is_public', true)
@@ -16,14 +24,11 @@ new class extends Component {
             ->latest()
             ->get();
 
-        $albums = $allPosts->groupBy(function($post) {
+        $allAlbums = $allPosts->groupBy(function($post) {
             return $post->created_at->format('Y|F');
         })->map(function($posts, $key) {
             [$year, $month] = explode('|', $key);
-            
-            // Collect all media from these posts to show a preview strip
             $allMedia = $posts->flatMap(fn($p) => $p->media)->take(4);
-            
             return (object) [
                 'year' => $year,
                 'month' => $month,
@@ -32,6 +37,9 @@ new class extends Component {
                 'fallback_text' => $posts->first()->content
             ];
         });
+
+        $this->hasMore = $allAlbums->count() > $this->limit;
+        $albums = $allAlbums->take($this->limit);
 
         return [
             'albums' => $albums
@@ -95,4 +103,18 @@ new class extends Component {
             </div>
         @endforelse
     </div>
+
+    @if($hasMore)
+        <div class="flex justify-center mt-12 md:mt-20 page-reveal">
+            <button wire:click="showMore" 
+                    class="group flex flex-col items-center gap-3 focus:outline-none">
+                <span class="text-[10px] md:text-xs font-bold tracking-widest uppercase theme-text opacity-40 group-hover:opacity-100 transition-opacity">show all collections</span>
+                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full border theme-border flex items-center justify-center theme-text group-hover:bg-white/5 transition-all">
+                    <svg class="w-4 h-4 md:w-5 md:h-5 transform group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </button>
+        </div>
+    @endif
 </div>

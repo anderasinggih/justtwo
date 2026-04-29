@@ -17,6 +17,7 @@ class PublicSetting extends Model
         'youtube_url',
         'journey_video_url',
         'journey_video_url_2',
+        'spotify_url',
         'banner_paths',
         'banner_data',
     ];
