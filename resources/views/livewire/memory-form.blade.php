@@ -130,30 +130,6 @@
                 
                 <div class="h-6 w-px bg-gray-100 mx-2"></div>
 
-                <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" type="button" class="p-2 text-gray-400 hover:text-brand-500 hover:bg-brand-50 rounded-full transition-all group relative">
-                        @if($mood)
-                            <span class="text-lg leading-none">{{ $mood }}</span>
-                        @else
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        @endif
-                        <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">set mood</span>
-                    </button>
-                    
-                    <div x-show="open" @click.away="open = false" class="absolute bottom-full mb-2 left-0 bg-white border border-gray-100 rounded-2xl shadow-xl p-2 flex gap-1 z-50">
-                        @foreach(['❤️', '🥰', '✨', '📸', '🌙', '🌊', '🍷', '🥂'] as $emoji)
-                            <button @click="$wire.set('mood', '{{ $emoji }}'); open = false" type="button" class="p-2 hover:bg-brand-50 rounded-xl transition-colors text-lg leading-none">
-                                {{ $emoji }}
-                            </button>
-                        @endforeach
-                        <button @click="$wire.set('mood', ''); open = false" type="button" class="p-2 hover:bg-gray-50 rounded-xl transition-colors">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="h-6 w-px bg-gray-100 mx-2"></div>
-
 
                 <select wire:model="type" class="border-none bg-transparent text-xs text-gray-400 focus:ring-0 lowercase cursor-pointer hover:text-gray-600 font-medium">
                     <option value="photo">photo</option>

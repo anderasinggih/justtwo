@@ -76,6 +76,7 @@
                             <button type="button" onclick="document.getElementById('profile_photo_input').click()" class="text-[10px] theme-accent font-bold lowercase">change photo</button>
                         </div>
                         <div wire:loading wire:target="profile_photo" class="text-[10px] theme-accent lowercase animate-pulse">uploading...</div>
+                        @error('profile_photo') <p class="text-[10px] text-red-500 lowercase">{{ $message }}</p> @enderror
                     </div>
 
                     <div>

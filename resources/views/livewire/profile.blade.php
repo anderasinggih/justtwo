@@ -9,7 +9,6 @@
         
         <div class="flex items-center gap-1">
             <h1 class="text-sm font-bold theme-text lowercase tracking-tighter">{{ Auth::user()->name }}</h1>
-            <svg class="w-2.5 h-2.5 theme-text opacity-40" fill="currentColor" viewBox="0 0 24 24"><path d="M12 16.5l-6-6h12l-6 6z"/></svg>
         </div>
 
         <div class="w-10 flex justify-end">
@@ -85,10 +84,10 @@
     </div>
 
     {{-- Post Grid (Full Width) --}}
-    <div class="grid grid-cols-3 gap-0.5">
+    <div class="grid grid-cols-3 gap-0">
         @forelse($posts as $post)
             <a href="{{ route('timeline') }}?post={{ $post->id }}" wire:navigate 
-               class="relative aspect-square bg-white/5 overflow-hidden border theme-border">
+               class="relative aspect-square bg-white/5 overflow-hidden">
                 @php
                     $media = $post->media->first();
                 @endphp

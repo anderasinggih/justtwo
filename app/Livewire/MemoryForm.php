@@ -15,7 +15,6 @@ class MemoryForm extends Component
 
     public $content;
     public $title;
-    public $mood;
     public $photos = [];
     public $type = 'photo'; // Default type
     public $is_public = false;
@@ -23,7 +22,6 @@ class MemoryForm extends Component
     protected $rules = [
         'content' => 'required|string|min:5',
         'title' => 'nullable|string|max:255',
-        'mood' => 'nullable|string|max:50',
         'photos.*' => 'image|max:5120', // 5MB max each
         'type' => 'required|in:photo,gallery,story,milestone,anniversary,travel,note',
     ];
@@ -39,7 +37,6 @@ class MemoryForm extends Component
             'type' => $this->type,
             'title' => $this->title,
             'content' => $this->content,
-            'mood' => $this->mood,
             'is_public' => $this->is_public,
             'published_at' => now(),
         ]);
@@ -68,7 +65,7 @@ class MemoryForm extends Component
             $partner->notify(new PartnerAction('post', Auth::user()->name, "shared a new {$this->type}"));
         }
 
-        $this->reset(['content', 'title', 'photos', 'type', 'mood', 'is_public']);
+        $this->reset(['content', 'title', 'photos', 'type', 'is_public']);
 
         $this->dispatch('postCreated');
         session()->flash('success', 'memory shared successfully.');

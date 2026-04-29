@@ -95,6 +95,8 @@
                         this.titleTimer = setTimeout(() => {
                             this.showTitle = false;
                         }, 4000);
+                        // Advance video after 15 seconds (while looping)
+                        this.timer = setTimeout(() => this.next(), 15000);
                     } else {
                         // Regular rotation for images
                         this.timer = setTimeout(() => this.next(), 5000);
@@ -118,8 +120,8 @@
                         @endphp
 
                         @if ($isVideo)
-                            <video src="{{ Storage::disk('public')->url($banner) }}" class="w-full h-full object-cover" autoplay
-                                muted playsinline @ended="next()"></video>
+                            <video src="{{ Storage::disk('public')->url($banner) }}" class="w-full h-full object-cover" autoplay loop
+                                muted playsinline></video>
                         @else
                             <img src="{{ Storage::disk('public')->url($banner) }}" class="w-full h-full object-cover">
                         @endif
@@ -215,8 +217,8 @@
                             <video src="{{ Storage::disk('public')->url($banner) }}"
                                 x-show="active === {{ $index }}" x-transition:enter="transition opacity duration-1000"
                                 x-transition:leave="transition opacity duration-1000"
-                                class="absolute inset-0 w-full h-full object-cover" autoplay muted
-                                playsinline @ended="next()"></video>
+                                class="absolute inset-0 w-full h-full object-cover" autoplay loop muted
+                                playsinline></video>
                         @else
                             <img src="{{ Storage::disk('public')->url($banner) }}" x-show="active === {{ $index }}"
                                 x-transition:enter="transition opacity duration-1000"
@@ -238,7 +240,7 @@
         </main>
 
         {{-- Public Feed --}}
-        <section class="relative z-10 max-w-7xl mx-auto px-4 py-8 md:px-6 md:py-24 bg-transparent">
+        <section class="relative z-10 max-w-7xl mx-auto px-2 py-8 md:px-4 md:py-24 bg-transparent">
             <div class="text-center mb-6 md:mb-16">
                 <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">public stories</h2>
             </div>

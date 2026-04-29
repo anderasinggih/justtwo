@@ -20,28 +20,18 @@
         </h2>
 
         <div class="space-y-6">
-            {{-- Hero Title --}}
-            <div class="space-y-1.5 md:space-y-2">
-                <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 ml-2">hero title</label>
-                <textarea wire:model="hero_title" rows="2" class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm focus:ring-brand-500 focus:border-brand-500 transition-all theme-text resize-none" placeholder="enter hero title"></textarea>
-                @error('hero_title') <p class="text-[10px] text-red-500 ml-2 mt-1">{{ $message }}</p> @enderror
-            </div>
-
-            {{-- Hero Subtitle --}}
-            <div class="space-y-1.5 md:space-y-2">
-                <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 ml-2">hero subtitle</label>
-                <textarea wire:model="hero_subtitle" rows="3" class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm focus:ring-brand-500 focus:border-brand-500 transition-all theme-text resize-none" placeholder="enter hero subtitle"></textarea>
-                @error('hero_subtitle') <p class="text-[10px] text-red-500 ml-2 mt-1">{{ $message }}</p> @enderror
-            </div>
-
             {{-- Theme Selector --}}
-            <div class="space-y-1.5 md:space-y-2">
+            <div class="space-y-1.5 md:space-y-3">
                 <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 ml-2">theme</label>
-                <select wire:model="theme" class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-3 py-2 md:px-4 md:py-3 text-xs md:text-sm focus:ring-brand-500 focus:border-brand-500 transition-all theme-text lowercase">
-                    <option value="light">light</option>
-                    <option value="dark">dark/black</option>
-                    <option value="rose">rose</option>
-                </select>
+                <div class="flex flex-wrap gap-2 md:gap-3 ml-2">
+                    @foreach(['light', 'dark', 'rose', 'midnight'] as $t)
+                        <button type="button" 
+                                wire:click="$set('theme', '{{ $t }}')"
+                                class="px-4 py-2 md:px-6 md:py-2.5 rounded-full border text-[10px] md:text-xs font-bold transition-all lowercase {{ $theme === $t ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/20' : 'bg-white/5 border-white/10 theme-text opacity-40 hover:opacity-100' }}">
+                            {{ $t }}
+                        </button>
+                    @endforeach
+                </div>
             </div>
 
             <div class="pt-1 md:pt-2">

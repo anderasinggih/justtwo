@@ -59,4 +59,6 @@ Route::get('invite/{code}', \App\Livewire\InvitePartner::class)
     ->name('invite');
 
 
+Route::get('posts/{post}/preview', \App\Livewire\PublicPostPreview::class)->name('posts.preview');
+
 require __DIR__.'/auth.php';

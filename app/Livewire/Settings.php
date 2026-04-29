@@ -62,7 +62,7 @@ class Settings extends Component
     {
         $this->validate([
             'user_name' => 'required|string|max:255',
-            'profile_photo' => 'nullable|image|max:1024', // 1MB Max
+            'profile_photo' => 'nullable|image|max:10240', // 10MB Max
         ]);
 
         $data = [
