@@ -43,7 +43,31 @@ class Timeline extends Component
         $post->update(['is_archived' => !$post->is_archived]);
     }
 
-    public function addComment($postId, $content)
+    public function deletePost($postId)
+    {
+        $post = Post::findOrFail($postId);
+        // Only allow owner to delete
+        if ($post->user_id === Auth::id()) {
+            $post->delete();
+            $this->dispatch('postDeleted');
+        }
+    }
+
+    public function toggleBookmark($postId)
+    {
+        $post = Post::findOrFail($postId);
+        $bookmark = $post->bookmarks()->where('user_id', Auth::id())->first();
+
+        if ($bookmark) {
+            $bookmark->delete();
+        } else {
+            $post->bookmarks()->create([
+                'user_id' => Auth::id(),
+            ]);
+        }
+    }
+
+    public function addComment($postId, $content, $parentId = null)
     {
         if (empty($content)) return;
 
@@ -51,6 +75,7 @@ class Timeline extends Component
         $post->comments()->create([
             'user_id' => Auth::id(),
             'relationship_id' => $post->relationship_id,
+            'parent_id' => $parentId,
             'content' => $content,
         ]);
 
@@ -72,7 +97,9 @@ class Timeline extends Component
                        ->orWhere('title', 'like', '%' . $this->search . '%');
                 });
             })
-            ->with(['user', 'media', 'reactions', 'comments.user'])
+            ->with(['user', 'media', 'reactions', 'bookmarks', 'comments' => function($q) {
+                $q->whereNull('parent_id')->with(['user', 'replies.user'])->latest();
+            }])
             ->latest()
             ->paginate(10);
 

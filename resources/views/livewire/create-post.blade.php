@@ -1,38 +1,130 @@
 <div class="min-h-screen theme-bg" 
      x-data="{ 
         step: @entangle('step'),
-        localPreviews: [],
-        uploadProgress: 0,
+        isEdit: @js($isEdit),
+        localFiles: [],
+        existingMedia: @js($existingMedia),
+        croppedImages: {}, // Store base64 crops by index
+        currentIndex: 0,
+        cropper: null,
         isUploading: false,
         
+        init() {
+            if (this.isEdit && this.existingMedia.length > 0) {
+                this.step = 2;
+                // We don't initialize cropper for existing media unless they re-upload
+            }
+        },
+
         handleFiles(event) {
             const files = event.target.files;
             if (!files.length) return;
             
-            this.isUploading = true;
-            this.step = 2; // Instant transition
+            this.localFiles = Array.from(files);
+            this.step = 2;
+            this.currentIndex = 0;
+            this.croppedImages = {};
+            this.existingMedia = []; // Clear existing if new files chosen
             
-            // Generate local previews
-            for (let i = 0; i < files.length; i++) {
-                this.localPreviews.push(URL.createObjectURL(files[i]));
+            this.$nextTick(() => {
+                this.initCropper();
+            });
+        },
+
+        initCropper() {
+            if (this.cropper) {
+                this.cropper.destroy();
             }
+
+            const image = document.getElementById('cropper-image');
+            if (!image) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                image.src = e.target.result;
+                this.cropper = new Cropper(image, {
+                    aspectRatio: 4 / 5,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: false,
+                    cropBoxResizable: false,
+                });
+            };
+            reader.readAsDataURL(this.localFiles[this.currentIndex]);
+        },
+
+        async selectPhoto(index) {
+            if (this.localFiles.length === 0) return;
+
+            // Save current crop before switching
+            if (this.cropper) {
+                const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
+                this.croppedImages[this.currentIndex] = canvas.toDataURL('image/jpeg', 0.9);
+            }
+            
+            this.currentIndex = index;
+            this.initCropper();
+        },
+
+        async submitPost() {
+            this.isUploading = true;
+            
+            // 1. Save final crop if new files
+            if (this.localFiles.length > 0 && this.cropper) {
+                const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
+                this.croppedImages[this.currentIndex] = canvas.toDataURL('image/jpeg', 0.9);
+            }
+            
+            const results = [];
+            if (this.localFiles.length > 0) {
+                for (let i = 0; i < this.localFiles.length; i++) {
+                    if (this.croppedImages[i]) {
+                        results.push(this.croppedImages[i]);
+                    }
+                }
+                
+                if (results.length === 0) {
+                    this.isUploading = false;
+                    alert('please wait for images to load');
+                    return;
+                }
+            } else if (!this.isEdit) {
+                // For new posts, images are mandatory
+                this.isUploading = false;
+                alert('please select at least one photo');
+                return;
+            }
+
+            @this.savePost(results);
         }
-     }"
-     x-on:livewire-upload-start="isUploading = true"
-     x-on:livewire-upload-finish="isUploading = false; uploadProgress = 0"
-     x-on:livewire-upload-error="isUploading = false"
-     x-on:livewire-upload-progress="uploadProgress = $event.detail.progress">
+    }">
+
+    {{-- Cropper.js Assets --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <style>
+        .cropper-view-box { border-radius: 0; outline: 1px solid rgba(255,255,255,0.5); }
+        .cropper-line, .cropper-point { display: none; }
+        .cropper-container { background-color: #000; }
+        [x-cloak] { display: none !important; }
+    </style>
 
     {{-- Full Page Header --}}
     <header class="flex items-center justify-between px-6 h-14 border-b theme-border sticky top-0 theme-bg z-30">
-        <a href="{{ url()->previous() }}" wire:navigate class="text-sm font-bold theme-text lowercase">
+        <a href="{{ url()->previous() }}" wire:navigate class="text-xs font-bold theme-text lowercase">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </a>
-        <h2 class="text-sm font-bold theme-text lowercase">new memory</h2>
+        <h2 class="text-sm font-bold theme-text lowercase" x-text="isEdit ? 'edit memory' : 'new memory'"></h2>
         <template x-if="step == 2">
-            <button wire:click="submit" :disabled="isUploading" 
-                    class="text-sm font-bold theme-accent lowercase disabled:opacity-30">
-                share
+            <button @click="submitPost" :disabled="isUploading" 
+                    class="text-sm font-bold theme-accent lowercase disabled:opacity-30"
+                    x-text="isEdit ? 'update' : 'share'">
             </button>
         </template>
         <template x-if="step == 1">
@@ -54,37 +146,60 @@
                 </div>
                 <label class="cursor-pointer theme-accent-bg text-white px-8 py-3 rounded-2xl text-sm font-bold hover:opacity-90 transition-all lowercase shadow-lg shadow-brand-500/20">
                     choose from gallery
-                    <input type="file" wire:model="photos" multiple class="hidden" accept="image/*" @change="handleFiles">
+                    <input type="file" multiple class="hidden" accept="image/*" @change="handleFiles">
                 </label>
             </div>
 
-            {{-- Step 2: Preview & Info --}}
+            {{-- Step 2: Preview & Crop --}}
             <div x-show="step == 2" x-cloak class="flex flex-col">
-                {{-- Photo Preview --}}
-                <div class="w-full aspect-[4/5] bg-black relative group overflow-hidden">
-                    {{-- Uploading Overlay --}}
-                    <div x-show="isUploading" class="absolute inset-0 z-20 bg-black/60 flex flex-col items-center justify-center space-y-4">
-                        <div class="w-48 h-1 bg-white/20 rounded-full overflow-hidden">
-                            <div class="h-full bg-brand-500 transition-all duration-300" :style="`width: ${uploadProgress}%`"></div>
+                {{-- Cropper Container --}}
+                <div class="w-full aspect-[4/5] bg-black relative overflow-hidden">
+                    <template x-if="localFiles.length > 0">
+                        <img id="cropper-image" class="max-w-full">
+                    </template>
+                    <template x-if="localFiles.length === 0 && existingMedia.length > 0">
+                        <div class="w-full h-full">
+                            <template x-for="(media, idx) in existingMedia">
+                                <img x-show="currentIndex === idx" :src="'/storage/' + media.file_path_original" class="w-full h-full object-cover">
+                            </template>
                         </div>
-                        <p class="text-[10px] text-white font-bold uppercase tracking-widest" x-text="`uploading ${uploadProgress}%`"></p>
-                    </div>
-
-                    <div class="flex overflow-x-auto snap-x snap-mandatory h-full scrollbar-hide">
-                        {{-- Use local previews if photos are still uploading --}}
-                        <template x-for="url in localPreviews">
-                            <div class="shrink-0 w-full h-full snap-center flex items-center justify-center overflow-hidden">
-                                <img :src="url" class="w-full h-full object-cover">
-                            </div>
-                        </template>
-                    </div>
+                    </template>
                     
-                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5" x-show="localPreviews.length > 1">
-                        <template x-for="(url, index) in localPreviews" :key="index">
-                            <div class="w-1 h-1 rounded-full transition-all duration-300"
-                                 :class="index === 0 ? 'bg-white' : 'bg-white/40'"></div>
-                        </template>
+                    {{-- Loading Overlay --}}
+                    <div x-show="isUploading" class="absolute inset-0 z-50 bg-black/80 flex flex-col items-center justify-center space-y-4">
+                        <div class="w-10 h-10 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin"></div>
+                        <p class="text-[10px] text-white font-bold uppercase tracking-widest">posting memory...</p>
                     </div>
+                </div>
+
+                {{-- Photo Tray --}}
+                <div class="p-4 flex gap-2 overflow-x-auto scrollbar-hide bg-black/5 border-b theme-border">
+                    <template x-if="localFiles.length > 0">
+                        <div class="flex gap-2">
+                            <template x-for="(file, index) in localFiles">
+                                <button @click="selectPhoto(index)" 
+                                        class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative"
+                                        :class="currentIndex === index ? 'border-brand-500 scale-95' : 'border-transparent opacity-50'">
+                                    <img :src="URL.createObjectURL(file)" class="w-full h-full object-cover">
+                                    <div x-show="croppedImages[index]" class="absolute inset-0 bg-brand-500/20 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                    </div>
+                                </button>
+                            </template>
+                        </div>
+                    </template>
+
+                    <template x-if="localFiles.length === 0 && existingMedia.length > 0">
+                        <div class="flex gap-2">
+                            <template x-for="(media, index) in existingMedia">
+                                <button @click="currentIndex = index" 
+                                        class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all"
+                                        :class="currentIndex === index ? 'border-brand-500 scale-95' : 'border-transparent opacity-50'">
+                                    <img :src="'/storage/' + media.file_path_original" class="w-full h-full object-cover">
+                                </button>
+                            </template>
+                        </div>
+                    </template>
                 </div>
 
                 {{-- Form Fields --}}
@@ -113,7 +228,7 @@
                         <div class="flex items-center justify-between p-4 bg-white/5 border theme-border rounded-2xl group cursor-pointer" x-on:click="$wire.is_public = !$wire.is_public">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-500">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012-2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 </div>
                                 <div>
                                     <p class="text-xs font-bold theme-text lowercase">public memory</p>

@@ -56,4 +56,9 @@ class Post extends Model
     {
         return $this->hasMany(Reaction::class);
     }
+
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
 }

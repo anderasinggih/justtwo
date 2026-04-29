@@ -34,19 +34,7 @@
 
 <body class="antialiased font-sans theme-text theme-bg transition-colors duration-500"
     data-theme="{{ $settings->theme ?? 'light' }}">
-    <div class="relative min-h-screen overflow-hidden">
-        {{-- Decorative Atmospheric Glows --}}
-        <div class="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
-            <div
-                class="absolute top-[20%] left-[20%] w-96 h-96 bg-brand-400 rounded-full blur-[100px] animate-float animate-soft-pulse">
-            </div>
-            <div
-                class="absolute top-[40%] right-[15%] w-72 h-72 bg-brand-500 rounded-full blur-[80px] animate-float-reverse opacity-20">
-            </div>
-            <div
-                class="absolute bottom-[20%] left-[30%] w-80 h-80 bg-brand-300 rounded-full blur-[90px] animate-float opacity-15">
-            </div>
-        </div>
+    <div class="relative min-h-screen">
 
         {{-- Nav --}}
         <nav
@@ -120,8 +108,8 @@
                         @endphp
 
                         @if ($isVideo)
-                            <video src="{{ Storage::disk('public')->url($banner) }}" class="w-full h-full object-cover" autoplay loop
-                                muted playsinline></video>
+                            <video src="{{ Storage::disk('public')->url($banner) }}" class="w-full h-full object-cover" autoplay
+                                loop muted playsinline></video>
                         @else
                             <img src="{{ Storage::disk('public')->url($banner) }}" class="w-full h-full object-cover">
                         @endif
@@ -181,10 +169,8 @@
                  }); 
                  startAnimation(bannerData[active] ? bannerData[active].title : '');">
                 @foreach($bannerData as $index => $data)
-                    <div x-show="active === {{ $index }} && showTitle" 
-                         x-transition:enter="transition opacity duration-1000"
-                         x-transition:leave="transition opacity duration-1000"
-                         class="space-y-4">
+                    <div x-show="active === {{ $index }} && showTitle" x-transition:enter="transition opacity duration-1000"
+                        x-transition:leave="transition opacity duration-1000" class="space-y-4">
                         <h1 class="text-sm md:text-3xl font-medium tracking-tight text-white drop-shadow-2xl text-justify"
                             style="text-align-last: justify;">
                             <template x-for="(line, i) in fullText.substring(0, index).split('\n')" :key="i">
@@ -193,12 +179,12 @@
                         </h1>
                     </div>
                 @endforeach
-                
+
                 <div x-show="fullText && index === fullText.length && showTitle"
-                     x-transition:enter="transition all duration-1000 delay-500 opacity-0 translate-y-4"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     x-transition:leave="transition all duration-1000 opacity-0 translate-y-4"
-                     class="text-sm md:text-lg opacity-40 lowercase italic tracking-tight">
+                    x-transition:enter="transition all duration-1000 delay-500 opacity-0 translate-y-4"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                    x-transition:leave="transition all duration-1000 opacity-0 translate-y-4"
+                    class="text-sm md:text-lg opacity-40 lowercase italic tracking-tight">
                     {{ $settings->hero_subtitle }}
                 </div>
             </div>
@@ -214,11 +200,10 @@
                         @endphp
 
                         @if ($isVideo)
-                            <video src="{{ Storage::disk('public')->url($banner) }}"
-                                x-show="active === {{ $index }}" x-transition:enter="transition opacity duration-1000"
+                            <video src="{{ Storage::disk('public')->url($banner) }}" x-show="active === {{ $index }}"
+                                x-transition:enter="transition opacity duration-1000"
                                 x-transition:leave="transition opacity duration-1000"
-                                class="absolute inset-0 w-full h-full object-cover" autoplay loop muted
-                                playsinline></video>
+                                class="absolute inset-0 w-full h-full object-cover" autoplay loop muted playsinline></video>
                         @else
                             <img src="{{ Storage::disk('public')->url($banner) }}" x-show="active === {{ $index }}"
                                 x-transition:enter="transition opacity duration-1000"
@@ -240,15 +225,15 @@
         </main>
 
         {{-- Public Feed --}}
-        <section class="relative z-10 max-w-7xl mx-auto px-2 py-8 md:px-4 md:py-24 bg-transparent">
+        <section class="relative z-10 max-w-7xl mx-auto px-0 py-8 md:px-4 md:py-24 bg-transparent">
             <div class="text-center mb-6 md:mb-16">
                 <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">public stories</h2>
             </div>
             <livewire:publicfeed />
         </section>
         <footer class="py-8 text-center border-t theme-border bg-transparent">
-            <p class="text-[10px] opacity-40 uppercase tracking-tight">
-                All Rights Reserved ©Copyright {{ $spaceName }}
+            <p class="text-[11px] opacity-50 tracking-tight">
+                All Rights Reserved ©Copyright 2026 {{ $spaceName }}
             </p>
         </footer>
     </div>

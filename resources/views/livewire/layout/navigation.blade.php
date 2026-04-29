@@ -34,7 +34,7 @@ new class extends Component {
             class="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-full p-1 flex items-center ring-1 ring-white/10 text-white overflow-hidden">
             
             {{-- Sliding Bubble Indicator --}}
-            <div class="absolute inset-y-1.5 w-[calc(20%-1.6px)] pointer-events-none flex justify-center"
+            <div class="absolute inset-y-1.5 w-[calc(20%-1.6px)] pointer-events-none flex justify-center px-1"
                  :class="ready ? 'opacity-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]' : 'opacity-0'"
                  :style="`transform: translateX(${active * 100}%)`"
                  style="transform: translateX({{ 
@@ -43,7 +43,7 @@ new class extends Component {
                     (request()->routeIs('journey') ? '300%' : 
                     (request()->routeIs('profile') || request()->routeIs('settings') || request()->routeIs('stats') ? '400%' : '200%')))
                  }})">
-                <div class="aspect-square h-full bg-white/20 rounded-full shadow-[inset_0_1px_2px_rgba(255,255,255,0.2)]"></div>
+                <div class="w-full h-full bg-white/20 rounded-full shadow-[inset_0_1px_2px_rgba(255,255,255,0.2)]"></div>
             </div>
 
             {{-- Home --}}
@@ -59,9 +59,9 @@ new class extends Component {
             </a>
 
             <div class="relative z-10 flex-1 flex justify-center">
-                <a href="{{ route('memories.create') }}" wire:navigate
-                    class="bg-brand-500 text-white p-2.5 rounded-full hover:scale-110 active:scale-95 transition-all duration-300">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <a href="{{ route('memories.create') }}" wire:navigate @click="setPage(2)"
+                    class="py-2.5 transition-opacity duration-500 {{ request()->routeIs('memories.create') ? 'opacity-100' : 'opacity-40 hover:opacity-100' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 </a>
             </div>
 

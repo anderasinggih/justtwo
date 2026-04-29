@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -11,11 +12,31 @@ class CreatePost extends Component
 {
     use WithFileUploads;
 
-    public $step = 1; // 1: Select, 2: Preview/Caption
+    public $step = 1;
+    public $post;
+    public $isEdit = false;
+    public $existingMedia = [];
     public $photos = [];
     public $caption = '';
     public $location = '';
     public $is_public = false;
+
+    public function mount($post = null)
+    {
+        if ($post) {
+            $post = Post::with('media')->findOrFail($post);
+            $this->post = $post;
+            $this->isEdit = true;
+            $this->caption = $post->content;
+            $this->location = $post->location;
+            $this->is_public = $post->is_public;
+            $this->existingMedia = $post->media->map(fn($m) => [
+                'id' => $m->id,
+                'file_path_original' => $m->file_path_original
+            ])->toArray();
+            $this->step = 2; // Go straight to preview
+        }
+    }
 
     public function updatedPhotos()
     {
@@ -25,31 +46,58 @@ class CreatePost extends Component
         $this->step = 2;
     }
 
-    public function submit()
+    public function savePost($base64Images = [])
     {
         $this->validate([
-            'photos' => 'required|array|min:1',
             'caption' => 'required|string',
         ]);
 
-        $post = Auth::user()->relationship->posts()->create([
-            'user_id' => Auth::id(),
-            'title' => $this->caption,
-            'content' => $this->caption,
-            'location' => $this->location,
-            'type' => 'memory',
-            'is_public' => $this->is_public,
-            'published_at' => now(),
-        ]);
-
-        foreach ($this->photos as $photo) {
-            $path = $photo->store('memories', 'public');
-            $post->media()->create([
-                'file_path_original' => $path,
-                'file_path_thumbnail' => $path,
-                'file_type' => $photo->getMimeType(),
-                'file_size_kb' => $photo->getSize() / 1024,
+        if ($this->isEdit) {
+            $this->post->update([
+                'title' => Str::limit($this->caption, 100),
+                'content' => $this->caption,
+                'location' => $this->location,
+                'is_public' => $this->is_public,
             ]);
+            $post = $this->post;
+        } else {
+            $post = Auth::user()->relationship->posts()->create([
+                'user_id' => Auth::id(),
+                'title' => Str::limit($this->caption, 100),
+                'content' => $this->caption,
+                'location' => $this->location,
+                'type' => 'memory',
+                'is_public' => $this->is_public,
+                'published_at' => now(),
+            ]);
+        }
+
+        if (!empty($base64Images)) {
+            // If new photos uploaded, replace existing ones
+            if ($this->isEdit) {
+                $post->media()->delete();
+            }
+
+            foreach ($base64Images as $index => $base64) {
+                // Decode base64
+                $image_parts = explode(";base64,", $base64);
+                $image_type_aux = explode("image/", $image_parts[0]);
+                $image_type = $image_type_aux[1];
+                $image_base64 = base64_decode($image_parts[1]);
+
+                $filename = Str::random(40) . '.' . $image_type;
+                $path = 'memories/' . $filename;
+                
+                \Illuminate\Support\Facades\Storage::disk('public')->put($path, $image_base64);
+
+                $post->media()->create([
+                    'file_path_original' => $path,
+                    'file_path_thumbnail' => $path,
+                    'file_type' => 'image/' . $image_type,
+                    'file_size_kb' => strlen($image_base64) / 1024,
+                    'sort_order' => $index,
+                ]);
+            }
         }
 
         return redirect()->route('timeline');

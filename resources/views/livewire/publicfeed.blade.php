@@ -21,33 +21,54 @@ new class extends Component {
 
 <div class="space-y-12">
     {{-- Instagram-style Grid --}}
-    <div class="grid grid-cols-3 lg:grid-cols-4 gap-1 md:gap-4 lg:gap-6">
-        @forelse($posts as $post)
+    {{-- Premium Dynamic Grid --}}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-0 md:gap-4 lg:gap-6 auto-rows-[160px] md:auto-rows-[250px]">
+        @forelse($posts as $index => $post)
+            @php
+                $pattern = $index % 8;
+                $classes = 'col-span-1 row-span-1'; // Default
+                if ($pattern === 0) $classes = 'col-span-2 row-span-1'; // Wide
+                if ($pattern === 5) $classes = 'col-span-1 row-span-2'; // Tall
+            @endphp
             <a href="{{ route('posts.preview', $post) }}" wire:navigate 
-                 class="aspect-square bg-gray-50 overflow-hidden relative group cursor-pointer rounded-xl md:rounded-[2rem] transition-all">
-                {{-- Media --}}
-                @if($post->media->isNotEmpty())
-                    <img src="{{ Storage::disk('public')->url($post->media->first()->file_path_original) }}" 
-                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    
-                    @if($post->media->count() > 1)
-                        <div class="absolute top-2 right-2 md:top-4 md:right-4 bg-white/20 backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] md:text-[10px] font-bold text-white">
-                            +{{ $post->media->count() - 1 }}
+               class="relative group cursor-pointer overflow-hidden rounded-none md:rounded-2xl transition-all duration-500 hover:shadow-[0_10px_30px_rgba(0,0,0,0.1)] {{ $classes }}">
+                
+                {{-- Media with Zoom Effect --}}
+                <div class="w-full h-full bg-gray-50 overflow-hidden">
+                    @if($post->media->isNotEmpty())
+                        <img src="{{ Storage::disk('public')->url($post->media->first()->file_path_original) }}" 
+                             class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
+                        
+                        @if($post->media->count() > 1)
+                            <div class="absolute top-4 right-4 z-10 bg-white/20 backdrop-blur-md px-2 py-1 rounded-full text-[8px] md:text-[10px] font-bold text-white border border-white/20">
+                                {{ $post->media->count() }} photos
+                            </div>
+                        @endif
+                    @else
+                        <div class="w-full h-full flex items-center justify-center p-6 bg-gradient-to-br from-brand-50 to-white">
+                            <p class="text-[10px] md:text-xs theme-text opacity-40 line-clamp-4 italic text-center leading-relaxed">{{ $post->content }}</p>
                         </div>
                     @endif
-                @else
-                    <div class="w-full h-full flex items-center justify-center bg-gray-100 p-4">
-                        <p class="text-[10px] theme-text opacity-40 line-clamp-3 italic">{{ $post->content }}</p>
-                    </div>
-                @endif
+                </div>
 
-                {{-- Hover Overlay --}}
-                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white p-4">
-                    <div class="flex items-center gap-4 text-xs font-bold">
-                        <span class="flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.1 18.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"></path></svg>
-                            view
-                        </span>
+                {{-- Premium Hover Overlay --}}
+                <div class="absolute inset-0 bg-black/40 md:bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-[2px] flex flex-col justify-end p-4 md:p-8">
+                    <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 space-y-2">
+                        @if($post->location)
+                            <p class="text-[8px] md:text-[10px] text-white/70 uppercase tracking-widest font-medium">{{ $post->location }}</p>
+                        @endif
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs md:text-sm text-white font-bold lowercase truncate pr-4">view story</p>
+                            <div class="flex items-center gap-3 text-white">
+                                @if($post->reactions->count() > 0)
+                                    <span class="flex items-center gap-1 text-[10px] font-bold">
+                                        <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                        {{ $post->reactions->count() }}
+                                    </span>
+                                @endif
+                                <svg class="w-4 h-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </a>

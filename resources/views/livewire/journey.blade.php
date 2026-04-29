@@ -44,7 +44,7 @@
                             <div class="absolute top-0 right-0 w-24 h-24 theme-accent-bg opacity-5 rounded-full -mr-12 -mt-12 blur-2xl"></div>
                         @endif
 
-                        <h3 class="text-sm font-bold lowercase tracking-tight mb-2 theme-text">{{ $item['title'] }}</h3>
+                        <h3 class="text-sm font-bold lowercase tracking-tight mb-2 theme-text break-words">{{ $item['title'] }}</h3>
                         
                         @if(isset($item['image']))
                             <div class="aspect-[16/9] w-full rounded-xl overflow-hidden mb-4 bg-white/5 border theme-border">
@@ -52,7 +52,7 @@
                             </div>
                         @endif
 
-                        <p class="text-xs opacity-70 theme-text leading-relaxed lowercase">
+                        <p class="text-xs opacity-70 theme-text leading-relaxed lowercase break-words">
                             {{ Str::limit($item['content'], 120) }}
                         </p>
 

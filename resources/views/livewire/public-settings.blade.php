@@ -27,7 +27,7 @@
                     @foreach(['light', 'dark', 'rose', 'midnight'] as $t)
                         <button type="button" 
                                 wire:click="$set('theme', '{{ $t }}')"
-                                class="px-4 py-2 md:px-6 md:py-2.5 rounded-full border text-[10px] md:text-xs font-bold transition-all lowercase {{ $theme === $t ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/20' : 'bg-white/5 border-white/10 theme-text opacity-40 hover:opacity-100' }}">
+                                class="px-8 py-2 md:px-10 md:py-2.5 rounded-full border text-[10px] md:text-xs font-bold transition-all lowercase {{ $theme === $t ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/20' : 'bg-white/5 border-white/10 theme-text opacity-40 hover:opacity-100' }}">
                             {{ $t }}
                         </button>
                     @endforeach

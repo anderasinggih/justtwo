@@ -78,7 +78,7 @@ class Settings extends Component
 
         Auth::user()->update($data);
 
-        session()->flash('profile_success', 'profile updated.');
+        return redirect()->route('profile');
     }
 
     public function exportMemories()

@@ -36,19 +36,17 @@ class ImageProcessor
 
         $image = $this->manager->read(Storage::path($tempPath));
 
-        // 1. Process Original (capped at 2560px)
+        // 1. Process Original (Auto-crop to 4:5 ratio - Instagram Standard)
         $originalImage = clone $image;
-        if ($originalImage->width() > 2560 || $originalImage->height() > 2560) {
-            $originalImage->scaleDown(width: 2560, height: 2560);
-        }
+        $originalImage->cover(1080, 1350); // Automatically crops center to 4:5
         
         $originalPath = $originalFolder . '/' . $filename;
         $originalEncoded = $originalImage->toWebp(85);
         Storage::disk('public')->put($originalPath, (string) $originalEncoded);
 
-        // 2. Process Thumbnail (800px)
+        // 2. Process Thumbnail (4:5 ratio at 600x750)
         $thumbnailImage = clone $image;
-        $thumbnailImage->scaleDown(width: 800, height: 800);
+        $thumbnailImage->cover(600, 750);
         
         $thumbnailPath = $thumbnailFolder . '/' . $filename;
         $thumbnailEncoded = $thumbnailImage->toWebp(75); // Slightly lower quality for thumbnails

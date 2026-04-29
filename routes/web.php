@@ -16,9 +16,13 @@ Route::get('journey', \App\Livewire\Journey::class)
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('journey');
 
-Route::get('memories/create', \App\Livewire\CreatePost::class)
+Route::get('memory/new', \App\Livewire\CreatePost::class)
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('memories.create');
+
+Route::get('memories/{post}/edit', \App\Livewire\CreatePost::class)
+    ->middleware(['auth', 'verified', 'relationship'])
+    ->name('memories.edit');
 
 Route::get('journal', \App\Livewire\Journal::class)
     ->middleware(['auth', 'verified', 'relationship'])
@@ -50,6 +54,10 @@ Route::get('public-settings', \App\Livewire\PublicSettings::class)
 Route::get('app-settings', \App\Livewire\AppSettings::class)
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('app-settings');
+
+Route::get('archived', \App\Livewire\ArchivedPosts::class)
+    ->middleware(['auth', 'verified', 'relationship'])
+    ->name('archived');
 
 Route::view('onboarding', 'onboarding')
     ->middleware(['auth'])
