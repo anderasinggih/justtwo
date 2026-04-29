@@ -144,8 +144,8 @@
                                             class="w-full h-full object-cover">
                                     @endif
                                     <button type="button" wire:click="removeNewBanner({{ $i }})"
-                                        class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                                        <span class="text-[10px] text-white lowercase">remove</span>
+                                        class="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all z-10">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                                     </button>
                                 </div>
                             @else

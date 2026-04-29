@@ -11,6 +11,7 @@ new class extends Component {
     {
         $allPosts = Post::where('is_public', true)
             ->where('is_archived', false)
+            ->where('is_secret', false)
             ->with(['media'])
             ->latest()
             ->get();

@@ -87,20 +87,58 @@
                         results.push(this.croppedImages[i]);
                     }
                 }
-                
-                if (results.length === 0) {
-                    this.isUploading = false;
-                    alert('please wait for images to load');
-                    return;
-                }
-            } else if (!this.isEdit && !this.$wire.is_secret) {
-                // For new posts, images are mandatory UNLESS it's a secret note
+            }
+            
+            const keepIds = this.existingMedia.map(m => m.id);
+
+            if (results.length === 0 && keepIds.length === 0 && !this.isEdit && !this.$wire.is_secret) {
                 this.isUploading = false;
                 alert('please select at least one photo');
                 return;
             }
 
-            @this.savePost(results);
+            @this.savePost(results, keepIds);
+        },
+
+        removePhoto(index) {
+            if (this.localFiles.length === 1) {
+                this.localFiles = [];
+                this.croppedImages = {};
+                if (!this.isEdit) this.step = 1;
+                if (this.cropper) this.cropper.destroy();
+                return;
+            }
+
+            this.localFiles.splice(index, 1);
+            
+            // Shift croppedImages
+            const newCrops = {};
+            Object.keys(this.croppedImages).forEach(key => {
+                const k = parseInt(key);
+                if (k < index) newCrops[k] = this.croppedImages[k];
+                else if (k > index) newCrops[k-1] = this.croppedImages[k];
+            });
+            this.croppedImages = newCrops;
+
+            if (this.currentIndex === index) {
+                this.currentIndex = Math.max(0, index - 1);
+                this.initCropper();
+            } else if (this.currentIndex > index) {
+                this.currentIndex--;
+            }
+        },
+
+        removeExistingPhoto(index) {
+            this.existingMedia.splice(index, 1);
+            if (this.currentIndex === index) {
+                this.currentIndex = Math.max(0, index - 1);
+            } else if (this.currentIndex > index) {
+                this.currentIndex--;
+            }
+            
+            if (this.existingMedia.length === 0 && this.localFiles.length === 0) {
+                this.step = 1;
+            }
         }
     }">
 
@@ -203,14 +241,19 @@
                     <template x-if="localFiles.length > 0">
                         <div class="flex gap-2">
                             <template x-for="(file, index) in localFiles">
-                                <button @click="selectPhoto(index)" 
-                                        class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative"
-                                        :class="currentIndex === index ? 'border-brand-500 scale-95' : 'border-transparent opacity-50'">
-                                    <img :src="URL.createObjectURL(file)" class="w-full h-full object-cover">
-                                    <div x-show="croppedImages[index]" class="absolute inset-0 bg-brand-500/20 flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                    </div>
-                                </button>
+                                <div class="shrink-0 relative">
+                                    <button @click="selectPhoto(index)" 
+                                            class="w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative"
+                                            :class="currentIndex === index ? 'border-brand-500 scale-95' : 'border-transparent opacity-50'">
+                                        <img :src="URL.createObjectURL(file)" class="w-full h-full object-cover">
+                                        <div x-show="croppedImages[index]" class="absolute inset-0 bg-brand-500/20 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                        </div>
+                                    </button>
+                                    <button @click.stop="removePhoto(index)" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all z-10">
+                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                </div>
                             </template>
                         </div>
                     </template>
@@ -218,11 +261,16 @@
                     <template x-if="localFiles.length === 0 && existingMedia.length > 0">
                         <div class="flex gap-2">
                             <template x-for="(media, index) in existingMedia">
-                                <button @click="currentIndex = index" 
-                                        class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all"
-                                        :class="currentIndex === index ? 'border-brand-500 scale-95' : 'border-transparent opacity-50'">
-                                    <img :src="'/storage/' + media.file_path_original" class="w-full h-full object-cover">
-                                </button>
+                                <div class="shrink-0 relative">
+                                    <button @click="currentIndex = index" 
+                                            class="w-16 h-16 rounded-lg overflow-hidden border-2 transition-all"
+                                            :class="currentIndex === index ? 'border-brand-500 scale-95' : 'border-transparent opacity-50'">
+                                        <img :src="'/storage/' + media.file_path_original" class="w-full h-full object-cover">
+                                    </button>
+                                    <button @click.stop="removeExistingPhoto(index)" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-all z-10">
+                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                </div>
                             </template>
                         </div>
                     </template>

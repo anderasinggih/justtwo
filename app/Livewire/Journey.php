@@ -25,7 +25,10 @@ class Journey extends Component
             ];
         });
 
-        $posts = $relationship->posts()->with('media')->get()->map(function($p) {
+        $posts = $relationship->posts()
+            ->where('is_archived', false)
+            ->where('is_secret', false)
+            ->with('media')->get()->map(function($p) {
             return [
                 'date' => $p->published_at ?? $p->created_at,
                 'type' => 'post',

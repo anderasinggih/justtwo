@@ -11,7 +11,9 @@ class Gallery extends Component
     public function render()
     {
         $media = PostMedia::whereHas('post', function($q) {
-            $q->where('relationship_id', Auth::user()->relationship->id);
+            $q->where('relationship_id', Auth::user()->relationship->id)
+              ->where('is_archived', false)
+              ->where('is_secret', false);
         })->latest()->get();
 
         return view('livewire.gallery', [

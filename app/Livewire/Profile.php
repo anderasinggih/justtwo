@@ -20,6 +20,8 @@ class Profile extends Component
         $milestonesCount = $relationship->milestones()->count();
         
         $posts = $relationship->posts()
+            ->where('is_archived', false)
+            ->where('is_secret', false)
             ->with(['media', 'user'])
             ->orderBy('published_at', 'desc')
             ->get();

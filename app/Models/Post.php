@@ -10,6 +10,22 @@ class Post extends Model
 {
     use HasFactory, BelongsToRelationship;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($post) {
+            foreach ($post->media as $media) {
+                if ($media->file_path_original) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($media->file_path_original);
+                }
+                if ($media->file_path_thumbnail && $media->file_path_thumbnail !== $media->file_path_original) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($media->file_path_thumbnail);
+                }
+            }
+        });
+    }
+
     protected $fillable = [
         'relationship_id',
         'user_id',

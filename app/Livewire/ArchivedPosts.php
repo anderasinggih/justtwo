@@ -26,6 +26,7 @@ class ArchivedPosts extends Component
         if ($post->user_id === Auth::id()) {
             $post->delete();
             $this->dispatch('postDeleted');
+            session()->flash('success', 'memory deleted successfully.');
         }
     }
 

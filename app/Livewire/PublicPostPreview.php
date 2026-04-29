@@ -71,6 +71,15 @@ class PublicPostPreview extends Component
         }
     }
 
+    public function deletePost($postId)
+    {
+        $post = \App\Models\Post::findOrFail($postId);
+        if (\Illuminate\Support\Facades\Auth::id() === $post->user_id) {
+            $post->delete();
+            return redirect()->route('welcome');
+        }
+    }
+
     public function render()
     {
         return view('livewire.public-post-preview')

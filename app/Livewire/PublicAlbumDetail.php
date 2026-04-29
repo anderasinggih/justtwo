@@ -31,6 +31,7 @@ class PublicAlbumDetail extends Component
 
         $posts = Post::where('is_public', true)
             ->where('is_archived', false)
+            ->where('is_secret', false)
             ->whereYear('created_at', $this->year)
             ->whereMonth('created_at', $monthNumber)
             ->with(['user', 'media', 'reactions'])

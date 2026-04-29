@@ -50,7 +50,7 @@ class CreatePost extends Component
         $this->step = 2;
     }
 
-    public function savePost($base64Images = [])
+    public function savePost($base64Images = [], $keepMediaIds = [])
     {
         $this->validate([
             'caption' => 'required|string',
@@ -67,6 +67,12 @@ class CreatePost extends Component
                 'unlock_at' => $this->is_secret ? $this->unlock_at : null,
             ]);
             $post = $this->post;
+
+            // Delete media not kept
+            $post->media()->whereNotIn('id', $keepMediaIds)->get()->each(function($m) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($m->file_path_original);
+                $m->delete();
+            });
         } else {
             $post = Auth::user()->relationship->posts()->create([
                 'user_id' => Auth::id(),
@@ -82,16 +88,15 @@ class CreatePost extends Component
         }
 
         if (!empty($base64Images)) {
-            // If new photos uploaded, replace existing ones
-            if ($this->isEdit) {
-                $post->media()->delete();
-            }
-
+            $lastSortOrder = $post->media()->max('sort_order') ?? -1;
+            
             foreach ($base64Images as $index => $base64) {
                 // Decode base64
                 $image_parts = explode(";base64,", $base64);
+                if (count($image_parts) < 2) continue;
+                
                 $image_type_aux = explode("image/", $image_parts[0]);
-                $image_type = $image_type_aux[1];
+                $image_type = $image_type_aux[1] ?? 'jpeg';
                 $image_base64 = base64_decode($image_parts[1]);
 
                 $filename = Str::random(40) . '.' . $image_type;
@@ -104,7 +109,7 @@ class CreatePost extends Component
                     'file_path_thumbnail' => $path,
                     'file_type' => 'image/' . $image_type,
                     'file_size_kb' => strlen($image_base64) / 1024,
-                    'sort_order' => $index,
+                    'sort_order' => $lastSortOrder + $index + 1,
                 ]);
             }
         }

@@ -166,6 +166,15 @@ class PublicSettings extends Component
                 ];
             }
 
+            $currentSettings = \App\Models\PublicSetting::find(1);
+            if ($currentSettings) {
+                $oldPaths = $currentSettings->banner_paths ?? [];
+                $removedPaths = array_diff($oldPaths, $finalBanners);
+                foreach ($removedPaths as $path) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+                }
+            }
+
             \Illuminate\Support\Facades\DB::table('public_settings')->updateOrInsert(
                 ['id' => 1],
                 [

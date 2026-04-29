@@ -14,7 +14,10 @@ class Timeline extends Component
 
     public $search = '';
 
-    protected $listeners = ['postCreated' => '$refresh'];
+    protected $listeners = [
+        'postCreated' => '$refresh',
+        'postDeleted' => '$refresh'
+    ];
 
     public function toggleReaction($postId)
     {
@@ -50,6 +53,7 @@ class Timeline extends Component
         if ($post->user_id === Auth::id()) {
             $post->delete();
             $this->dispatch('postDeleted');
+            session()->flash('success', 'memory deleted successfully.');
         }
     }
 
