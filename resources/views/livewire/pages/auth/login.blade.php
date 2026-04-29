@@ -28,10 +28,10 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div class="space-y-8">
-    <div class="text-center space-y-2">
-        <x-ui.heading level="1" size="3xl" class="tracking-tight text-romantic-slate">welcome back</x-ui.heading>
-        <p class="text-gray-400 lowercase">we missed you and your beautiful memories.</p>
+<div class="space-y-6 sm:space-y-8">
+    <div class="text-center space-y-1.5">
+        <x-ui.heading level="1" size="xl" class="tracking-tighter theme-text lowercase">welcome back</x-ui.heading>
+        <p class="text-[11px] theme-text opacity-50 lowercase px-4">we missed you and your beautiful memories.</p>
     </div>
 
     <!-- Session Status -->
@@ -41,17 +41,17 @@ new #[Layout('layouts.guest')] class extends Component
         @csrf
         <!-- Email Address -->
         <div class="space-y-2">
-            <x-input-label for="email" :value="__('email')" class="lowercase ml-2 text-xs font-semibold text-gray-500" />
-            <x-ui.input wire:model="form.email" id="email" type="email" name="email" required autofocus autocomplete="username" placeholder="your email address" />
+            <x-input-label for="email" :value="__('email')" class="lowercase ml-2 text-xs font-semibold theme-text opacity-50" />
+            <x-ui.input wire:model="form.email" id="email" type="email" name="email" required autofocus autocomplete="username" placeholder="your email address" class="py-2.5 text-xs" />
             <x-input-error :messages="$errors->get('form.email')" class="mt-2 ml-2" />
         </div>
 
         <!-- Password -->
         <div class="space-y-2">
             <div class="flex items-center justify-between ml-2">
-                <x-input-label for="password" :value="__('password')" class="lowercase text-xs font-semibold text-gray-500" />
+                <x-input-label for="password" :value="__('password')" class="lowercase text-xs font-semibold theme-text opacity-50" />
                 @if (Route::has('password.request'))
-                    <a class="text-[10px] text-gray-400 hover:text-brand-500 transition-colors lowercase" href="{{ route('password.request') }}" wire:navigate>
+                    <a class="text-[10px] theme-text opacity-40 hover:opacity-100 transition-colors lowercase" href="{{ route('password.request') }}" wire:navigate>
                         {{ __('forgot password?') }}
                     </a>
                 @endif
@@ -61,7 +61,8 @@ new #[Layout('layouts.guest')] class extends Component
                             type="password"
                             name="password"
                             required autocomplete="current-password" 
-                            placeholder="your secret password" />
+                            placeholder="your secret password"
+                            class="py-2.5 text-xs" />
 
             <x-input-error :messages="$errors->get('form.password')" class="mt-2 ml-2" />
         </div>
@@ -72,18 +73,18 @@ new #[Layout('layouts.guest')] class extends Component
                 <div class="relative flex items-center justify-center">
                     <input wire:model="form.remember" id="remember" type="checkbox" class="peer h-5 w-5 rounded-full border-gray-100 bg-gray-50 text-brand-500 focus:ring-brand-200 transition-all cursor-pointer" name="remember">
                 </div>
-                <span class="ms-3 text-sm text-gray-400 group-hover:text-gray-600 transition-colors lowercase">{{ __('remember us') }}</span>
+                <span class="ms-3 text-sm theme-text opacity-50 group-hover:opacity-100 transition-colors lowercase">{{ __('remember us') }}</span>
             </label>
         </div>
 
         <div class="pt-2">
-            <x-ui.button type="submit" class="w-full py-4 text-lg" variant="primary">
+            <x-ui.button type="submit" class="w-full py-3 text-sm rounded-2xl" variant="primary">
                 {{ __('log in') }}
             </x-ui.button>
         </div>
 
         <div class="text-center pt-4">
-            <p class="text-sm text-gray-400 lowercase">
+            <p class="text-sm theme-text opacity-50 lowercase">
                 don't have an account? 
                 <a href="{{ route('register') }}" class="text-brand-500 font-semibold hover:underline" wire:navigate>
                     join the journey

@@ -25,7 +25,9 @@
             @php
                 $isLocked = $post->is_secret && $post->unlock_at && $post->unlock_at->isFuture() && $post->user_id !== Auth::id();
             @endphp
-            <article class="theme-card sm:border theme-border sm:rounded-2xl sm:mb-8 overflow-hidden relative hover-lift tap-effect">
+             <article id="post-{{ $post->id }}" 
+                      x-init="if({{ $post->id }} == {{ $this->post ?? 'null' }}) { $el.scrollIntoView({ behavior: 'smooth', block: 'center' }) }"
+                      class="theme-card sm:border theme-border sm:rounded-2xl sm:mb-8 overflow-hidden relative">
                 {{-- User Header --}}
                 <div class="px-4 py-3 flex items-center justify-between relative">
                     <div class="flex items-center gap-3">
@@ -86,9 +88,22 @@
                 {{-- Media Gallery --}}
                 @if($post->media->isNotEmpty())
                     <div x-data="{ 
-                        index: 0, 
+                        index: {{ ($post->id == $this->post) ? $this->index : 0 }}, 
                         total: {{ $post->media->count() }},
                         showHeart: false,
+                        initialized: false,
+                        init() {
+                            if(this.index > 0) {
+                                setTimeout(() => {
+                                    if (this.$refs.slider) {
+                                        this.$refs.slider.scrollLeft = this.$refs.slider.offsetWidth * this.index;
+                                    }
+                                    setTimeout(() => { this.initialized = true }, 100);
+                                }, 400);
+                            } else {
+                                this.initialized = true;
+                            }
+                        },
                         like() {
                             if (!{{ $post->reactions->where('user_id', Auth::id())->isNotEmpty() ? 'true' : 'false' }}) {
                                 $wire.toggleReaction({{ $post->id }});
@@ -101,9 +116,9 @@
                             <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide {{ $isLocked ? 'blur-2xl brightness-50 pointer-events-none' : '' }}" 
                                  x-ref="slider"
                                  @dblclick="like()"
-                                 @scroll.debounce.100ms="index = Math.round($event.target.scrollLeft / $event.target.clientWidth)">
-                                @foreach($post->media as $item)
-                                    <div class="flex-none w-full snap-center aspect-[4/5] bg-gray-900/50 relative overflow-hidden">
+                                 @scroll.debounce.100ms="if(initialized) index = Math.round($event.target.scrollLeft / $event.target.offsetWidth)">
+                                @foreach($post->media as $i => $item)
+                                    <div id="media-{{ $post->id }}-{{ $i }}" class="flex-none w-full snap-center aspect-[4/5] bg-gray-900/50 relative overflow-hidden">
                                         @if($item->file_path_original)
                                             <img src="{{ Storage::disk('public')->url($item->file_path_thumbnail ?? $item->file_path_original) }}" 
                                                  class="w-full h-full object-cover">
@@ -129,7 +144,7 @@
                             @if($post->media->count() > 1)
                                 <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
                                     @foreach($post->media as $i => $item)
-                                        <div class="h-1 w-1 rounded-full transition-all duration-300 {{ $i === 0 ? 'bg-white' : 'bg-white/40' }}"
+                                        <div class="h-1 w-1 rounded-full transition-all duration-300"
                                              :class="index === {{ $i }} ? 'bg-white w-2' : 'bg-white/40'"></div>
                                     @endforeach
                                 </div>

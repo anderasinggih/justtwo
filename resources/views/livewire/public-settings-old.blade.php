@@ -22,10 +22,10 @@
             <div class="space-y-2">
                 <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 px-1">Theme Appearance</label>
                 <div class="flex flex-wrap gap-1.5 md:gap-2">
-                    @foreach(['light', 'dark', 'rose', 'midnight', 'sky', 'mint', 'lavender', 'pink', 'mix'] as $t)
+                    @foreach(['light', 'dark', 'rose', 'midnight', 'mix'] as $t)
                         <button type="button" 
                                 wire:click="$set('theme', '{{ $t }}')"
-                                class="px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl border text-[10px] md:text-xs font-medium transition-all {{ $theme === $t ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/20' : 'bg-white/5 border-white/10 theme-text opacity-50 hover:opacity-100' }}">
+                                class="px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl border text-[10px] md:text-xs font-medium transition-all {{ $theme === $t ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/20' : 'bg-white/5 border-white/10 theme-text opacity-50' }}">
                             {{ $t }}
                         </button>
                     @endforeach

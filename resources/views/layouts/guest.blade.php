@@ -12,7 +12,7 @@
     <link rel="manifest" href="/manifest.json" type="application/manifest+json">
     <link rel="apple-touch-icon" href="/images/auth-bg.png">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
@@ -28,20 +28,24 @@
 
 </head>
 
-<body class="font-sans text-gray-900 antialiased bg-[#fdfaf6]">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-        <div
-            class="w-full sm:max-w-md mt-6 px-10 py-12 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden rounded-[2.5rem] border border-gray-100">
-            <div class="flex justify-center mb-10">
-                <a href="/" wire:navigate>
-                    <x-application-logo class="w-20 h-20 fill-current text-brand-500" />
-                </a>
-            </div>
+@php
+    $settings = \App\Models\PublicSetting::getSettings();
+    $theme = $settings->theme ?? 'light';
+    
+    // Handle "mix" mode for auth pages by picking a random theme
+    if ($theme === 'mix') {
+        $themes = ['light', 'dark', 'rose', 'midnight', 'sky', 'mint', 'lavender', 'pink'];
+        $theme = $themes[array_rand($themes)];
+    }
+@endphp
 
+<body class="font-sans antialiased theme-bg theme-text transition-colors duration-1000" data-theme="{{ $theme }}">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-0 sm:pt-0">
+        <div
+            class="w-full sm:max-w-md sm:mt-6 px-6 py-12 sm:px-10 sm:py-12 sm:theme-card sm:shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden sm:rounded-[2.5rem] sm:border theme-border">
             {{ $slot }}
         </div>
     </div>
-
 </body>
 
 </html>

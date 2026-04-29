@@ -22,10 +22,10 @@
             <div class="space-y-2">
                 <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 px-1">Theme Appearance</label>
                 <div class="flex flex-wrap gap-1.5 md:gap-2">
-                    @foreach(['light', 'dark', 'rose', 'midnight', 'sky', 'mint', 'lavender', 'pink', 'mix'] as $t)
+                    @foreach(['light', 'dark', 'rose', 'midnight', 'mix'] as $t)
                         <button type="button" 
                                 wire:click="$set('theme', '{{ $t }}')"
-                                class="px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl border text-[10px] md:text-xs font-medium transition-all {{ $theme === $t ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/20' : 'bg-white/5 border-white/10 theme-text opacity-50 hover:opacity-100' }}">
+                                class="px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl border text-[10px] md:text-xs font-medium transition-all {{ $theme === $t ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/20' : 'bg-white/5 border-white/10 theme-text opacity-50' }}">
                             {{ $t }}
                         </button>
                     @endforeach
@@ -45,11 +45,11 @@
             {{-- Links --}}
             <div class="space-y-3 md:space-y-4">
                 <div class="space-y-1.5">
-                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 px-1">YouTube Playlist Link (Watch All)</label>
-                    <input type="url" wire:model="youtube_url" placeholder="https://youtube.com/playlist?list=..." class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-4 py-2.5 text-xs md:text-sm theme-text focus:ring-1 focus:ring-brand-500 transition-all">
+                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 px-1">YouTube Link (Button)</label>
+                    <input type="url" wire:model="youtube_url" placeholder="https://youtube.com/..." class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-4 py-2.5 text-xs md:text-sm theme-text focus:ring-1 focus:ring-brand-500 transition-all">
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 px-1">Journey Video 1 (Hero)</label>
+                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 px-1">Journey Video 1</label>
                     <input type="url" wire:model="journey_video_url" placeholder="Video URL..." class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-4 py-2.5 text-xs md:text-sm theme-text focus:ring-1 focus:ring-brand-500 transition-all">
                 </div>
                 <div class="space-y-1.5">

@@ -33,6 +33,34 @@
         --accent-color: #38bdf8;
     }
 
+    [data-theme="sky"] {
+        --bg-primary: #f0f9ff;
+        --card-bg: #ffffff;
+        --text-primary: #075985;
+        --accent-color: #0ea5e9;
+    }
+
+    [data-theme="mint"] {
+        --bg-primary: #f0fdf4;
+        --card-bg: #ffffff;
+        --text-primary: #166534;
+        --accent-color: #22c55e;
+    }
+
+    [data-theme="lavender"] {
+        --bg-primary: #f5f3ff;
+        --card-bg: #ffffff;
+        --text-primary: #5b21b6;
+        --accent-color: #8b5cf6;
+    }
+
+    [data-theme="pink"] {
+        --bg-primary: #fff5f5;
+        --card-bg: #ffffff;
+        --text-primary: #9d174d;
+        --accent-color: #fecdd3;
+    }
+
 
     body {
         background-color: var(--bg-primary);
@@ -73,6 +101,8 @@ html, body {
     -ms-overflow-style: none;
     scrollbar-width: none;
     overscroll-behavior-y: contain; /* Disable pull-to-refresh */
+    touch-action: manipulation; /* Prevent double-tap zoom */
+    -webkit-text-size-adjust: 100%; /* Prevent automatic text resizing */
 }
 
 
@@ -161,4 +191,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     opacity: 1;
     transform: translateY(0) scale(1);
     filter: blur(0);
+}
+
+/* Prevent iOS auto-zoom on focus */
+@media screen and (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px !important;
+    }
 }

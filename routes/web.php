@@ -55,6 +55,18 @@ Route::get('app-settings', \App\Livewire\AppSettings::class)
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('app-settings');
 
+Route::get('settings/space', \App\Livewire\SpaceSettings::class)
+    ->middleware(['auth', 'verified', 'relationship'])
+    ->name('settings.space');
+
+Route::get('settings/security', \App\Livewire\SecuritySettings::class)
+    ->middleware(['auth', 'verified', 'relationship'])
+    ->name('settings.security');
+
+Route::get('settings/privacy', \App\Livewire\PrivacySettings::class)
+    ->middleware(['auth', 'verified', 'relationship'])
+    ->name('settings.privacy');
+
 Route::get('archived', \App\Livewire\ArchivedPosts::class)
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('archived');

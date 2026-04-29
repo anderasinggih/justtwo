@@ -40,65 +40,72 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div class="space-y-8">
-    <div class="text-center space-y-2">
-        <x-ui.heading level="1" size="3xl" class="tracking-tight text-romantic-slate">join the journey</x-ui.heading>
-        <p class="text-gray-400 lowercase">start sharing your beautiful moments together.</p>
+<div class="space-y-6 sm:space-y-8">
+    <div class="text-center space-y-1.5">
+        <x-ui.heading level="1" size="xl" class="tracking-tighter theme-text lowercase">join the journey</x-ui.heading>
+        <p class="text-[11px] theme-text opacity-50 lowercase px-4">start sharing your beautiful moments together.</p>
     </div>
 
     <form wire:submit="register" class="space-y-5">
-        <!-- Name -->
-        <div class="space-y-2">
-            <x-input-label for="name" :value="__('name')" class="lowercase ml-2 text-xs font-semibold text-gray-500" />
-            <x-ui.input wire:model="name" id="name" type="text" name="name" required autofocus autocomplete="name" placeholder="your name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2 ml-2" />
-        </div>
-
-        <!-- Email Address -->
-        <div class="space-y-2">
-            <x-input-label for="email" :value="__('email address')" class="lowercase ml-2 text-xs font-semibold text-gray-500" />
-            <x-ui.input wire:model="email" id="email" type="email" name="email" required autocomplete="username" placeholder="your@email.com" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2 ml-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="space-y-2">
-            <x-input-label for="password" :value="__('password')" class="lowercase ml-2 text-xs font-semibold text-gray-500" />
-            <x-ui.input wire:model="password" id="password"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password"
-                            placeholder="choose a strong password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2 ml-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="space-y-2">
-            <x-input-label for="password_confirmation" :value="__('confirm password')" class="lowercase ml-2 text-xs font-semibold text-gray-500" />
-            <x-ui.input wire:model="password_confirmation" id="password_confirmation"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password"
-                            placeholder="repeat your password" />
-            </div>
-        
         <!-- Registration Token -->
         <div class="space-y-2">
-            <x-input-label for="registration_token" :value="__('registration token')" class="lowercase ml-2 text-xs font-semibold text-gray-500" />
-            <x-ui.input wire:model="registration_token" id="registration_token"
+            <x-input-label for="registration_token" :value="__('registration token')" class="lowercase ml-2 text-xs font-semibold theme-text opacity-50" />
+            <x-ui.input wire:model.live="registration_token" id="registration_token"
                             type="text"
-                            name="registration_token" required
-                            placeholder="enter invitation token" />
+                            name="registration_token" required autofocus
+                            placeholder="enter invitation token"
+                            class="py-2.5 text-xs" />
             <x-input-error :messages="$errors->get('registration_token')" class="mt-2 ml-2" />
         </div>
 
-        <div class="pt-4">
-            <x-ui.button type="submit" class="w-full py-4 text-lg" variant="primary">
-                {{ __('create account') }}
-            </x-ui.button>
-        </div>
+        @if($registration_token === 'LVNPC2026')
+            <!-- Name -->
+            <div class="space-y-2" x-transition>
+                <x-input-label for="name" :value="__('name')" class="lowercase ml-2 text-xs font-semibold theme-text opacity-50" />
+                <x-ui.input wire:model="name" id="name" type="text" name="name" required autocomplete="name" placeholder="your name" class="py-2.5 text-xs" />
+                <x-input-error :messages="$errors->get('name')" class="mt-2 ml-2" />
+            </div>
+
+            <!-- Email Address -->
+            <div class="space-y-2" x-transition>
+                <x-input-label for="email" :value="__('email address')" class="lowercase ml-2 text-xs font-semibold theme-text opacity-50" />
+                <x-ui.input wire:model="email" id="email" type="email" name="email" required autocomplete="username" placeholder="your@email.com" class="py-2.5 text-xs" />
+                <x-input-error :messages="$errors->get('email')" class="mt-2 ml-2" />
+            </div>
+
+            <!-- Password -->
+            <div class="space-y-2" x-transition>
+                <x-input-label for="password" :value="__('password')" class="lowercase ml-2 text-xs font-semibold theme-text opacity-50" />
+                <x-ui.input wire:model="password" id="password"
+                                type="password"
+                                name="password"
+                                required autocomplete="new-password"
+                                placeholder="choose a strong password"
+                                class="py-2.5 text-xs" />
+                <x-input-error :messages="$errors->get('password')" class="mt-2 ml-2" />
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="space-y-2" x-transition>
+                <x-input-label for="password_confirmation" :value="__('confirm password')" class="lowercase ml-2 text-xs font-semibold theme-text opacity-50" />
+                <x-ui.input wire:model="password_confirmation" id="password_confirmation"
+                                type="password"
+                                name="password_confirmation" required autocomplete="new-password"
+                                placeholder="repeat your password"
+                                class="py-2.5 text-xs" />
+            </div>
+
+            <div class="pt-4" x-transition>
+                <x-ui.button type="submit" class="w-full py-3 text-sm rounded-2xl" variant="primary">
+                    {{ __('create account') }}
+                </x-ui.button>
+            </div>
+        @elseif($registration_token !== '')
+            <p class="text-[10px] text-center theme-text opacity-30 lowercase">please enter a valid token to continue</p>
+        @endif
 
         <div class="text-center pt-2">
-            <p class="text-sm text-gray-400 lowercase">
+            <p class="text-sm theme-text opacity-50 lowercase">
                 already part of the journey? 
                 <a href="{{ route('login') }}" class="text-brand-500 font-semibold hover:underline" wire:navigate>
                     log in here

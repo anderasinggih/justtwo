@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
     
     @php
         $settings = \App\Models\PublicSetting::getSettings();
@@ -25,7 +25,7 @@
 
 <body x-data="{
         currentTheme: '{{ $settings->theme ?? 'light' }}',
-        themes: ['light', 'dark', 'rose', 'midnight'],
+        themes: ['light', 'dark', 'rose', 'midnight', 'sky', 'mint', 'lavender', 'pink'],
         init() {
             if (this.currentTheme === 'mix') {
                 this.currentTheme = this.themes[Math.floor(Math.random() * this.themes.length)];

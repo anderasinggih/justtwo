@@ -86,26 +86,28 @@
     {{-- Post Grid (Posts Tab) --}}
     <div x-show="tab === 'posts'" class="grid grid-cols-3 gap-0.5">
         @forelse($posts as $post)
-            <a href="{{ route('timeline') }}?post={{ $post->id }}" wire:navigate 
-               class="relative aspect-[4/5] bg-white/5 overflow-hidden">
-                @php
-                    $media = $post->media->first();
-                @endphp
-                @if($media)
-                    <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
-                         class="w-full h-full object-cover" alt="{{ $post->title }}">
-                @else
-                    <div class="w-full h-full flex items-center justify-center theme-text opacity-20">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            @foreach($post->media as $index => $item)
+                <a href="{{ route('timeline') }}?post={{ $post->id }}&index={{ $index }}" wire:navigate 
+                   class="relative aspect-[1/1] bg-white/5 overflow-hidden group">
+                    @if($item->file_path_original)
+                        <img src="{{ Storage::disk('public')->url($item->file_path_thumbnail ?? $item->file_path_original) }}" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $post->title }}">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center theme-text opacity-20">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                    @endif
+                    
+                    {{-- Carousel Indicator on Square --}}
+                    @if($post->media->count() > 1)
+                    <div class="absolute top-1.5 right-1.5 z-10">
+                        <span class="bg-black/40 backdrop-blur-md text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold">
+                            {{ $index + 1 }}/{{ $post->media->count() }}
+                        </span>
                     </div>
-                @endif
-                
-                @if($post->media->count() > 1)
-                <div class="absolute top-1.5 right-1.5 text-white/90">
-                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 2H8a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2V4a2 2 0 00-2-2zM4 6H2v14a2 2 0 002 2h14v-2H4V6z"/></svg>
-                </div>
-                @endif
-            </a>
+                    @endif
+                </a>
+            @endforeach
         @empty
             <div class="col-span-3 py-20 text-center">
                 <p class="text-xs theme-text opacity-20 lowercase italic">no shared memories yet.</p>
@@ -116,20 +118,19 @@
     {{-- Bookmark Grid (Bookmarks Tab) --}}
     <div x-show="tab === 'bookmarks'" x-cloak class="grid grid-cols-3 gap-0.5">
         @forelse($bookmarkedPosts as $post)
-            <a href="{{ route('timeline') }}?post={{ $post->id }}" wire:navigate 
-               class="relative aspect-[4/5] bg-white/5 overflow-hidden">
-                @php
-                    $media = $post->media->first();
-                @endphp
-                @if($media)
-                    <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
-                         class="w-full h-full object-cover" alt="{{ $post->title }}">
-                @else
-                    <div class="w-full h-full flex items-center justify-center theme-text opacity-20">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                @endif
-            </a>
+            @foreach($post->media as $index => $item)
+                <a href="{{ route('timeline') }}?post={{ $post->id }}&index={{ $index }}" wire:navigate 
+                   class="relative aspect-[1/1] bg-white/5 overflow-hidden group">
+                    @if($item->file_path_original)
+                        <img src="{{ Storage::disk('public')->url($item->file_path_thumbnail ?? $item->file_path_original) }}" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ $post->title }}">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center theme-text opacity-20">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                    @endif
+                </a>
+            @endforeach
         @empty
             <div class="col-span-3 py-20 text-center">
                 <div class="mb-4 flex justify-center">

@@ -55,7 +55,7 @@
 
 <body x-data="{
         currentTheme: '{{ $settings->theme ?? 'light' }}',
-        themes: ['light', 'dark', 'rose', 'midnight'],
+        themes: ['light', 'dark', 'rose', 'midnight', 'sky', 'mint', 'lavender', 'pink'],
         init() {
             if (this.currentTheme === 'mix') {
                 this.currentTheme = this.themes[Math.floor(Math.random() * this.themes.length)];
@@ -254,20 +254,20 @@
                         <div
                             class="grid {{ ($journeyVideoId && $journeyVideoId2) ? 'grid-cols-2' : 'grid-cols-1' }} gap-2 md:gap-8">
                             @if($journeyVideoId)
-                                <div
-                                    class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl border theme-border">
-                                    <iframe id="yt-player-1" class="absolute inset-0 w-full h-full"
-                                        src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=0&vq=hd1080"
+                                <div class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl group">
+                                    <iframe id="yt-player-1" 
+                                        class="absolute inset-0 w-full h-full md:w-full md:h-full md:scale-100 origin-top-left mobile-yt-scale"
+                                        src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
                                         frameborder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen></iframe>
                                 </div>
                             @endif
                             @if($journeyVideoId2)
-                                <div
-                                    class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl border theme-border">
-                                    <iframe id="yt-player-2" class="absolute inset-0 w-full h-full"
-                                        src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId2 }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=0&vq=hd1080"
+                                <div class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl group">
+                                    <iframe id="yt-player-2" 
+                                        class="absolute inset-0 w-full h-full md:w-full md:h-full md:scale-100 origin-top-left mobile-yt-scale"
+                                        src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId2 }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
                                         frameborder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen></iframe>
@@ -525,6 +525,14 @@
 
         .animate-blink {
             animation: blink 0.8s step-end infinite;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-yt-scale {
+                width: 150% !important;
+                height: 150% !important;
+                transform: scale(0.6666) !important;
+            }
         }
     </style>
     <script>
