@@ -25,6 +25,8 @@ class PublicSettings extends Component
     public $status_general = '';
     public $status_banners = '';
     public $youtube_url;
+    public $journey_title;
+    public $journey_description;
     public $journey_video_url;
     public $journey_video_url_2;
     public $spotify_url;
@@ -39,6 +41,8 @@ class PublicSettings extends Component
         $this->hero_subtitle = $settings->hero_subtitle;
         $this->about_us = $settings->about_us;
         $this->youtube_url = $settings->youtube_url;
+        $this->journey_title = $settings->journey_title;
+        $this->journey_description = $settings->journey_description;
         $this->journey_video_url = $settings->journey_video_url;
         $this->journey_video_url_2 = $settings->journey_video_url_2;
         $this->spotify_url = $settings->spotify_url;
@@ -104,6 +108,8 @@ class PublicSettings extends Component
             'hero_subtitle' => 'nullable|string|max:1000',
             'about_us' => 'nullable|string|max:2000',
             'youtube_url' => 'nullable|url|max:255',
+            'journey_title' => 'nullable|string|max:255',
+            'journey_description' => 'nullable|string|max:1000',
             'journey_video_url' => 'nullable|url|max:255',
             'journey_video_url_2' => 'nullable|url|max:255',
             'spotify_url' => 'nullable|url|max:500',
@@ -118,6 +124,8 @@ class PublicSettings extends Component
                     'hero_subtitle' => $this->hero_subtitle,
                     'about_us' => $this->about_us,
                     'youtube_url' => $this->youtube_url,
+                    'journey_title' => $this->journey_title,
+                    'journey_description' => $this->journey_description,
                     'journey_video_url' => $this->journey_video_url,
                     'journey_video_url_2' => $this->journey_video_url_2,
                     'spotify_url' => $this->spotify_url,

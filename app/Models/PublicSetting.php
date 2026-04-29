@@ -15,6 +15,8 @@ class PublicSetting extends Model
         'hero_subtitle',
         'about_us',
         'youtube_url',
+        'journey_title',
+        'journey_description',
         'journey_video_url',
         'journey_video_url_2',
         'spotify_url',

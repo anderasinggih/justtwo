@@ -257,7 +257,7 @@
                                 <div
                                     class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl border theme-border">
                                     <iframe id="yt-player-1" class="absolute inset-0 w-full h-full"
-                                        src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
+                                        src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=0&vq=hd1080"
                                         frameborder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen></iframe>
@@ -267,7 +267,7 @@
                                 <div
                                     class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl border theme-border">
                                     <iframe id="yt-player-2" class="absolute inset-0 w-full h-full"
-                                        src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId2 }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
+                                        src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId2 }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=0&vq=hd1080"
                                         frameborder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen></iframe>
@@ -277,20 +277,33 @@
 
                         <script src="https://www.youtube.com/iframe_api"></script>
                         <script>
+                            var ytPlayers = [];
                             function onYouTubeIframeAPIReady() {
                                 [1, 2].forEach(id => {
                                     const el = document.getElementById('yt-player-' + id);
                                     if (el) {
-                                        new YT.Player('yt-player-' + id, {
+                                        var player = new YT.Player('yt-player-' + id, {
                                             events: {
                                                 'onReady': function(event) {
                                                     event.target.setVolume(70);
+                                                    // Try to play immediately
+                                                    event.target.playVideo();
                                                 }
                                             }
                                         });
+                                        ytPlayers.push(player);
                                     }
                                 });
                             }
+
+                            // Global interaction listener for Safari Autoplay fix
+                            document.addEventListener('click', function() {
+                                ytPlayers.forEach(p => {
+                                    if (p && typeof p.playVideo === 'function') {
+                                        p.playVideo();
+                                    }
+                                });
+                            }, { once: true });
                         </script>
                     </div>
                 @else
@@ -330,7 +343,7 @@
                 {{-- Watch Journey Button (Contrast Styled) --}}
                 @if($settings->youtube_url)
                     <div class="mt-6 md:mt-10 flex justify-center">
-                        <a href="{{ $settings->youtube_url }}" target="_blank"
+                        <a href="{{ route('public.journey') }}" wire:navigate
                             class="px-6 py-2.5 bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 text-sm font-semibold rounded-full transition-all duration-500 lowercase flex items-center gap-2">
                             watch all journey
                         </a>

@@ -45,11 +45,11 @@
             {{-- Links --}}
             <div class="space-y-3 md:space-y-4">
                 <div class="space-y-1.5">
-                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 px-1">YouTube Link (Button)</label>
-                    <input type="url" wire:model="youtube_url" placeholder="https://youtube.com/..." class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-4 py-2.5 text-xs md:text-sm theme-text focus:ring-1 focus:ring-brand-500 transition-all">
+                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 px-1">YouTube Playlist Link (Watch All)</label>
+                    <input type="url" wire:model="youtube_url" placeholder="https://youtube.com/playlist?list=..." class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-4 py-2.5 text-xs md:text-sm theme-text focus:ring-1 focus:ring-brand-500 transition-all">
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 px-1">Journey Video 1</label>
+                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 px-1">Journey Video 1 (Hero)</label>
                     <input type="url" wire:model="journey_video_url" placeholder="Video URL..." class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-4 py-2.5 text-xs md:text-sm theme-text focus:ring-1 focus:ring-brand-500 transition-all">
                 </div>
                 <div class="space-y-1.5">
