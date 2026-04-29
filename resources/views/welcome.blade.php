@@ -43,7 +43,7 @@
         }
     @endphp
 
-    <title>{{ $settings->hero_title }}</title>
+    <title>{{ $spaceName }} — {{ $settings->hero_title }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -53,8 +53,22 @@
     @livewireStyles
 </head>
 
-<body class="antialiased font-sans theme-text theme-bg transition-colors duration-500"
-    data-theme="{{ $settings->theme ?? 'light' }}">
+<body x-data="{
+        currentTheme: '{{ $settings->theme ?? 'light' }}',
+        themes: ['light', 'dark', 'rose', 'midnight'],
+        init() {
+            if (this.currentTheme === 'mix') {
+                this.currentTheme = this.themes[Math.floor(Math.random() * this.themes.length)];
+                setInterval(() => {
+                    let idx = this.themes.indexOf(this.currentTheme);
+                    this.currentTheme = this.themes[(idx + 1) % this.themes.length];
+                }, 300000); // 5 minutes
+            }
+        }
+    }" 
+    :data-theme="currentTheme"
+    :class="currentTheme"
+    class="antialiased font-sans theme-text theme-bg transition-colors duration-1000">
     <div class="relative min-h-screen">
 
         {{-- Nav --}}
@@ -242,8 +256,8 @@
                             @if($journeyVideoId)
                                 <div
                                     class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl border theme-border">
-                                    <iframe class="absolute inset-0 w-full h-full"
-                                        src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=1&loop=1&playlist={{ $journeyVideoId }}&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
+                                    <iframe id="yt-player-1" class="absolute inset-0 w-full h-full"
+                                        src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
                                         frameborder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen></iframe>
@@ -252,14 +266,32 @@
                             @if($journeyVideoId2)
                                 <div
                                     class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl border theme-border">
-                                    <iframe class="absolute inset-0 w-full h-full"
-                                        src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=1&loop=1&playlist={{ $journeyVideoId2 }}&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
+                                    <iframe id="yt-player-2" class="absolute inset-0 w-full h-full"
+                                        src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId2 }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
                                         frameborder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen></iframe>
                                 </div>
                             @endif
                         </div>
+
+                        <script src="https://www.youtube.com/iframe_api"></script>
+                        <script>
+                            function onYouTubeIframeAPIReady() {
+                                [1, 2].forEach(id => {
+                                    const el = document.getElementById('yt-player-' + id);
+                                    if (el) {
+                                        new YT.Player('yt-player-' + id, {
+                                            events: {
+                                                'onReady': function(event) {
+                                                    event.target.setVolume(70);
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        </script>
                     </div>
                 @else
                     {{-- Original Carousel --}}
@@ -318,7 +350,6 @@
                                 days: 0, hours: 0, minutes: 0, seconds: 0,
                                 actualTotalSeconds: 0,
                                 animated: false,
-                                blur: 0,
                                 updateActual() {
                                     const now = new Date().getTime();
                                     const diff = Math.abs(now - this.start);
@@ -338,14 +369,12 @@
                                     const diff = Math.abs(now - this.start);
                                     const targetTotal = Math.floor(diff / 1000);
                                     
-                                    const duration = 4000; // 4 seconds
+                                    const duration = 2500; // 2.5 seconds
                                     const startTime = performance.now();
                                     
                                     const step = (timestamp) => {
                                         const progress = Math.min((timestamp - startTime) / duration, 1);
                                         const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-                                        
-                                        this.blur = (1 - progress) * 2;
                                         
                                         const currentTotal = Math.floor(ease * targetTotal);
                                         
@@ -357,7 +386,6 @@
                                         if (progress < 1) {
                                             requestAnimationFrame(step);
                                         } else {
-                                            this.blur = 0;
                                             setInterval(() => this.updateActual(), 1000);
                                         }
                                     };
@@ -370,12 +398,23 @@
                                 }, { threshold: 0.5 });
                                 observer.observe($el);
                             "
-                    class="flex flex-wrap justify-center gap-x-4 md:gap-x-8 theme-text"
-                    :style="'filter: blur(' + blur + 'px); transition: filter 0.3s ease;'">
-                    <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="days + 'd'"></span>
-                    <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="hours + 'h'"></span>
-                    <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="minutes + 'm'"></span>
-                    <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="seconds + 's'"></span>
+                    class="flex flex-wrap justify-center gap-x-4 md:gap-x-10 theme-text">
+                    <div class="flex items-baseline gap-0.5">
+                        <span class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right" x-text="days"></span>
+                        <span class="text-2xl md:text-5xl font-bold tracking-[-0.07em]">d</span>
+                    </div>
+                    <div class="flex items-baseline gap-0.5">
+                        <span class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right" x-text="hours"></span>
+                        <span class="text-2xl md:text-5xl font-bold tracking-[-0.07em]">h</span>
+                    </div>
+                    <div class="flex items-baseline gap-0.5">
+                        <span class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right" x-text="minutes"></span>
+                        <span class="text-2xl md:text-5xl font-bold tracking-[-0.07em]">m</span>
+                    </div>
+                    <div class="flex items-baseline gap-0.5">
+                        <span class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right" x-text="seconds"></span>
+                        <span class="text-2xl md:text-5xl font-bold tracking-[-0.07em]">s</span>
+                    </div>
                 </div>
                 <div class="mt-4 md:mt-8 text-[10px] md:text-sm theme-text opacity-40 lowercase italic tracking-tight">
                     and counting every second together...

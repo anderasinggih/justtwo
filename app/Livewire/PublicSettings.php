@@ -107,7 +107,7 @@ class PublicSettings extends Component
             'journey_video_url' => 'nullable|url|max:255',
             'journey_video_url_2' => 'nullable|url|max:255',
             'spotify_url' => 'nullable|url|max:500',
-            'theme' => 'required|in:light,dark,rose,midnight',
+            'theme' => 'required|in:light,dark,rose,midnight,mix',
         ]);
 
         try {
