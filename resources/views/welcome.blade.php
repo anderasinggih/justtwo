@@ -19,7 +19,9 @@
         $settings = \App\Models\PublicSetting::getSettings();
         $banners = $settings->banner_paths ?? [];
         $bannerData = $settings->banner_data ?? [];
-        $spaceName = \App\Models\Relationship::orderBy('id', 'desc')->first()?->name ?? 'justtwo';
+        $relationship = \App\Models\Relationship::orderBy('id', 'desc')->first();
+        $spaceName = $relationship?->name ?? 'justtwo';
+        $anniversaryDate = $relationship?->anniversary_date;
 
         $journeyVideoId = null;
         if ($settings->journey_video_url) {
@@ -287,6 +289,33 @@
                 @endif
             </div>
         </div>
+        
+        @if($anniversaryDate)
+        {{-- Times Fly Section --}}
+        <section class="relative z-10 max-w-7xl mx-auto px-4 py-8 md:py-16 text-center">
+            <div class="mb-6 md:mb-12">
+                <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">times fly</h2>
+            </div>
+            <div x-data="{
+                start: new Date('{{ $anniversaryDate }}').getTime(),
+                days: 0, hours: 0, minutes: 0, seconds: 0,
+                update() {
+                    const now = new Date().getTime();
+                    const diff = Math.abs(now - this.start);
+                    this.days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    this.hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    this.minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    this.seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                }
+            }" x-init="update(); setInterval(() => update(), 1000)" 
+            class="flex flex-wrap justify-center gap-x-4 md:gap-x-8 theme-text">
+                <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="days + 'd'"></span>
+                <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="hours + 'h'"></span>
+                <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="minutes + 'm'"></span>
+                <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="seconds + 's'"></span>
+            </div>
+        </section>
+        @endif
 
         {{-- Public Feed --}}
         <section class="relative z-10 max-w-7xl mx-auto px-0 py-8 md:px-4 md:py-24 bg-transparent">
