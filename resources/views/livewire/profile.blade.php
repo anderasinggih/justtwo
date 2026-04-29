@@ -50,14 +50,10 @@
 
         {{-- Bio --}}
         <div class="space-y-1">
-            <h2 class="text-sm font-bold lowercase tracking-tight theme-text">{{ $user->name }} & {{ $partner ? $partner->name : 'partner' }}</h2>
-            <p class="text-xs opacity-60 theme-text lowercase">
-                @if($relationship->anniversary_date)
-                    loving since {{ $relationship->anniversary_date->format('M Y') }} ✨
-                @else
-                    building our story...
-                @endif
-            </p>
+            <h2 class="text-sm font-bold lowercase tracking-tight theme-text">{{ $user->name }}</h2>
+            @if($user->bio)
+                <p class="text-xs theme-text lowercase whitespace-pre-line leading-relaxed">{{ $user->bio }}</p>
+            @endif
         </div>
 
         {{-- Action Buttons --}}

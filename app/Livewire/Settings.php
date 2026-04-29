@@ -14,6 +14,7 @@ class Settings extends Component
     public $relationship_name;
     public $anniversary_date;
     public $user_name;
+    public $bio;
     public $theme;
     public $profile_photo;
 
@@ -23,6 +24,7 @@ class Settings extends Component
         $this->relationship_name = $relationship->name;
         $this->anniversary_date = $relationship->anniversary_date?->format('Y-m-d');
         $this->user_name = Auth::user()->name;
+        $this->bio = Auth::user()->bio;
         $this->theme = $relationship->theme ?? 'light';
     }
 
@@ -67,6 +69,7 @@ class Settings extends Component
 
         $data = [
             'name' => $this->user_name,
+            'bio' => $this->bio,
         ];
 
         if ($this->profile_photo) {
