@@ -25,7 +25,7 @@
             @php
                 $isLocked = $post->is_secret && $post->unlock_at && $post->unlock_at->isFuture() && $post->user_id !== Auth::id();
             @endphp
-            <article class="theme-card sm:border theme-border sm:rounded-2xl sm:mb-8 overflow-hidden relative">
+            <article class="theme-card sm:border theme-border sm:rounded-2xl sm:mb-8 overflow-hidden relative hover-lift tap-effect">
                 {{-- User Header --}}
                 <div class="px-4 py-3 flex items-center justify-between relative">
                     <div class="flex items-center gap-3">

@@ -206,17 +206,17 @@
             {{-- Media Carousel Section --}}
             <div class="max-w-7xl mx-auto px-2 md:px-12 mt-12 md:mt-24 mb-12 md:mb-20">
                 @if($settings->about_us)
-                    <div class="text-center mb-6 md:mb-12">
+                    <div class="text-center mb-6 md:mb-12 page-reveal reveal-delay-1">
                         <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">description</h2>
                     </div>
-                    <div class="max-w-2xl mx-auto mb-12 md:mb-24 px-4">
+                    <div class="max-w-2xl mx-auto mb-12 md:mb-24 px-4 page-reveal reveal-delay-2">
                         <div class="text-xs md:text-sm theme-text opacity-60 font-medium tracking-tighter lowercase text-justify" style="text-align-last: justify;">
                             {!! nl2br(e($settings->about_us)) !!}
                         </div>
                     </div>
                 @endif
 
-                <div class="text-center mb-8 md:mb-16">
+                <div class="text-center mb-8 md:mb-16 page-reveal reveal-delay-3">
                     <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">our journey</h2>
                 </div>
                 @if($journeyVideoId || $journeyVideoId2)
@@ -292,7 +292,7 @@
         
         @if($anniversaryDate)
         {{-- Times Fly Section --}}
-        <section class="relative z-10 max-w-7xl mx-auto px-4 py-8 md:py-16 text-center">
+        <section class="relative z-10 max-w-7xl mx-auto px-4 py-8 md:py-16 text-center page-reveal reveal-delay-4">
             <div class="mb-6 md:mb-12">
                 <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">times fly</h2>
             </div>

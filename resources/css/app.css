@@ -114,3 +114,36 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 .animate-soft-pulse {
     animation: soft-pulse 10s ease-in-out infinite;
 }
+
+/* Premium Page Transition & Interaction */
+.page-reveal {
+    animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes reveal {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hover-lift {
+    @apply transition-all duration-500;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-lift:hover {
+    @apply -translate-y-2;
+    filter: brightness(1.05);
+}
+
+.tap-effect {
+    @apply transition-transform duration-200 active:scale-95;
+}
+
+[x-cloak] { display: none !important; }
+
+/* Staggered Reveal Utility */
+.reveal-delay-1 { animation-delay: 100ms; }
+.reveal-delay-2 { animation-delay: 200ms; }
+.reveal-delay-3 { animation-delay: 300ms; }
+.reveal-delay-4 { animation-delay: 400ms; }
+.reveal-delay-5 { animation-delay: 500ms; }

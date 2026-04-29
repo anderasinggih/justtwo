@@ -47,7 +47,7 @@
         <livewire:layout.navigation />
 
         {{-- Main Content --}}
-        <main>
+        <main class="page-reveal">
             {{ $slot }}
         </main>
 

@@ -11,7 +11,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         @forelse($media as $item)
             @if($item->file_path_original)
-                <div class="relative group cursor-pointer aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100 shadow-sm" 
+                <div class="relative group cursor-pointer aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100 shadow-sm hover-lift tap-effect" 
                      @click="open('{{ Storage::disk('public')->url($item->file_path_original) }}')">
                     <img src="{{ Storage::disk('public')->url($item->file_path_thumbnail ?? $item->file_path_original) }}" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
