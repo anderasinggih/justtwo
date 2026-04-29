@@ -34,7 +34,58 @@
                 </div>
             </div>
 
-            <div class="pt-1 md:pt-2">
+            {{-- About Us --}}
+            <div class="space-y-1.5 md:space-y-3">
+                <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 ml-2">about us / description</label>
+                <div class="ml-2">
+                    <textarea wire:model="about_us" 
+                              rows="4" 
+                              placeholder="write about us here..." 
+                              class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-6 py-3 text-xs theme-text focus:ring-brand-500/20 focus:border-brand-500/30 transition-all lowercase resize-none"></textarea>
+                    @error('about_us') <p class="text-[10px] text-red-500 mt-1 lowercase">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            {{-- YouTube Link --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                <div class="space-y-1.5 md:space-y-3">
+                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 ml-2">youtube journey link (button)</label>
+                    <div class="ml-2">
+                        <input type="url" 
+                               wire:model="youtube_url" 
+                               placeholder="https://youtube.com/..." 
+                               class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-6 py-3 text-xs theme-text focus:ring-brand-500/20 focus:border-brand-500/30 transition-all lowercase">
+                        @error('youtube_url') <p class="text-[10px] text-red-500 mt-1 lowercase">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+                <div class="space-y-1.5 md:space-y-3">
+                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 ml-2">journey video 1 (left/top)</label>
+                    <div class="ml-2">
+                        <input type="url" 
+                               wire:model="journey_video_url" 
+                               placeholder="https://youtube.com/watch?v=..." 
+                               class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-6 py-3 text-xs theme-text focus:ring-brand-500/20 focus:border-brand-500/30 transition-all lowercase">
+                        @error('journey_video_url') <p class="text-[10px] text-red-500 mt-1 lowercase">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+                <div class="space-y-1.5 md:space-y-3">
+                    <label class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest theme-text opacity-40 ml-2">journey video 2 (right/bottom)</label>
+                    <div class="ml-2">
+                        <input type="url" 
+                               wire:model="journey_video_url_2" 
+                               placeholder="https://youtube.com/watch?v=..." 
+                               class="w-full bg-white/5 border theme-border rounded-xl md:rounded-2xl px-6 py-3 text-xs theme-text focus:ring-brand-500/20 focus:border-brand-500/30 transition-all lowercase">
+                        @error('journey_video_url_2') <p class="text-[10px] text-red-500 mt-1 lowercase">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+                <div class="col-span-full ml-3">
+                    <p class="text-[8px] md:text-[9px] theme-text opacity-30 lowercase italic">
+                        *journey link will be used for the button. embed links will replace the image banner if provided. you can provide one or two videos.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-1 md:pt-4">
                 <button type="button" wire:click="saveGeneral" wire:loading.attr="disabled" class="w-full py-2 md:py-3 bg-brand-500 text-white rounded-xl md:rounded-2xl font-bold hover:bg-brand-600 active:scale-[0.98] transition-all lowercase disabled:opacity-50 text-xs md:text-sm">
                     <span wire:loading.remove wire:target="saveGeneral">save changes</span>
                     <span wire:loading wire:target="saveGeneral">saving...</span>

@@ -12,10 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reactions', function (Blueprint $blueprint) {
+            $blueprint->index('relationship_id'); // Ensure FK index exists
             $blueprint->dropUnique('reactions_relationship_id_post_id_user_id_type_unique');
-            $blueprint->foreignId('user_id')->nullable()->change();
+            $blueprint->unsignedBigInteger('user_id')->nullable()->change();
             $blueprint->string('guest_id')->nullable()->after('user_id');
-            $blueprint->unique(['post_id', 'user_id', 'guest_id', 'type'], 'reactions_unique');
+            $blueprint->unique(['relationship_id', 'post_id', 'user_id', 'guest_id', 'type'], 'reactions_full_unique');
         });
     }
 

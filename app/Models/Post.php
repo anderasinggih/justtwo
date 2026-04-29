@@ -21,6 +21,8 @@ class Post extends Model
         'is_pinned',
         'is_archived',
         'is_public',
+        'is_secret',
+        'unlock_at',
         'published_at',
     ];
 
@@ -28,6 +30,8 @@ class Post extends Model
         'is_pinned' => 'boolean',
         'is_archived' => 'boolean',
         'is_public' => 'boolean',
+        'is_secret' => 'boolean',
+        'unlock_at' => 'datetime',
         'published_at' => 'datetime',
     ];
 

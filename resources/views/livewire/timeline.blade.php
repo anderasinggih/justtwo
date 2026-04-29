@@ -22,6 +22,9 @@
         commentContent: ''
     }">
         @forelse($posts as $post)
+            @php
+                $isLocked = $post->is_secret && $post->unlock_at && $post->unlock_at->isFuture() && $post->user_id !== Auth::id();
+            @endphp
             <article class="theme-card sm:border theme-border sm:rounded-2xl sm:mb-8 overflow-hidden relative">
                 {{-- User Header --}}
                 <div class="px-4 py-3 flex items-center justify-between relative">
@@ -95,7 +98,7 @@
                         }
                     }">
                         <div class="relative group/carousel">
-                            <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide" 
+                            <div class="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide {{ $isLocked ? 'blur-2xl brightness-50 pointer-events-none' : '' }}" 
                                  x-ref="slider"
                                  @dblclick="like()"
                                  @scroll.debounce.100ms="index = Math.round($event.target.scrollLeft / $event.target.clientWidth)">
@@ -131,6 +134,21 @@
                                     @endforeach
                                 </div>
                             @endif
+                            @if($isLocked)
+                                {{-- Locked Overlay --}}
+                                <div class="absolute inset-0 z-30 flex flex-col items-center justify-center text-center p-6 bg-black/20">
+                                    <div class="w-16 h-16 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white mb-4 shadow-2xl">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                    </div>
+                                    <p class="text-white text-sm font-bold lowercase tracking-tight">secret note from {{ $post->user->name }}</p>
+                                    <p class="text-white/60 text-[10px] lowercase mt-1 italic">unlocks {{ $post->unlock_at->diffForHumans() }}</p>
+                                    
+                                    <div class="mt-6 flex items-center gap-2 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></div>
+                                        <span class="text-[9px] font-bold text-white uppercase tracking-widest">{{ $post->unlock_at->format('M d, H:i') }}</span>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 @endif
@@ -163,10 +181,10 @@
                     <div class="text-xs" x-data="{ expanded: false }">
                         <span class="font-bold lowercase theme-text block mb-1">{{ $post->user->id === Auth::id() ? 'you' : $post->user->name }}</span>
                         <div class="relative">
-                            <div class="opacity-80 lowercase theme-text break-words" 
+                            <div class="opacity-80 lowercase theme-text break-words {{ $isLocked ? 'blur-md select-none' : '' }}" 
                                  :class="!expanded ? 'line-clamp-2' : ''"
                                  @click="expanded = true">
-                                {!! nl2br(e($post->content)) !!}
+                                {!! nl2br(e($isLocked ? Str::random(50) : $post->content)) !!}
                             </div>
                             @if(strlen($post->content) > 80)
                                 <button x-show="!expanded" @click.stop="expanded = true" 

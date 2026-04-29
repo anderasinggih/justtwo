@@ -16,6 +16,7 @@ class PublicSettings extends Component
 
     public $hero_title;
     public $hero_subtitle;
+    public $about_us;
     public $theme = 'light';
     public $new_banners = [];
     public $existing_banners = [];
@@ -23,6 +24,9 @@ class PublicSettings extends Component
     public $banner_subtitles = [];
     public $status_general = '';
     public $status_banners = '';
+    public $youtube_url;
+    public $journey_video_url;
+    public $journey_video_url_2;
 
     public function mount()
     {
@@ -32,6 +36,10 @@ class PublicSettings extends Component
         
         $this->hero_title = $settings->hero_title;
         $this->hero_subtitle = $settings->hero_subtitle;
+        $this->about_us = $settings->about_us;
+        $this->youtube_url = $settings->youtube_url;
+        $this->journey_video_url = $settings->journey_video_url;
+        $this->journey_video_url_2 = $settings->journey_video_url_2;
         $this->theme = $settings->theme ?? 'light';
         $this->existing_banners = $settings->banner_paths ?? [];
         
@@ -92,6 +100,10 @@ class PublicSettings extends Component
         $this->validate([
             'hero_title' => 'required|string|max:255',
             'hero_subtitle' => 'nullable|string|max:1000',
+            'about_us' => 'nullable|string|max:2000',
+            'youtube_url' => 'nullable|url|max:255',
+            'journey_video_url' => 'nullable|url|max:255',
+            'journey_video_url_2' => 'nullable|url|max:255',
             'theme' => 'required|in:light,dark,rose,midnight',
         ]);
 
@@ -101,6 +113,10 @@ class PublicSettings extends Component
                 [
                     'hero_title' => $this->hero_title,
                     'hero_subtitle' => $this->hero_subtitle,
+                    'about_us' => $this->about_us,
+                    'youtube_url' => $this->youtube_url,
+                    'journey_video_url' => $this->journey_video_url,
+                    'journey_video_url_2' => $this->journey_video_url_2,
                     'theme' => $this->theme,
                     'updated_at' => now(),
                 ]

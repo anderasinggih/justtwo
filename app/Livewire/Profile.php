@@ -24,6 +24,11 @@ class Profile extends Component
             ->orderBy('published_at', 'desc')
             ->get();
 
+        $bookmarkedPosts = Auth::user()->bookmarks()
+            ->with(['post.media', 'post.user'])
+            ->get()
+            ->pluck('post');
+
         return view('livewire.profile', [
             'relationship' => $relationship,
             'user' => Auth::user(),
@@ -32,6 +37,7 @@ class Profile extends Component
             'daysTogether' => $daysTogether,
             'milestonesCount' => $milestonesCount,
             'posts' => $posts,
+            'bookmarkedPosts' => $bookmarkedPosts,
         ])->layout('layouts.app');
     }
 }

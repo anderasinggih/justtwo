@@ -13,6 +13,10 @@ class PublicSetting extends Model
         'theme',
         'hero_title',
         'hero_subtitle',
+        'about_us',
+        'youtube_url',
+        'journey_video_url',
+        'journey_video_url_2',
         'banner_paths',
         'banner_data',
     ];

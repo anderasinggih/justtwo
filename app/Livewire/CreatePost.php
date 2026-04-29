@@ -20,6 +20,8 @@ class CreatePost extends Component
     public $caption = '';
     public $location = '';
     public $is_public = false;
+    public $is_secret = false;
+    public $unlock_at = '';
 
     public function mount($post = null)
     {
@@ -30,6 +32,8 @@ class CreatePost extends Component
             $this->caption = $post->content;
             $this->location = $post->location;
             $this->is_public = $post->is_public;
+            $this->is_secret = $post->is_secret;
+            $this->unlock_at = $post->unlock_at ? $post->unlock_at->format('Y-m-d\TH:i') : '';
             $this->existingMedia = $post->media->map(fn($m) => [
                 'id' => $m->id,
                 'file_path_original' => $m->file_path_original
@@ -50,6 +54,7 @@ class CreatePost extends Component
     {
         $this->validate([
             'caption' => 'required|string',
+            'unlock_at' => $this->is_secret ? 'required|date|after:now' : 'nullable',
         ]);
 
         if ($this->isEdit) {
@@ -58,6 +63,8 @@ class CreatePost extends Component
                 'content' => $this->caption,
                 'location' => $this->location,
                 'is_public' => $this->is_public,
+                'is_secret' => $this->is_secret,
+                'unlock_at' => $this->is_secret ? $this->unlock_at : null,
             ]);
             $post = $this->post;
         } else {
@@ -68,6 +75,8 @@ class CreatePost extends Component
                 'location' => $this->location,
                 'type' => 'memory',
                 'is_public' => $this->is_public,
+                'is_secret' => $this->is_secret,
+                'unlock_at' => $this->is_secret ? $this->unlock_at : null,
                 'published_at' => now(),
             ]);
         }
