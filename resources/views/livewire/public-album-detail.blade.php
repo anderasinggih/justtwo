@@ -6,78 +6,69 @@
         'midnight' => ['bg' => 'bg-slate-900', 'text' => 'text-blue-50', 'sub' => 'text-blue-300/40', 'border' => 'border-white/5'],
     ];
     $colors = $themeColors[$theme] ?? $themeColors['light'];
+    $heroPost = $posts->first();
 @endphp
 
-<div class="min-h-screen {{ $colors['bg'] }} {{ $colors['text'] }} selection:bg-brand-500/20">
-    {{-- Header --}}
-    <nav class="sticky top-0 z-[100] {{ $colors['bg'] }}/80 backdrop-blur-md border-b {{ $colors['border'] }} py-4 md:py-6">
-        <div class="max-w-7xl mx-auto px-4 md:px-12 flex items-center justify-between">
-            <a href="{{ route('welcome') }}" wire:navigate class="flex items-center gap-2 {{ $colors['text'] }} opacity-60 hover:opacity-100 transition-opacity">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                <span class="text-xs font-bold uppercase tracking-widest hidden md:inline">back to albums</span>
+<div class="min-h-screen {{ $colors['bg'] }} {{ $colors['text'] }} selection:bg-brand-500/20 pb-20">
+    {{-- iOS Hero Header --}}
+    <header class="relative w-full aspect-[4/5] md:aspect-[21/9] overflow-hidden">
+        @if($heroPost && $heroPost->media->isNotEmpty())
+            <img src="{{ Storage::disk('public')->url($heroPost->media->first()->file_path_original) }}" 
+                 class="w-full h-full object-cover">
+        @else
+            <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-300 flex items-center justify-center italic opacity-30">no preview</div>
+        @endif
+
+        {{-- Top Navigation Bar (Transparent to Blur) --}}
+        <div class="absolute top-0 left-0 right-0 p-4 md:p-8 flex items-center justify-between z-20">
+            <a href="{{ route('welcome') }}" wire:navigate class="w-10 h-10 rounded-full bg-black/20 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </a>
-            
-            <div class="text-center">
-                <h2 class="text-sm md:text-xl font-bold lowercase tracking-tighter">{{ $monthName }} {{ $year }}</h2>
-                <p class="text-[9px] md:text-[10px] {{ $colors['sub'] }} uppercase tracking-[0.2em] mt-0.5">{{ $posts->total() }} memories captured</p>
-            </div>
-
-            <div class="w-10"></div> {{-- Spacer --}}
+            <div class="w-10"></div>
         </div>
-    </nav>
 
-    <main class="max-w-7xl mx-auto py-8 md:py-16 px-0 md:px-12">
-        {{-- Premium Dynamic Grid --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-0 md:gap-6 lg:gap-8 auto-rows-[160px] md:auto-rows-[250px]">
-            @forelse($posts as $index => $post)
-                @php
-                    $pattern = $index % 8;
-                    $classes = 'col-span-1 row-span-1';
-                    if ($pattern === 0) $classes = 'col-span-2 row-span-1';
-                    if ($pattern === 5) $classes = 'col-span-1 row-span-2';
-                @endphp
+        {{-- Hero Bottom Info --}}
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6 md:p-12 text-white pointer-events-none">
+            <h1 class="text-4xl md:text-6xl font-bold tracking-tight lowercase">{{ $monthName }}</h1>
+            <div class="flex items-center gap-2 opacity-80 mt-1">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <span class="text-sm md:text-base font-medium">{{ $posts->total() }} items</span>
+            </div>
+        </div>
+    </header>
+
+    {{-- Gapless Square Grid (iOS Style) --}}
+    <main class="w-full">
+        <div class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-[1px]">
+            @foreach($posts as $post)
                 <a href="{{ route('posts.preview', $post) }}" wire:navigate 
-                   class="relative group cursor-pointer overflow-hidden rounded-none md:rounded-[2.5rem] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] {{ $classes }}">
-                    
+                   class="relative aspect-square overflow-hidden group">
                     {{-- Media --}}
-                    <div class="w-full h-full bg-gray-50 overflow-hidden">
-                        @if($post->media->isNotEmpty())
-                            <img src="{{ Storage::disk('public')->url($post->media->first()->file_path_original) }}" 
-                                 class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
-                        @else
-                            <div class="w-full h-full flex items-center justify-center p-6 bg-gradient-to-br from-brand-50 to-white">
-                                <p class="text-[10px] theme-text opacity-40 line-clamp-4 italic text-center">{{ $post->content }}</p>
-                            </div>
-                        @endif
+                    @if($post->media->isNotEmpty())
+                        <img src="{{ Storage::disk('public')->url($post->media->first()->file_path_original) }}" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center p-2 bg-gray-100 text-[8px] italic opacity-40 text-center">{{ Str::limit($post->content, 20) }}</div>
+                    @endif
+
+                    {{-- iOS Favorite Heart Icon --}}
+                    <div class="absolute bottom-2 left-2 pointer-events-none opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 transition-opacity">
+                        <svg class="w-4 h-4 text-white fill-current drop-shadow-md" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
                     </div>
 
-                    {{-- Hover Overlay --}}
-                    <div class="absolute inset-0 bg-black/40 md:bg-black/20 opacity-0 group-hover:opacity-100 transition-all duration-500 backdrop-blur-[2px] flex flex-col justify-end p-4 md:p-8">
-                        <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                            <p class="text-[8px] md:text-[10px] text-white/70 uppercase tracking-widest font-medium mb-1">{{ $post->location ?? 'Captured Moment' }}</p>
-                            <div class="flex items-center justify-between">
-                                <p class="text-xs md:text-sm text-white font-bold lowercase">view story</p>
-                                @if($post->reactions->count() > 0)
-                                    <span class="flex items-center gap-1 text-[10px] text-white font-bold">
-                                        <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                        {{ $post->reactions->count() }}
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
+                    {{-- Selection Overlay --}}
+                    <div class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors pointer-events-none"></div>
                 </a>
-            @empty
-                <div class="col-span-full py-20 text-center opacity-40">
-                    <p class="italic lowercase">no stories found for this period.</p>
-                </div>
-            @endforelse
+            @endforeach
         </div>
 
         @if($posts->hasPages())
-            <div class="mt-16">
+            <div class="mt-8 px-4">
                 {{ $posts->links() }}
             </div>
         @endif
     </main>
 </div>
+

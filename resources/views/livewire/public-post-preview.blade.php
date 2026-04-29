@@ -6,109 +6,133 @@
         'midnight' => ['bg' => 'bg-slate-900', 'text' => 'text-blue-50', 'sub' => 'text-blue-300/40', 'border' => 'border-white/5'],
     ];
     $colors = $themeColors[$theme] ?? $themeColors['light'];
+    $initialIndex = $posts->search(fn($p) => $p->id == $targetId) ?: 0;
+    
+    $overlayBg = in_array($theme, ['dark', 'midnight']) ? 'bg-white/10' : 'bg-black/5';
+    $iconBg = in_array($theme, ['dark', 'midnight']) ? 'bg-white/10' : 'bg-black/10';
 @endphp
 
-<div class="min-h-screen {{ $colors['bg'] }} {{ $colors['text'] }} selection:bg-brand-500/20" 
+<div class="fixed inset-0 {{ $colors['bg'] }} {{ $colors['text'] }} z-[200] flex flex-col overflow-hidden select-none"
      x-data="{ 
-        targetId: @js($targetId),
-        init() {
-            this.$nextTick(() => {
-                const target = document.getElementById('post-' + this.targetId);
-                if (target) {
-                    target.scrollIntoView({ behavior: 'auto', block: 'start' });
-                    // Adjust for sticky header
-                    window.scrollBy(0, -60);
+        currentIndex: {{ $initialIndex }},
+        total: {{ $posts->count() }},
+        showHeart: false,
+        isScrollingCarousel: false,
+        isScrollingThumbs: false,
+
+        // Update carousel when thumb is scrolled to center
+        onThumbsScroll(e) {
+            if (this.isScrollingCarousel) return;
+            this.isScrollingThumbs = true;
+            
+            const container = e.target;
+            const center = container.scrollLeft + (container.clientWidth / 2);
+            const items = container.querySelectorAll('.thumb-item');
+            
+            let closestIndex = 0;
+            let minDistance = Infinity;
+            
+            items.forEach((item, index) => {
+                const itemCenter = item.offsetLeft + (item.clientWidth / 2);
+                const distance = Math.abs(center - itemCenter);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestIndex = index;
                 }
             });
+            
+            if (this.currentIndex !== closestIndex) {
+                this.currentIndex = closestIndex;
+                this.$refs.carousel.scrollTo({ 
+                    left: this.$refs.carousel.clientWidth * closestIndex, 
+                    behavior: 'auto' 
+                });
+            }
+            
+            clearTimeout(this.thumbTimeout);
+            this.thumbTimeout = setTimeout(() => { this.isScrollingThumbs = false; }, 150);
+        },
+
+        // Update thumb position when carousel is swiped
+        onCarouselScroll(e) {
+            if (this.isScrollingThumbs) return;
+            this.isScrollingCarousel = true;
+            
+            const newIndex = Math.round(e.target.scrollLeft / e.target.clientWidth);
+            if (this.currentIndex !== newIndex) {
+                this.currentIndex = newIndex;
+                this.scrollToThumb(newIndex);
+            }
+            
+            clearTimeout(this.carouselTimeout);
+            this.carouselTimeout = setTimeout(() => { this.isScrollingCarousel = false; }, 150);
+        },
+
+        scrollToThumb(index) {
+            const thumb = document.getElementById('thumb-' + index);
+            if (thumb) {
+                thumb.parentElement.scrollTo({
+                    left: thumb.offsetLeft - (thumb.parentElement.clientWidth / 2) + (thumb.clientWidth / 2),
+                    behavior: 'smooth'
+                });
+            }
+        },
+
+        like(postId) {
+            $wire.toggleReaction(postId);
+            this.showHeart = true;
+            setTimeout(() => this.showHeart = false, 800);
         }
-     }">
-    {{-- Header --}}
-    <nav class="sticky top-0 z-[100] {{ $colors['bg'] }}/80 backdrop-blur-md border-b {{ $colors['border'] }} py-3">
-        <div class="max-w-xl mx-auto px-4 flex items-center justify-between">
-            <a href="{{ route('welcome') }}" wire:navigate class="{{ $colors['text'] }}">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            </a>
-            <h2 class="text-sm md:text-base font-bold lowercase tracking-tighter">public stories</h2>
-            <div class="w-6"></div> {{-- Spacer --}}
+     }"
+     x-init="setTimeout(() => {
+        scrollToThumb(currentIndex);
+        $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' });
+     }, 100)">
+
+    {{-- iOS Minimal Top Bar --}}
+    <nav class="p-4 md:p-6 flex items-center justify-between z-30">
+        <button onclick="history.back()" class="w-10 h-10 rounded-full {{ $iconBg }} backdrop-blur-xl border {{ $colors['border'] }} flex items-center justify-center transition-transform active:scale-90">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+
+        <div class="flex flex-col items-center {{ $overlayBg }} backdrop-blur-md px-6 py-1.5 rounded-full min-w-[150px]">
+            <template x-for="(post, index) in @js($posts->map(fn($p) => ['id' => $p->id, 'loc' => $p->location, 'date' => $p->created_at->format('j F Y'), 'time' => $p->created_at->format('g:i A')]))">
+                <div x-show="currentIndex === index" class="flex flex-col items-center text-center">
+                    <span class="text-[10px] md:text-xs font-bold leading-tight" x-text="post.loc || 'Captured Moment'"></span>
+                    <span class="text-[9px] md:text-[10px] opacity-60 leading-tight" x-text="post.date + ' • ' + post.time"></span>
+                </div>
+            </template>
         </div>
+
+        <div class="w-10"></div>
     </nav>
 
-    <main class="max-w-xl mx-auto pb-20 space-y-0 sm:space-y-8 px-0 sm:px-4">
-        @foreach($posts as $post)
-            <article id="post-{{ $post->id }}" 
-                     class="bg-white/5 sm:border {{ $colors['border'] }} sm:rounded-2xl overflow-hidden {{ $post->id == $targetId ? 'ring-2 ring-brand-500/10' : '' }}">
-                {{-- Post Header (IG Style) --}}
-                <div class="px-4 py-3 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ $post->user->profile_photo_url }}" class="w-8 h-8 rounded-full border {{ $colors['border'] }} object-cover">
-                        <div>
-                            <div class="flex items-center gap-1.5">
-                                <p class="text-xs font-bold lowercase tracking-tight">{{ $post->user->name }}</p>
-                            </div>
-                            <p class="text-[9px] {{ $colors['sub'] }} brightness-[2] opacity-80 lowercase">{{ $post->created_at->format('d F Y') }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Media (4:5 Ratio) --}}
-                <div x-data="{ 
-                    index: 0, 
-                    total: {{ $post->media->count() }},
-                    showHeart: false,
-                    like() {
-                        $wire.toggleReaction({{ $post->id }});
-                        this.showHeart = true;
-                        setTimeout(() => this.showHeart = false, 800);
-                    }
-                }" class="relative w-full aspect-[4/5] bg-black/5 flex items-center justify-center overflow-hidden">
-                    <div class="w-full h-full" @dblclick="like()">
-                        @if($post->media->count() > 1)
-                            <div class="w-full h-full">
-                                <div class="flex h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide" 
-                                     x-ref="slider"
-                                     @scroll.debounce.100ms="index = Math.round($event.target.scrollLeft / $event.target.clientWidth)">
-                                    @foreach($post->media as $item)
-                                        <div class="flex-none w-full h-full snap-center relative">
-                                            @if(str_contains($item->file_type, 'video'))
-                                                <video src="{{ Storage::disk('public')->url($item->file_path_original) }}" 
-                                                       class="w-full h-full object-cover" 
-                                                       autoplay loop muted playsinline></video>
-                                            @else
-                                                <img src="{{ Storage::disk('public')->url($item->file_path_original) }}" 
-                                                     class="w-full h-full object-cover">
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                </div>
-                                
-                                {{-- Dots --}}
-                                <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
-                                    @foreach($post->media as $i => $item)
-                                        <div class="h-1 w-1 rounded-full transition-all duration-300 bg-white"
-                                             :class="index === {{ $i }} ? 'bg-white w-2' : 'bg-white/40'"></div>
-                                    @endforeach
-                                </div>
-                            </div>
+    {{-- Main Carousel Section (Higher) --}}
+    <main class="flex-1 relative flex flex-col justify-start pt-4 md:pt-10 overflow-hidden">
+        <div class="relative w-full h-[65vh] md:h-[75vh] flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+             @scroll="onCarouselScroll($event)"
+             x-ref="carousel">
+            
+            @foreach($posts as $index => $post)
+                <div class="flex-none w-full h-full snap-center flex items-center justify-center p-4 relative" 
+                     @dblclick="like({{ $post->id }})">
+                    @if($post->media->isNotEmpty())
+                        @php $media = $post->media->first(); @endphp
+                        @if(str_contains($media->file_type, 'video'))
+                            <video src="{{ Storage::disk('public')->url($media->file_path_original) }}" 
+                                   class="max-w-full max-h-full object-contain rounded-xl shadow-2xl" 
+                                   {{ $index === $initialIndex ? 'autoplay' : '' }} loop muted playsinline></video>
                         @else
-                            @php $item = $post->media->first(); @endphp
-                            @if($item)
-                                @if(str_contains($item->file_type, 'video'))
-                                    <video src="{{ Storage::disk('public')->url($item->file_path_original) }}" 
-                                           class="w-full h-full object-cover" 
-                                           autoplay loop muted playsinline></video>
-                                @else
-                                    <img src="{{ Storage::disk('public')->url($item->file_path_original) }}" 
-                                         class="w-full h-full object-cover">
-                                @endif
-                            @endif
+                            <img src="{{ Storage::disk('public')->url($media->file_path_original) }}" 
+                                 class="max-w-full max-h-full object-contain shadow-2xl rounded-xl">
                         @endif
-                    </div>
+                    @endif
 
                     {{-- Big Heart Animation --}}
-                    <div x-show="showHeart" x-cloak 
+                    <div x-show="showHeart && currentIndex === {{ $index }}" x-cloak 
                          x-transition:enter="transition-all ease-[cubic-bezier(0.175,0.885,0.32,1.275)] duration-500"
-                         x-transition:enter-start="opacity-0 scale-50 rotate-[-15deg]"
-                         x-transition:enter-end="opacity-100 scale-125 rotate-0"
+                         x-transition:enter-start="opacity-0 scale-50"
+                         x-transition:enter-end="opacity-100 scale-125"
                          x-transition:leave="transition ease-in duration-300"
                          x-transition:leave-start="opacity-100 scale-125"
                          x-transition:leave-end="opacity-0 scale-150"
@@ -118,84 +142,39 @@
                         </svg>
                     </div>
                 </div>
-
-                {{-- Actions --}}
-                <div class="px-4 pt-3 flex items-center justify-between" x-data="{ activeComments: false }">
-                    <div class="flex items-center gap-4">
-                        <button @click="$wire.toggleReaction({{ $post->id }})" class="transition-transform active:scale-125">
-                            <svg class="w-6 h-6 {{ $post->reactions->where('user_id', Auth::id())->where('guest_id', session()->getId())->isNotEmpty() ? 'text-brand-500 fill-current' : $colors['text'].' opacity-70' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </button>
-                        <button @click="activeComments = !activeComments" class="{{ $colors['text'] }} opacity-70">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                        </button>
-                    </div>
-                </div>
-
-                {{-- Content & Comments --}}
-                <div class="px-4 pt-2 pb-10 space-y-3" x-data="{ expanded: false }">
-                    @if($post->reactions->count() > 0)
-                        <p class="text-xs font-bold lowercase">{{ $post->reactions->count() }} likes</p>
-                    @endif
-
-                    <div class="text-xs">
-                        <span class="font-bold lowercase block mb-0.5">{{ $post->user->name }}</span>
-                        <div class="opacity-80 lowercase leading-relaxed relative">
-                            <p :class="expanded ? '' : 'line-clamp-2 overflow-hidden text-ellipsis'" 
-                               class="whitespace-pre-line">{{ $post->content }}</p>
-                            
-                            @if(strlen($post->content) > 80)
-                                <button x-show="!expanded" @click="expanded = true" 
-                                        class="text-[10px] font-bold opacity-40 hover:opacity-100 transition-opacity mt-1">
-                                    ... more
-                                </button>
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- View Only Comments --}}
-                    @if($post->comments->count() > 0)
-                        <div class="space-y-3 mt-4 pt-4 border-t {{ $colors['border'] }}">
-                            @foreach($post->comments as $comment)
-                                <div class="space-y-3">
-                                    <div class="flex items-start gap-2">
-                                        <img src="{{ $comment->user->profile_photo_url }}" class="w-5 h-5 rounded-full object-cover">
-                                        <div class="flex-1">
-                                            <p class="text-[11px]">
-                                                <span class="font-bold lowercase mr-1">{{ $comment->user->name }}</span>
-                                                <span class="opacity-70 lowercase">{{ $comment->content }}</span>
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {{-- Replies --}}
-                                    @foreach($comment->replies as $reply)
-                                        <div class="flex items-start gap-2 ml-7">
-                                            <img src="{{ $reply->user->profile_photo_url }}" class="w-4 h-4 rounded-full object-cover">
-                                            <div class="flex-1">
-                                                <p class="text-[10px]">
-                                                    <span class="font-bold lowercase mr-1">{{ $reply->user->name }}</span>
-                                                    <span class="opacity-70 lowercase">{{ $reply->content }}</span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-
-                    <p class="text-[9px] {{ $colors['sub'] }} brightness-[2] opacity-80 uppercase pt-1">{{ $post->created_at->diffForHumans() }}</p>
-                </div>
-            </article>
-        @endforeach
-
-        {{-- More from --}}
-        <div class="mt-12 px-4 pt-8 border-t {{ $colors['border'] }} text-center">
-            <a href="{{ route('welcome') }}" wire:navigate class="text-[10px] font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">
-                explore more stories
-            </a>
+            @endforeach
         </div>
     </main>
+
+    {{-- Interactive Filmstrip Scrubber (Gapless & No Border) --}}
+    <footer class="pb-16 pt-4 overflow-hidden relative">
+        {{-- Selection Guide (Subtle) --}}
+        <div class="absolute left-1/2 top-4 bottom-16 w-[1px] bg-white/20 -translate-x-1/2 z-20 pointer-events-none"></div>
+
+        <div class="flex items-center gap-0 overflow-x-auto scrollbar-hide px-4" 
+             @scroll="onThumbsScroll($event)"
+             x-ref="filmstrip">
+            <div class="flex-none w-[48vw]"></div> {{-- Perfect Center Spacer --}}
+            
+            @foreach($posts as $index => $p)
+                <button @click="currentIndex = {{ $index }}; $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * {{ $index }}, behavior: 'smooth' }); scrollToThumb({{ $index }})"
+                        id="thumb-{{ $index }}"
+                        class="thumb-item flex-none w-10 h-14 md:w-12 md:h-16 rounded-none overflow-hidden transition-all duration-300"
+                        :class="currentIndex === {{ $index }} ? 'scale-125 z-10 opacity-100' : 'opacity-30 scale-90'">
+                    @if($p->media->isNotEmpty())
+                        <img src="{{ Storage::disk('public')->url($p->media->first()->file_path_original) }}" class="w-full h-full object-cover">
+                    @else
+                        <div class="w-full h-full bg-white/10 flex items-center justify-center text-[6px] italic opacity-50">{{ Str::limit($p->content, 10) }}</div>
+                    @endif
+                </button>
+            @endforeach
+            
+            <div class="flex-none w-[48vw]"></div> {{-- Perfect Center Spacer --}}
+        </div>
+    </footer>
+
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </div>
