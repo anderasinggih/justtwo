@@ -256,8 +256,8 @@
                             @if($journeyVideoId)
                                 <div class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl group">
                                     <iframe id="yt-player-1" 
-                                        class="absolute inset-0 w-full h-full md:w-full md:h-full md:scale-100 origin-top-left mobile-yt-scale"
-                                        src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
+                                        class="absolute inset-0 w-full h-full md:w-full md:h-full md:scale-100 mobile-yt-scale"
+                                        src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=1&loop=1&playlist={{ $journeyVideoId }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
                                         frameborder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen></iframe>
@@ -266,8 +266,8 @@
                             @if($journeyVideoId2)
                                 <div class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl group">
                                     <iframe id="yt-player-2" 
-                                        class="absolute inset-0 w-full h-full md:w-full md:h-full md:scale-100 origin-top-left mobile-yt-scale"
-                                        src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=0&loop=1&playlist={{ $journeyVideoId2 }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
+                                        class="absolute inset-0 w-full h-full md:w-full md:h-full md:scale-100 mobile-yt-scale"
+                                        src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=1&loop=1&playlist={{ $journeyVideoId2 }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
                                         frameborder="0"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowfullscreen></iframe>
@@ -285,8 +285,8 @@
                                         var player = new YT.Player('yt-player-' + id, {
                                             events: {
                                                 'onReady': function(event) {
-                                                    event.target.setVolume(70);
-                                                    // Try to play immediately
+                                                    // Start muted to allow autoplay on Safari/Chrome
+                                                    event.target.mute();
                                                     event.target.playVideo();
                                                 }
                                             }
@@ -531,7 +531,9 @@
             .mobile-yt-scale {
                 width: 150% !important;
                 height: 150% !important;
-                transform: scale(0.6666) !important;
+                left: 50% !important;
+                top: 50% !important;
+                transform: translate(-50%, -50%) scale(0.6666) !important;
             }
         }
     </style>
