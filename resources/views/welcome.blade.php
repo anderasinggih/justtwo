@@ -314,6 +314,9 @@
                 <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="minutes + 'm'"></span>
                 <span class="text-3xl md:text-7xl font-bold tracking-tighter" x-text="seconds + 's'"></span>
             </div>
+            <div class="mt-4 md:mt-8 text-[10px] md:text-sm theme-text opacity-40 lowercase italic tracking-tight">
+                and counting every second together...
+            </div>
         </section>
         @endif
 
