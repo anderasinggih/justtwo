@@ -9,7 +9,7 @@
     $heroPost = $posts->first();
 @endphp
 
-<div class="min-h-screen {{ $colors['bg'] }} {{ $colors['text'] }} selection:bg-brand-500/20 pb-20">
+<div class="min-h-screen theme-bg theme-text selection:bg-brand-500/20 pb-20">
     {{-- iOS Hero Header --}}
     <header class="relative w-full aspect-[4/5] md:aspect-[21/9] overflow-hidden"
             x-data="{ 

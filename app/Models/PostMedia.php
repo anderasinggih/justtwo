@@ -17,7 +17,16 @@ class PostMedia extends Model
         'file_type',
         'file_size_kb',
         'location',
+        'captured_at',
+        'lat',
+        'lon',
         'sort_order',
+    ];
+
+    protected $casts = [
+        'captured_at' => 'datetime',
+        'lat' => 'float',
+        'lon' => 'float',
     ];
 
 

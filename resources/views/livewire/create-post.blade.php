@@ -46,23 +46,48 @@
                 file: file,
                 url: URL.createObjectURL(file),
                 location: '',
+                captured_at: null,
+                lat: null,
+                lon: null,
                 crop: null
             }));
 
-            this.localItems = newItems;
-
             this.isExtracting = true;
-            for (let i = 0; i < this.localItems.length; i++) {
-                const loc = await window.extractLocation(this.localItems[i].file);
-                if (loc) {
-                    this.localItems[i].location = loc.toLowerCase();
-                    if (i === 0 && !this.$wire.location) {
-                        this.$wire.location = loc.toLowerCase();
+            
+            // Extract coordinates for all files in parallel (fast)
+            // Process LOCALLY first, then set to this.localItems to avoid reactive collision
+            const processedItems = await Promise.all(newItems.map(async (item, i) => {
+                const data = await window.extractExifData(item.file);
+                if (data) {
+                    item.captured_at = data.captured_at;
+                    item.lat = data.lat;
+                    item.lon = data.lon;
+                    
+                    if (i === 0 && data.lat && data.lon && !item.location) {
+                        try {
+                            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${data.lat}&lon=${data.lon}&zoom=18`, {
+                                headers: { 'User-Agent': 'JustTwo-App' }
+                            });
+                            const geo = await res.json();
+                            if (geo.address) {
+                                const addr = geo.address;
+                                const city = addr.city || addr.town || addr.village || addr.suburb;
+                                const road = addr.road || addr.neighbourhood;
+                                item.location = [road, city].filter(Boolean).join(', ').toLowerCase();
+                            }
+                        } catch (e) { console.error('Geocode error', e); }
                     }
                 }
-            }
-            this.isExtracting = false;
+                return item;
+            }));
+
+            this.localItems = processedItems;
             
+            if (this.localItems.length > 0 && this.localItems[0].location && !this.$wire.location) {
+                this.$wire.location = this.localItems[0].location;
+            }
+
+            this.isExtracting = false;
             this.$nextTick(() => this.initCropper());
         },
 
@@ -71,16 +96,20 @@
             if (!files.length) return;
 
             this.isExtracting = true;
-            for (const file of files) {
-                const loc = await window.extractLocation(file);
+            const promises = files.map(async (file) => {
+                const data = await window.extractExifData(file);
                 this.localItems.push({
                     id: Date.now() + Math.random(),
                     file: file,
                     url: URL.createObjectURL(file),
-                    location: loc ? loc.toLowerCase() : '',
+                    location: '',
+                    captured_at: data?.captured_at || null,
+                    lat: data?.lat || null,
+                    lon: data?.lon || null,
                     crop: null
                 });
-            }
+            });
+            await Promise.all(promises);
             this.isExtracting = false;
         },
 
@@ -127,23 +156,61 @@
                     this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.7);
                 }
                 
-                // Helper to get base64 for uncropped photos
-                const getBase64 = (file) => new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.readAsDataURL(file);
+                // Helper to resize/compress images before upload (Ultra-light version)
+                const processImage = (fileOrUrl) => new Promise((resolve, reject) => {
+                    const img = new Image();
+                    const timeout = setTimeout(() => {
+                        console.error('Image processing timed out');
+                        resolve(null);
+                    }, 10000);
+
+                    img.onload = () => {
+                        clearTimeout(timeout);
+                        try {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            const maxDim = 800; // Even smaller for stability
+                            let w = img.width;
+                            let h = img.height;
+                            if (w > h) {
+                                if (w > maxDim) { h *= maxDim / w; w = maxDim; }
+                            } else {
+                                if (h > maxDim) { w *= maxDim / h; h = maxDim; }
+                            }
+                            canvas.width = w;
+                            canvas.height = h;
+                            ctx.drawImage(img, 0, 0, w, h);
+                            resolve(canvas.toDataURL('image/jpeg', 0.6)); // Lower quality for stability
+                        } catch (e) {
+                            console.error('Canvas error', e);
+                            resolve(null);
+                        }
+                    };
+                    img.onerror = () => {
+                        clearTimeout(timeout);
+                        console.error('Image load error');
+                        resolve(null);
+                    };
+                    img.src = typeof fileOrUrl === 'string' ? fileOrUrl : URL.createObjectURL(fileOrUrl);
                 });
 
-                // Ensure ALL photos have a crop/base64 before sending
+                // Ensure ALL photos are processed (resized/compressed) before sending (Sequential to avoid lag)
                 for (let item of this.localItems) {
-                    if (!item.crop) {
-                        item.crop = await getBase64(item.file);
-                    }
+                    await new Promise(r => setTimeout(r, 50)); // Yield to UI thread
+                    const processed = await processImage(item.crop || item.file);
+                    if (processed) item.crop = processed;
                 }
                 
-                const results = this.localItems.map(item => item.crop);
+                const results = this.localItems.filter(item => item.crop).map(item => item.crop);
                 const locations = this.localItems.map(item => item.location || null);
+                const capturedDates = this.localItems.map(item => item.captured_at || null);
+                const lats = this.localItems.map(item => item.lat || null);
+                const lons = this.localItems.map(item => item.lon || null);
                 const keepIds = this.existingMedia.map(m => m.id);
+
+                const totalSize = results.reduce((acc, curr) => acc + curr.length, 0);
+                console.log('Sending payload size:', (totalSize / 1024).toFixed(2), 'KB');
+                console.log('Calling server savePost...');
 
                 if (results.length === 0 && keepIds.length === 0 && !this.isEdit && !this.$wire.is_secret) {
                     this.isUploading = false;
@@ -151,11 +218,18 @@
                     return;
                 }
 
-                await @this.savePost(results, keepIds, locations);
+                try {
+                    await @this.savePost(results, keepIds, locations, capturedDates, lats, lons);
+                } catch (e) {
+                    this.isUploading = false;
+                    if (e.status !== 422) {
+                        console.error(e);
+                        alert('failed to post memory. the images might be too large or there is a server error.');
+                    }
+                }
             } catch (e) {
                 this.isUploading = false;
                 console.error(e);
-                alert('failed to post memory. the images might be too large or there is a server error.');
             }
         },
 
@@ -196,16 +270,34 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <script>
-        window.extractLocation = async (file) => {
+        window.extractExifData = async (file) => {
             return new Promise((resolve) => {
+                if (!file.type.startsWith('image/')) {
+                    resolve({ location: null, captured_at: null, lat: null, lon: null });
+                    return;
+                }
+                
                 EXIF.getData(file, function() {
                     const lat = EXIF.getTag(this, "GPSLatitude");
                     const lon = EXIF.getTag(this, "GPSLongitude");
                     const latRef = EXIF.getTag(this, "GPSLatitudeRef") || "N";
                     const lonRef = EXIF.getTag(this, "GPSLongitudeRef") || "E";
+                    const dateTime = EXIF.getTag(this, "DateTimeOriginal") || EXIF.getTag(this, "DateTime");
+
+                    let result = { location: null, captured_at: null, lat: null, lon: null };
+
+                    // Parse Date
+                    if (dateTime) {
+                        // EXIF date format: "YYYY:MM:DD HH:MM:SS"
+                        const parts = dateTime.split(/[: ]/);
+                        if (parts.length >= 6) {
+                            // Format as YYYY-MM-DD HH:MM:SS to avoid JS Date timezone shifts
+                            result.captured_at = `${parts[0]}-${parts[1]}-${parts[2]} ${parts[3]}:${parts[4]}:${parts[5]}`;
+                        }
+                    }
 
                     if (!lat || !lon) {
-                        resolve(null);
+                        resolve(result);
                         return;
                     }
 
@@ -215,48 +307,9 @@
                         return dec;
                     };
 
-                    const decimalLat = toDecimal(lat, latRef);
-                    const decimalLon = toDecimal(lon, lonRef);
-
-                    // Reverse Geocode using Nominatim (Free)
-                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${decimalLat}&lon=${decimalLon}&zoom=18&addressdetails=1`, {
-                        headers: { 'User-Agent': 'JustTwo-App' }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.address) {
-                            const addr = data.address;
-                            let parts = [];
-                            
-                            // Specific point of interest
-                            const poi = addr.amenity || addr.historic || addr.shop || addr.tourism || addr.leisure || addr.building;
-                            if (poi) parts.push(poi);
-                            
-                            // Road / Street
-                            if (addr.road) parts.push(addr.road);
-                            
-                            // Local area
-                            const local = addr.suburb || addr.neighbourhood || addr.village || addr.hamlet;
-                            if (local) parts.push(local);
-                            
-                            // City/Town
-                            const city = addr.city || addr.town || addr.municipality;
-                            if (city) parts.push(city);
-
-                            // Fallback if parts is empty
-                            let loc = parts.length > 0 ? parts.join(', ') : data.display_name.split(',').slice(0, 2).join(', ');
-                            
-                            // Limit length to keep it clean
-                            if (loc.length > 50) {
-                                loc = loc.substring(0, 47) + '...';
-                            }
-
-                            resolve(loc);
-                        } else {
-                            resolve(null);
-                        }
-                    })
-                    .catch(() => resolve(null));
+                    result.lat = toDecimal(lat, latRef);
+                    result.lon = toDecimal(lon, lonRef);
+                    resolve(result);
                 });
             });
         };
@@ -431,11 +484,13 @@
                 <div class="p-6 space-y-8 pb-32">
                     <div class="flex items-start gap-4">
                         <img src="{{ Auth::user()->profile_photo_url }}" class="w-10 h-10 rounded-full border theme-border object-cover">
-                        <textarea 
-                            wire:model="caption" 
-                            placeholder="{{ $is_secret ? 'write your secret note here...' : 'write something about this memory...' }}" 
-                            class="flex-1 bg-transparent border-none focus:ring-0 text-sm theme-text p-0 resize-none min-h-[150px] lowercase leading-relaxed select-text"
-                        ></textarea>
+                        <div class="flex-1 space-y-2">
+                            <textarea 
+                                wire:model="caption" 
+                                placeholder="{{ $is_secret ? 'write your secret note here...' : 'write something about this memory...' }}" 
+                                class="w-full bg-transparent border-none focus:ring-0 text-sm theme-text p-0 resize-none min-h-[150px] lowercase leading-relaxed select-text"
+                            ></textarea>
+                        </div>
                     </div>
 
                     <div class="space-y-6 border-t theme-border pt-6">

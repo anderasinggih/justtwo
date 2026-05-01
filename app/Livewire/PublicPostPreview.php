@@ -40,8 +40,11 @@ class PublicPostPreview extends Component
                     'file_path' => \Storage::disk('public')->url($m->file_path_original),
                     'file_type' => $m->file_type,
                     'location' => $m->location ?: $p->location,
-                    'date' => $p->created_at->format('j F Y'),
-                    'time' => $p->created_at->format('g:i A'),
+                    'lat' => $m->lat,
+                    'lon' => $m->lon,
+                    'captured_at' => $m->captured_at ? $m->captured_at->toISOString() : null,
+                    'date' => ($m->captured_at ?: $p->created_at)->format('l, j M Y'),
+                    'time' => ($m->captured_at ?: $p->created_at)->format('g:i A'),
                     'user_id' => $p->user_id
                 ];
             }
@@ -92,13 +95,26 @@ class PublicPostPreview extends Component
         }
     }
 
-    public function deletePost($postId)
+    public function deleteMedia($mediaId)
     {
-        $post = \App\Models\Post::findOrFail($postId);
-        if (\Illuminate\Support\Facades\Auth::id() === $post->user_id) {
-            $post->delete();
-            return redirect()->route('welcome');
+        $media = \App\Models\PostMedia::findOrFail($mediaId);
+        $post = $media->post;
+        
+        if (\Illuminate\Support\Facades\Auth::id() !== $post->user_id) {
+            return;
         }
+
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($media->file_path_original);
+        $media->delete();
+
+        if ($post->media()->count() === 0) {
+            $post->delete();
+        }
+
+        // Remove from the local array to update UI immediately
+        $this->allMedia = array_values(array_filter($this->allMedia, fn($m) => $m['id'] !== $mediaId));
+        
+        $this->dispatch('media-deleted');
     }
 
     public function render()

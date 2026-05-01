@@ -50,12 +50,14 @@ class CreatePost extends Component
         $this->step = 2;
     }
 
-    public function savePost($base64Images = [], $keepMediaIds = [], $imageLocations = [])
+    public function savePost($base64Images = [], $keepMediaIds = [], $imageLocations = [], $capturedDates = [], $lats = [], $lons = [])
     {
-        $this->validate([
-            'caption' => 'required|string',
-            'unlock_at' => $this->is_secret ? 'required|date|after:now' : 'nullable',
-        ]);
+        \Illuminate\Support\Facades\Log::info('savePost started', ['count' => count($base64Images)]);
+        try {
+            $this->validate([
+                'caption' => 'nullable|string',
+                'unlock_at' => $this->is_secret ? 'required|date|after:now' : 'nullable',
+            ]);
 
         if ($this->isEdit) {
             $this->post->update([
@@ -110,13 +112,21 @@ class CreatePost extends Component
                     'file_type' => 'image/' . $image_type,
                     'file_size_kb' => strlen($image_base64) / 1024,
                     'location' => $imageLocations[$index] ?? null,
+                    'captured_at' => ($capturedDates[$index] ?? null) ? \Carbon\Carbon::parse($capturedDates[$index]) : null,
+                    'lat' => $lats[$index] ?? null,
+                    'lon' => $lons[$index] ?? null,
                     'sort_order' => $lastSortOrder + $index + 1,
                 ]);
             }
         }
 
+        \Illuminate\Support\Facades\Log::info('savePost finished');
         return redirect()->route('timeline');
+    } catch (\Exception $e) {
+        \Illuminate\Support\Facades\Log::error('savePost failed: ' . $e->getMessage());
+        throw $e;
     }
+}
 
     public function render()
     {
