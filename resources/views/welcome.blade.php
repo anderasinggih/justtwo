@@ -65,9 +65,7 @@
                 }, 300000); // 5 minutes
             }
         }
-    }" 
-    :data-theme="currentTheme"
-    :class="currentTheme"
+    }" :data-theme="currentTheme" :class="currentTheme"
     class="antialiased font-sans theme-text theme-bg transition-colors duration-1000">
     <div class="relative min-h-screen">
 
@@ -125,6 +123,20 @@
                 },
                 init() { 
                     this.startRotation();
+                    this.$watch('active', () => {
+                        this.$nextTick(() => {
+                            const videos = this.$el.querySelectorAll('video');
+                            videos.forEach((v) => {
+                                // If the video is visible (not hidden by x-show), play it
+                                if (v.offsetParent !== null) {
+                                    v.currentTime = 0;
+                                    v.play().catch(() => {});
+                                } else {
+                                    v.pause();
+                                }
+                            });
+                        });
+                    });
                 }
             }">
 
@@ -254,8 +266,9 @@
                         <div
                             class="grid {{ ($journeyVideoId && $journeyVideoId2) ? 'grid-cols-2' : 'grid-cols-1' }} gap-2 md:gap-8">
                             @if($journeyVideoId)
-                                <div class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl group">
-                                    <iframe id="yt-player-1" 
+                                <div
+                                    class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl group">
+                                    <iframe id="yt-player-1"
                                         class="absolute inset-0 w-full h-full md:w-full md:h-full md:scale-100 mobile-yt-scale"
                                         src="https://www.youtube.com/embed/{{ $journeyVideoId }}?autoplay=1&mute=1&loop=1&playlist={{ $journeyVideoId }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
                                         frameborder="0"
@@ -264,8 +277,9 @@
                                 </div>
                             @endif
                             @if($journeyVideoId2)
-                                <div class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl group">
-                                    <iframe id="yt-player-2" 
+                                <div
+                                    class="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden {{ $embedBg }} shadow-2xl group">
+                                    <iframe id="yt-player-2"
                                         class="absolute inset-0 w-full h-full md:w-full md:h-full md:scale-100 mobile-yt-scale"
                                         src="https://www.youtube.com/embed/{{ $journeyVideoId2 }}?autoplay=1&mute=1&loop=1&playlist={{ $journeyVideoId2 }}&enablejsapi=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1&vq=hd1080"
                                         frameborder="0"
@@ -284,7 +298,7 @@
                                     if (el) {
                                         var player = new YT.Player('yt-player-' + id, {
                                             events: {
-                                                'onReady': function(event) {
+                                                'onReady': function (event) {
                                                     // Start muted to allow autoplay on Safari/Chrome
                                                     event.target.mute();
                                                     event.target.playVideo();
@@ -297,7 +311,7 @@
                             }
 
                             // Global interaction listener for Safari Autoplay fix
-                            document.addEventListener('click', function() {
+                            document.addEventListener('click', function () {
                                 ytPlayers.forEach(p => {
                                     if (p && typeof p.playVideo === 'function') {
                                         p.playVideo();
@@ -354,78 +368,85 @@
 
         @if($anniversaryDate)
             {{-- Times Fly Section --}}
-            <section class="relative z-10 max-w-7xl mx-auto px-4 py-12 md:py-20 text-center page-reveal reveal-delay-4 reveal">
+            <section
+                class="relative z-10 max-w-7xl mx-auto px-4 py-12 md:py-20 text-center page-reveal reveal-delay-4 reveal">
                 <div class="mb-8 md:mb-12">
                     <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">times fly</h2>
                 </div>
                 <div x-data="{
-                                start: new Date('{{ $anniversaryDate }}').getTime(),
-                                days: 0, hours: 0, minutes: 0, seconds: 0,
-                                actualTotalSeconds: 0,
-                                animated: false,
-                                updateActual() {
-                                    const now = new Date().getTime();
-                                    const diff = Math.abs(now - this.start);
-                                    this.actualTotalSeconds = Math.floor(diff / 1000);
-                                    
-                                    // Current values (for real-time ticking)
-                                    this.days = Math.floor(this.actualTotalSeconds / (60 * 60 * 24));
-                                    this.hours = Math.floor((this.actualTotalSeconds % (60 * 60 * 24)) / (60 * 60));
-                                    this.minutes = Math.floor((this.actualTotalSeconds % (60 * 60)) / 60);
-                                    this.seconds = this.actualTotalSeconds % 60;
-                                },
-                                animate() {
-                                    if (this.animated) return;
-                                    this.animated = true;
-                                    
-                                    const now = new Date().getTime();
-                                    const diff = Math.abs(now - this.start);
-                                    const targetTotal = Math.floor(diff / 1000);
-                                    
-                                    const duration = 2500; // 2.5 seconds
-                                    const startTime = performance.now();
-                                    
-                                    const step = (timestamp) => {
-                                        const progress = Math.min((timestamp - startTime) / duration, 1);
-                                        const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-                                        
-                                        const currentTotal = Math.floor(ease * targetTotal);
-                                        
-                                        this.days = Math.floor(currentTotal / (60 * 60 * 24));
-                                        this.hours = Math.floor((currentTotal % (60 * 60 * 24)) / (60 * 60));
-                                        this.minutes = Math.floor((currentTotal % (60 * 60)) / 60);
-                                        this.seconds = currentTotal % 60;
-                                        
-                                        if (progress < 1) {
-                                            requestAnimationFrame(step);
-                                        } else {
-                                            setInterval(() => this.updateActual(), 1000);
-                                        }
-                                    };
-                                    requestAnimationFrame(step);
-                                }
-                            }" 
-                            x-init="
-                                const observer = new IntersectionObserver((entries) => {
-                                    if (entries[0].isIntersecting) animate();
-                                }, { threshold: 0.5 });
-                                observer.observe($el);
-                            "
-                    class="flex flex-wrap justify-center gap-x-4 md:gap-x-10 theme-text">
+                                    start: new Date('{{ $anniversaryDate }}').getTime(),
+                                    days: 0, hours: 0, minutes: 0, seconds: 0,
+                                    actualTotalSeconds: 0,
+                                    animated: false,
+                                    updateActual() {
+                                        const now = new Date().getTime();
+                                        const diff = Math.abs(now - this.start);
+                                        this.actualTotalSeconds = Math.floor(diff / 1000);
+
+                                        // Current values (for real-time ticking)
+                                        this.days = Math.floor(this.actualTotalSeconds / (60 * 60 * 24));
+                                        this.hours = Math.floor((this.actualTotalSeconds % (60 * 60 * 24)) / (60 * 60));
+                                        this.minutes = Math.floor((this.actualTotalSeconds % (60 * 60)) / 60);
+                                        this.seconds = this.actualTotalSeconds % 60;
+                                    },
+                                    animate() {
+                                        if (this.animated) return;
+                                        this.animated = true;
+
+                                        const now = new Date().getTime();
+                                        const diff = Math.abs(now - this.start);
+                                        const targetTotal = Math.floor(diff / 1000);
+
+                                        const duration = 2500; // 2.5 seconds
+                                        const startTime = performance.now();
+
+                                        const step = (timestamp) => {
+                                            const progress = Math.min((timestamp - startTime) / duration, 1);
+                                            const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+
+                                            const currentTotal = Math.floor(ease * targetTotal);
+
+                                            this.days = Math.floor(currentTotal / (60 * 60 * 24));
+                                            this.hours = Math.floor((currentTotal % (60 * 60 * 24)) / (60 * 60));
+                                            this.minutes = Math.floor((currentTotal % (60 * 60)) / 60);
+                                            this.seconds = currentTotal % 60;
+
+                                            if (progress < 1) {
+                                                requestAnimationFrame(step);
+                                            } else {
+                                                setInterval(() => this.updateActual(), 1000);
+                                            }
+                                        };
+                                        requestAnimationFrame(step);
+                                    }
+                                }" x-init="
+                                    const observer = new IntersectionObserver((entries) => {
+                                        if (entries[0].isIntersecting) animate();
+                                    }, { threshold: 0.5 });
+                                    observer.observe($el);
+                                " class="flex flex-wrap justify-center gap-x-4 md:gap-x-10 theme-text">
                     <div class="flex items-baseline gap-0.5">
-                        <span class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right" x-text="days"></span>
+                        <span
+                            class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right"
+                            x-text="days"></span>
                         <span class="text-2xl md:text-5xl font-bold tracking-[-0.07em]">d</span>
                     </div>
                     <div class="flex items-baseline gap-0.5">
-                        <span class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right" x-text="hours"></span>
+                        <span
+                            class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right"
+                            x-text="hours"></span>
                         <span class="text-2xl md:text-5xl font-bold tracking-[-0.07em]">h</span>
                     </div>
                     <div class="flex items-baseline gap-0.5">
-                        <span class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right" x-text="minutes"></span>
+                        <span
+                            class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right"
+                            x-text="minutes"></span>
                         <span class="text-2xl md:text-5xl font-bold tracking-[-0.07em]">m</span>
                     </div>
                     <div class="flex items-baseline gap-0.5">
-                        <span class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right" x-text="seconds"></span>
+                        <span
+                            class="text-3xl md:text-7xl font-bold tracking-[-0.07em] tabular-nums inline-block min-w-[1.2ch] md:min-w-[1.5ch] text-right"
+                            x-text="seconds"></span>
                         <span class="text-2xl md:text-5xl font-bold tracking-[-0.07em]">s</span>
                     </div>
                 </div>

@@ -101,7 +101,7 @@
                                     $isVid = in_array(strtolower($ext), ['mp4', 'mov', 'webm', 'ogg']);
                                 @endphp
                                 @if ($isVid)
-                                    <video src="{{ Storage::url($existing_banners[$i]) }}" class="w-full h-full object-cover" muted></video>
+                                    <video src="{{ Storage::url($existing_banners[$i]) }}" class="w-full h-full object-cover" autoplay loop muted playsinline></video>
                                 @else
                                     <img src="{{ Storage::url($existing_banners[$i]) }}" class="w-full h-full object-cover">
                                 @endif
