@@ -12,7 +12,7 @@
     <link rel="manifest" href="/manifest.json" type="application/manifest+json">
     <link rel="apple-touch-icon" href="/images/auth-bg.png">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>

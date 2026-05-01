@@ -132,6 +132,7 @@
                                {{ $index === $initialMediaIndex ? 'autoplay' : '' }} loop muted playsinline></video>
                     @else
                         <img src="{{ $m['file_path'] }}" 
+                             draggable="false"
                              class="max-w-full max-h-full object-contain shadow-2xl rounded-xl">
                     @endif
 
@@ -168,7 +169,7 @@
                         id="thumb-{{ $index }}"
                         class="thumb-item flex-none w-10 h-14 md:w-12 md:h-16 rounded-none overflow-hidden transition-all duration-300"
                         :class="currentIndex === {{ $index }} ? 'scale-125 z-10 opacity-100' : 'opacity-30 scale-90'">
-                    <img src="{{ $m['file_path'] }}" class="w-full h-full object-cover">
+                    <img src="{{ $m['file_path'] }}" draggable="false" class="w-full h-full object-cover">
                 </button>
             @endforeach
             

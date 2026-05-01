@@ -87,35 +87,32 @@
         initCropper() {
             if (this.cropper) this.cropper.destroy();
             const image = document.getElementById('cropper-image');
-            if (!image || !this.localItems[this.currentIndex]) return;
+            const item = this.localItems[this.currentIndex];
+            if (!image || !item) return;
 
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                image.src = e.target.result;
-                this.cropper = new Cropper(image, {
-                    aspectRatio: 4 / 5,
-                    viewMode: 3, // Fill container
-                    dragMode: 'move', // Image moves, not box
-                    autoCropArea: 1,
-                    restore: false,
-                    guides: true,
-                    center: true,
-                    highlight: false,
-                    cropBoxMovable: false,
-                    cropBoxResizable: false,
-                    toggleDragModeOnDblclick: false,
-                    background: false,
-                    modal: true,
-                });
-            };
-            reader.readAsDataURL(this.localItems[this.currentIndex].file);
+            image.src = item.url;
+            this.cropper = new Cropper(image, {
+                aspectRatio: 4 / 5,
+                viewMode: 3, // Fill container
+                dragMode: 'move', // Image moves, not box
+                autoCropArea: 1,
+                restore: false,
+                guides: true,
+                center: true,
+                highlight: false,
+                cropBoxMovable: false,
+                cropBoxResizable: false,
+                toggleDragModeOnDblclick: false,
+                background: false,
+                modal: true,
+            });
         },
 
         async selectPhoto(index) {
             if (this.localItems.length === 0) return;
             if (this.cropper) {
                 const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
-                this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.9);
+                this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.7);
             }
             this.currentIndex = index;
             this.initCropper();
@@ -123,22 +120,43 @@
 
         async submitPost() {
             this.isUploading = true;
-            if (this.localItems.length > 0 && this.cropper) {
-                const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
-                this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.9);
-            }
-            
-            const results = this.localItems.map(item => item.crop).filter(c => c);
-            const locations = this.localItems.map(item => item.location || null);
-            const keepIds = this.existingMedia.map(m => m.id);
+            try {
+                // Save current crop
+                if (this.localItems.length > 0 && this.cropper) {
+                    const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
+                    this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.7);
+                }
+                
+                // Helper to get base64 for uncropped photos
+                const getBase64 = (file) => new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(file);
+                });
 
-            if (results.length === 0 && keepIds.length === 0 && !this.isEdit && !this.$wire.is_secret) {
+                // Ensure ALL photos have a crop/base64 before sending
+                for (let item of this.localItems) {
+                    if (!item.crop) {
+                        item.crop = await getBase64(item.file);
+                    }
+                }
+                
+                const results = this.localItems.map(item => item.crop);
+                const locations = this.localItems.map(item => item.location || null);
+                const keepIds = this.existingMedia.map(m => m.id);
+
+                if (results.length === 0 && keepIds.length === 0 && !this.isEdit && !this.$wire.is_secret) {
+                    this.isUploading = false;
+                    alert('please select at least one photo');
+                    return;
+                }
+
+                await @this.savePost(results, keepIds, locations);
+            } catch (e) {
                 this.isUploading = false;
-                alert('please select at least one photo');
-                return;
+                console.error(e);
+                alert('failed to post memory. the images might be too large or there is a server error.');
             }
-
-            @this.savePost(results, keepIds, locations);
         },
 
         removePhoto(index) {
@@ -371,7 +389,7 @@
                                         <button @click="selectPhoto(index)" 
                                                 class="w-16 h-16 rounded-lg overflow-hidden border-2 transition-all relative"
                                                 :class="currentIndex === index ? 'border-brand-500 scale-95' : 'border-transparent opacity-50'">
-                                            <img :src="item.url" class="w-full h-full object-cover">
+                                            <img :src="item.url" draggable="false" loading="lazy" class="w-full h-full object-cover">
                                             <div x-show="item.crop" class="absolute inset-0 bg-brand-500/20 flex items-center justify-center">
                                                 <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                                             </div>
