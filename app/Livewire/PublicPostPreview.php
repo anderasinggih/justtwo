@@ -6,7 +6,8 @@ use Livewire\Component;
 
 class PublicPostPreview extends Component
 {
-    public $posts;
+    public $allMedia = [];
+    public $initialMediaIndex = 0;
     public $targetId;
     public $theme = 'light';
 
@@ -19,13 +20,33 @@ class PublicPostPreview extends Component
         $this->targetId = $post->id;
         
         // Load all public posts in natural order
-        $this->posts = \App\Models\Post::where('is_public', true)
+        $posts = \App\Models\Post::where('is_public', true)
             ->where('is_archived', false)
-            ->with(['user', 'media', 'reactions', 'comments' => function($q) {
-                $q->whereNull('parent_id')->with(['user', 'replies.user'])->latest();
-            }])
+            ->with(['user', 'media', 'reactions'])
             ->latest()
             ->get();
+        
+        $mediaList = [];
+        $foundTarget = false;
+        foreach ($posts as $p) {
+            foreach ($p->media as $m) {
+                if (!$foundTarget && $p->id == $this->targetId) {
+                    $this->initialMediaIndex = count($mediaList);
+                    $foundTarget = true;
+                }
+                $mediaList[] = [
+                    'id' => $m->id,
+                    'post_id' => $p->id,
+                    'file_path' => \Storage::disk('public')->url($m->file_path_original),
+                    'file_type' => $m->file_type,
+                    'location' => $m->location ?: $p->location,
+                    'date' => $p->created_at->format('j F Y'),
+                    'time' => $p->created_at->format('g:i A'),
+                    'user_id' => $p->user_id
+                ];
+            }
+        }
+        $this->allMedia = $mediaList;
         
         $settings = \App\Models\PublicSetting::first();
         $this->theme = $settings->theme ?? 'light';

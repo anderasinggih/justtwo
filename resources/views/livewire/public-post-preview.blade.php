@@ -6,7 +6,6 @@
         'midnight' => ['bg' => 'bg-slate-900', 'text' => 'text-blue-50', 'sub' => 'text-blue-300/40', 'border' => 'border-white/5'],
     ];
     $colors = $themeColors[$theme] ?? $themeColors['light'];
-    $initialIndex = $posts->search(fn($p) => $p->id == $targetId) ?: 0;
     
     $overlayBg = in_array($theme, ['dark', 'midnight']) ? 'bg-white/10' : 'bg-black/5';
     $iconBg = in_array($theme, ['dark', 'midnight']) ? 'bg-white/10' : 'bg-black/10';
@@ -14,8 +13,8 @@
 
 <div class="fixed inset-0 {{ $colors['bg'] }} {{ $colors['text'] }} z-[200] flex flex-col overflow-hidden select-none"
      x-data="{ 
-        currentIndex: {{ $initialIndex }},
-        total: {{ $posts->count() }},
+        currentIndex: {{ $initialMediaIndex }},
+        total: {{ count($allMedia) }},
         showHeart: false,
         isScrollingCarousel: false,
         isScrollingThumbs: false,
@@ -96,20 +95,20 @@
         </button>
 
         <div class="flex flex-col items-center {{ $overlayBg }} backdrop-blur-md px-6 py-1.5 rounded-full min-w-[150px]">
-            <template x-for="(post, index) in @js($posts->map(fn($p) => ['id' => $p->id, 'loc' => $p->location, 'date' => $p->created_at->format('j F Y'), 'time' => $p->created_at->format('g:i A')]))">
+            <template x-for="(media, index) in @js($allMedia)">
                 <div x-show="currentIndex === index" class="flex flex-col items-center text-center">
-                    <span class="text-[10px] md:text-xs font-bold leading-tight" x-text="post.loc || 'Captured Moment'"></span>
-                    <span class="text-[9px] md:text-[10px] opacity-60 leading-tight" x-text="post.date + ' • ' + post.time"></span>
+                    <span class="text-[10px] md:text-xs font-bold leading-tight" x-text="media.location || 'Captured Moment'"></span>
+                    <span class="text-[9px] md:text-[10px] opacity-60 leading-tight" x-text="media.date + ' • ' + media.time"></span>
                 </div>
             </template>
         </div>
 
         <div class="relative w-10 h-10">
-            @foreach($posts as $index => $p)
-                @if(Auth::check() && $p->user_id === Auth::id())
+            @foreach($allMedia as $index => $m)
+                @if(Auth::check() && $m['user_id'] === Auth::id())
                     <button x-show="currentIndex === {{ $index }}" 
-                            wire:click="deletePost({{ $p->id }})"
-                            wire:confirm="are you sure you want to delete this memory?"
+                            wire:click="deletePost({{ $m['post_id'] }})"
+                            wire:confirm="are you sure you want to delete this entire memory?"
                             class="absolute inset-0 rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/20 flex items-center justify-center text-red-500 transition-transform active:scale-90 z-40">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
@@ -124,19 +123,16 @@
              @scroll="onCarouselScroll($event)"
              x-ref="carousel">
             
-            @foreach($posts as $index => $post)
+            @foreach($allMedia as $index => $m)
                 <div class="flex-none w-full h-full snap-center flex items-center justify-center p-4 relative" 
-                     @dblclick="like({{ $post->id }})">
-                    @if($post->media->isNotEmpty())
-                        @php $media = $post->media->first(); @endphp
-                        @if(str_contains($media->file_type, 'video'))
-                            <video src="{{ Storage::disk('public')->url($media->file_path_original) }}" 
-                                   class="max-w-full max-h-full object-contain rounded-xl shadow-2xl" 
-                                   {{ $index === $initialIndex ? 'autoplay' : '' }} loop muted playsinline></video>
-                        @else
-                            <img src="{{ Storage::disk('public')->url($media->file_path_original) }}" 
-                                 class="max-w-full max-h-full object-contain shadow-2xl rounded-xl">
-                        @endif
+                     @dblclick="like({{ $m['post_id'] }})">
+                    @if(str_contains($m['file_type'], 'video'))
+                        <video src="{{ $m['file_path'] }}" 
+                               class="max-w-full max-h-full object-contain rounded-xl shadow-2xl" 
+                               {{ $index === $initialMediaIndex ? 'autoplay' : '' }} loop muted playsinline></video>
+                    @else
+                        <img src="{{ $m['file_path'] }}" 
+                             class="max-w-full max-h-full object-contain shadow-2xl rounded-xl">
                     @endif
 
                     {{-- Big Heart Animation --}}
@@ -167,16 +163,12 @@
              x-ref="filmstrip">
             <div class="flex-none w-[48vw]"></div> {{-- Perfect Center Spacer --}}
             
-            @foreach($posts as $index => $p)
+            @foreach($allMedia as $index => $m)
                 <button @click="currentIndex = {{ $index }}; $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * {{ $index }}, behavior: 'smooth' }); scrollToThumb({{ $index }})"
                         id="thumb-{{ $index }}"
                         class="thumb-item flex-none w-10 h-14 md:w-12 md:h-16 rounded-none overflow-hidden transition-all duration-300"
                         :class="currentIndex === {{ $index }} ? 'scale-125 z-10 opacity-100' : 'opacity-30 scale-90'">
-                    @if($p->media->isNotEmpty())
-                        <img src="{{ Storage::disk('public')->url($p->media->first()->file_path_original) }}" class="w-full h-full object-cover">
-                    @else
-                        <div class="w-full h-full bg-white/10 flex items-center justify-center text-[6px] italic opacity-50">{{ Str::limit($p->content, 10) }}</div>
-                    @endif
+                    <img src="{{ $m['file_path'] }}" class="w-full h-full object-cover">
                 </button>
             @endforeach
             

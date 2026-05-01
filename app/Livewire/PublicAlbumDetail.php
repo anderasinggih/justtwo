@@ -38,9 +38,23 @@ class PublicAlbumDetail extends Component
             ->latest()
             ->paginate(24);
 
+        $allMediaPaths = Post::where('is_public', true)
+            ->where('is_archived', false)
+            ->where('is_secret', false)
+            ->whereYear('created_at', $this->year)
+            ->whereMonth('created_at', $monthNumber)
+            ->with(['media'])
+            ->get()
+            ->flatMap(fn($p) => $p->media)
+            ->map(fn($m) => \Storage::disk('public')->url($m->file_path_original))
+            ->shuffle()
+            ->values()
+            ->all();
+
         return view('livewire.public-album-detail', [
             'posts' => $posts,
             'monthName' => $this->month,
+            'allMediaPaths' => $allMediaPaths,
         ])->layout('layouts.public', ['theme' => $this->theme]);
     }
 }

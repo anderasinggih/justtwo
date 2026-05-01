@@ -50,7 +50,7 @@ class CreatePost extends Component
         $this->step = 2;
     }
 
-    public function savePost($base64Images = [], $keepMediaIds = [])
+    public function savePost($base64Images = [], $keepMediaIds = [], $imageLocations = [])
     {
         $this->validate([
             'caption' => 'required|string',
@@ -109,6 +109,7 @@ class CreatePost extends Component
                     'file_path_thumbnail' => $path,
                     'file_type' => 'image/' . $image_type,
                     'file_size_kb' => strlen($image_base64) / 1024,
+                    'location' => $imageLocations[$index] ?? null,
                     'sort_order' => $lastSortOrder + $index + 1,
                 ]);
             }

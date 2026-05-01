@@ -16,6 +16,7 @@ class PostMedia extends Model
         'file_path_thumbnail',
         'file_type',
         'file_size_kb',
+        'location',
         'sort_order',
     ];
 

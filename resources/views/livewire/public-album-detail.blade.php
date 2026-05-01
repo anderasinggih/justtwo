@@ -11,10 +11,27 @@
 
 <div class="min-h-screen {{ $colors['bg'] }} {{ $colors['text'] }} selection:bg-brand-500/20 pb-20">
     {{-- iOS Hero Header --}}
-    <header class="relative w-full aspect-[4/5] md:aspect-[21/9] overflow-hidden">
-        @if($heroPost && $heroPost->media->isNotEmpty())
-            <img src="{{ Storage::disk('public')->url($heroPost->media->first()->file_path_original) }}" 
-                 class="w-full h-full object-cover">
+    <header class="relative w-full aspect-[4/5] md:aspect-[21/9] overflow-hidden"
+            x-data="{ 
+                active: 0, 
+                images: {{ json_encode($allMediaPaths) }},
+                init() {
+                    if (this.images.length > 1) {
+                        setInterval(() => {
+                            this.active = (this.active + 1) % this.images.length;
+                        }, 3000);
+                    }
+                }
+            }">
+        @if(count($allMediaPaths) > 0)
+            <template x-for="(img, index) in images" :key="index">
+                <div x-show="active === index" 
+                     x-transition:enter="transition opacity duration-1000 ease-in-out"
+                     x-transition:leave="transition opacity duration-1000 ease-in-out"
+                     class="absolute inset-0 w-full h-full">
+                    <img :src="img" class="w-full h-full object-cover">
+                </div>
+            </template>
         @else
             <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-300 flex items-center justify-center italic opacity-30">no preview</div>
         @endif
@@ -41,26 +58,24 @@
     <main class="w-full">
         <div class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-[1px]">
             @foreach($posts as $post)
-                <a href="{{ route('posts.preview', $post) }}" wire:navigate 
-                   class="relative aspect-square overflow-hidden group">
-                    {{-- Media --}}
-                    @if($post->media->isNotEmpty())
-                        <img src="{{ Storage::disk('public')->url($post->media->first()->file_path_original) }}" 
+                @foreach($post->media as $media)
+                    <a href="{{ route('posts.preview', $post) }}" wire:navigate 
+                       class="relative aspect-square overflow-hidden group">
+                        {{-- Media --}}
+                        <img src="{{ Storage::disk('public')->url($media->file_path_original) }}" 
                              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    @else
-                        <div class="w-full h-full flex items-center justify-center p-2 bg-gray-100 text-[8px] italic opacity-40 text-center">{{ Str::limit($post->content, 20) }}</div>
-                    @endif
 
-                    {{-- iOS Favorite Heart Icon --}}
-                    <div class="absolute bottom-2 left-2 pointer-events-none opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 transition-opacity">
-                        <svg class="w-4 h-4 text-white fill-current drop-shadow-md" viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                    </div>
+                        {{-- iOS Favorite Heart Icon --}}
+                        <div class="absolute bottom-2 left-2 pointer-events-none opacity-0 group-hover:opacity-100 md:group-hover:opacity-100 transition-opacity">
+                            <svg class="w-4 h-4 text-white fill-current drop-shadow-md" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                        </div>
 
-                    {{-- Selection Overlay --}}
-                    <div class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors pointer-events-none"></div>
-                </a>
+                        {{-- Selection Overlay --}}
+                        <div class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors pointer-events-none"></div>
+                    </a>
+                @endforeach
             @endforeach
         </div>
 
