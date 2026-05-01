@@ -223,7 +223,7 @@
                         <div x-show="active === {{ $index }} && showTitle"
                             x-transition:enter="transition opacity duration-1000"
                             x-transition:leave="transition opacity duration-1000" class="space-y-4">
-                            <h1 class="text-sm md:text-4xl lg:text-6xl font-medium tracking-tight text-white drop-shadow-2xl text-justify"
+                            <h1 class="text-sm md:text-2xl lg:text-4xl font-medium tracking-tight text-white drop-shadow-2xl text-justify"
                                 style="text-align-last: justify;">
                                 <template x-for="(line, i) in fullText.substring(0, index).split('\n')" :key="i">
                                     <div x-text="line" class="w-full" style="text-align-last: justify;"></div>
@@ -251,7 +251,7 @@
                 @endif
 
                 <div class="text-center mb-8 md:mb-12 page-reveal reveal-delay-3 reveal">
-                    <h2 class="text-xl md:text-4xl font-bold tracking-tighter lowercase">our journey</h2>
+                    <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">our journey</h2>
                 </div>
                 @if($journeyVideoId || $journeyVideoId2)
                     {{-- YouTube Embed replaces Carousel --}}
