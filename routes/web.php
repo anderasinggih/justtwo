@@ -16,6 +16,14 @@ Route::get('journey', \App\Livewire\Journey::class)
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('journey');
 
+Route::get('gallery', \App\Livewire\Gallery::class)
+    ->middleware(['auth', 'verified', 'relationship'])
+    ->name('gallery');
+
+Route::get('gallery/preview/{media}', \App\Livewire\InternalGalleryPreview::class)
+    ->middleware(['auth', 'verified', 'relationship'])
+    ->name('gallery.preview');
+
 Route::get('memory/new', \App\Livewire\CreatePost::class)
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('memories.create');

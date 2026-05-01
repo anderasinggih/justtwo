@@ -26,13 +26,22 @@ class PublicPostPreview extends Component
             ->latest()
             ->get();
         
+        $targetMediaId = request()->query('media');
         $mediaList = [];
         $foundTarget = false;
+        
         foreach ($posts as $p) {
             foreach ($p->media as $m) {
-                if (!$foundTarget && $p->id == $this->targetId) {
-                    $this->initialMediaIndex = count($mediaList);
-                    $foundTarget = true;
+                if (!$foundTarget) {
+                    if ($targetMediaId) {
+                        if ($m->id == $targetMediaId) {
+                            $this->initialMediaIndex = count($mediaList);
+                            $foundTarget = true;
+                        }
+                    } else if ($p->id == $this->targetId) {
+                        $this->initialMediaIndex = count($mediaList);
+                        $foundTarget = true;
+                    }
                 }
                 $mediaList[] = [
                     'id' => $m->id,

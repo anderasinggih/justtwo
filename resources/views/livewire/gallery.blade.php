@@ -1,40 +1,60 @@
-<div x-data="{ 
-    open(src) {
-        $dispatch('open-lightbox', src)
-    }
-}" class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-12">
-    <div class="text-center">
-        <x-ui.heading level="1" size="4xl">Your gallery</x-ui.heading>
-        <p class="text-gray-500 lowercase">every captured smile, archived forever.</p>
-    </div>
+<div class="max-w-xl mx-auto pb-32 pt-4 px-4">
+    {{-- Header --}}
+    <header class="py-8 px-4 border-b theme-border">
+        <div class="flex items-center justify-between">
+            <h1 class="text-4xl font-bold tracking-tight">Library</h1>
+            <div class="flex items-center gap-4">
+                <button class="text-brand-500 font-bold text-sm tracking-tight">Select</button>
+            </div>
+        </div>
+    </header>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        @forelse($media as $item)
-            @if($item->file_path_original)
-                <div class="relative group cursor-pointer aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100 shadow-sm hover-lift tap-effect" 
-                     @click="open('{{ Storage::disk('public')->url($item->file_path_original) }}')">
-                    <img src="{{ Storage::disk('public')->url($item->file_path_thumbnail ?? $item->file_path_original) }}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <svg class="w-8 h-8 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                        </svg>
+    {{-- Content Grid --}}
+    <main class="w-full -mx-4 md:mx-0">
+        @forelse($groupedMedia as $monthYear => $mediaItems)
+            @php
+                [$year, $month] = explode('-', $monthYear);
+            @endphp
+            <section class="mb-8">
+                <div class="px-4 py-3 border-b theme-border flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold lowercase">{{ $month }}</h2>
+                        <p class="text-[10px] opacity-40 uppercase tracking-widest">{{ $year }}</p>
                     </div>
                 </div>
-            @else
-                <div class="relative aspect-[4/5] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center">
 
-                    <div class="text-center space-y-2">
-                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-500 mx-auto"></div>
-                        <p class="text-[10px] text-gray-400 lowercase">optimizing...</p>
-                    </div>
+                <div class="grid grid-cols-3 gap-[1px] md:gap-1 px-[1px]">
+                    @foreach($mediaItems as $media)
+                        <a href="{{ route('gallery.preview', $media->id) }}" wire:navigate 
+                           class="relative aspect-square group overflow-hidden bg-current/5 cursor-pointer">
+                            <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
+                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                 loading="lazy">
+                            
+                            @if(str_contains($media->file_type, 'video'))
+                                <div class="absolute bottom-1.5 right-1.5 bg-black/40 backdrop-blur-md rounded px-1 py-0.5">
+                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            @endif
+
+                            <div class="absolute inset-0 bg-white/0 group-active:bg-white/20 transition-colors pointer-events-none"></div>
+                        </a>
+                    @endforeach
                 </div>
-            @endif
-
-
+            </section>
         @empty
-            <div class="col-span-full py-20 text-center">
-                <p class="text-gray-400 lowercase italic">no photos found. start sharing some memories!</p>
+            <div class="py-40 text-center space-y-4">
+                <div class="w-20 h-20 bg-current/5 rounded-full mx-auto flex items-center justify-center opacity-20">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <p class="text-sm opacity-30 lowercase italic">no photos in your library yet.</p>
             </div>
         @endforelse
-    </div>
+
+        {{-- Library Stats --}}
+        <div class="py-12 text-center">
+            <p class="text-sm font-bold opacity-80">{{ $groupedMedia->flatten()->count() }} Photos, {{ $groupedMedia->flatten()->filter(fn($m) => str_contains($m->file_type, 'video'))->count() }} Videos</p>
+            <p class="text-[10px] opacity-40 uppercase tracking-widest mt-1">last updated just now</p>
+        </div>
+    </main>
 </div>

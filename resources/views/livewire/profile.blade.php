@@ -66,6 +66,10 @@
                class="flex-1 text-center py-1.5 bg-white/5 border theme-border theme-text text-[11px] font-bold rounded-lg transition-colors lowercase hover:bg-white/10">
                 view stats
             </a>
+            <a href="{{ route('journey') }}" wire:navigate 
+               class="flex-1 text-center py-1.5 bg-brand-500/10 border border-brand-500/20 theme-accent text-[11px] font-bold rounded-lg transition-colors lowercase hover:bg-brand-500/20">
+                journey
+            </a>
         </div>
     </div>
 

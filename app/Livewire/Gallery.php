@@ -10,14 +10,23 @@ class Gallery extends Component
 {
     public function render()
     {
-        $media = PostMedia::whereHas('post', function($q) {
-            $q->where('relationship_id', Auth::user()->relationship->id)
-              ->where('is_archived', false)
-              ->where('is_secret', false);
-        })->latest()->get();
+        $relationship = Auth::user()->relationship;
+        
+        $media = PostMedia::whereHas('post', function($q) use ($relationship) {
+            $q->where('relationship_id', $relationship->id)
+              ->where('is_archived', false);
+        })
+        ->orderBy('captured_at', 'desc')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        $groupedMedia = $media->groupBy(function($item) {
+            $date = $item->captured_at ?? $item->created_at;
+            return $date->format('Y-F');
+        });
 
         return view('livewire.gallery', [
-            'media' => $media,
+            'groupedMedia' => $groupedMedia,
         ])->layout('layouts.app');
     }
 }
