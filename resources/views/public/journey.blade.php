@@ -57,35 +57,47 @@
             </div>
         </header>
 
-        {{-- Responsive Video Grid --}}
-        <main class="max-w-7xl mx-auto px-4 py-12 md:py-16 lg:py-24">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 lg:gap-12">
+        {{-- Responsive Video List --}}
+        <main class="max-w-5xl mx-auto px-4 py-12 md:py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 @forelse($videos as $video)
-                    <div class="group space-y-4">
-                        <div class="relative aspect-video rounded-3xl overflow-hidden shadow-2xl transition-transform duration-500 group-hover:scale-[1.02] bg-gray-100 dark:bg-gray-800">
-                            <iframe 
-                                class="absolute inset-0 w-full h-full"
-                                src="https://www.youtube.com/embed/{{ $video['id'] }}?modestbranding=1&rel=0&showinfo=0" 
-                                frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen>
-                            </iframe>
+                    <a href="https://youtube.com/watch?v={{ $video['id'] }}" target="_blank" 
+                       class="flex gap-4 md:gap-6 p-3 rounded-3xl hover:bg-white/5 active:scale-[0.98] transition-all group">
+                        
+                        {{-- Thumbnail --}}
+                        <div class="relative w-32 md:w-48 aspect-video rounded-2xl overflow-hidden flex-shrink-0 bg-black/20 shadow-xl">
+                            <img src="https://img.youtube.com/vi/{{ $video['id'] }}/hqdefault.jpg" 
+                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <div class="absolute bottom-1.5 right-1.5 bg-black/80 backdrop-blur-sm text-[10px] font-bold px-2 py-0.5 rounded text-white tracking-tight uppercase">
+                                Play
+                            </div>
                         </div>
-                        <div class="px-2">
-                            <h3 class="text-lg font-bold line-clamp-1 group-hover:theme-text-brand transition-colors">{{ $video['title'] }}</h3>
-                            <p class="text-sm opacity-50 line-clamp-2 mt-1">{{ $video['description'] }}</p>
+
+                        {{-- Info --}}
+                        <div class="flex-grow py-1 flex flex-col justify-center min-w-0">
+                            <h3 class="text-sm md:text-xl font-bold tracking-tight leading-tight line-clamp-2 theme-text mb-1 lowercase">
+                                {{ $video['title'] }}
+                            </h3>
+                            <p class="text-[11px] md:text-sm opacity-40 font-medium line-clamp-1 lowercase tracking-tight">
+                                {{ \Illuminate\Support\Str::limit($video['description'] ?? 'our journey', 80) }}
+                            </p>
                         </div>
-                    </div>
+                    </a>
                 @empty
-                    <div class="col-span-full text-center py-20 opacity-30 italic">
-                        No videos found in the journey playlist.
+                    <div class="col-span-full flex flex-col items-center justify-center py-20 opacity-20">
+                        <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        <p class="text-xs font-bold uppercase tracking-widest">No journey videos found</p>
                     </div>
                 @endforelse
             </div>
         </main>
 
-        {{-- Footer Spacer --}}
-        <div class="h-20"></div>
+        {{-- Footer --}}
+        <footer class="max-w-5xl mx-auto mt-24 py-12 text-center border-t theme-border">
+            <p class="text-[11px] opacity-40 tracking-widest uppercase">
+                All Rights Reserved ©Copyright 2026 {{ $spaceName }}
+            </p>
+        </footer>
     </div>
 </body>
 </html>
