@@ -45,27 +45,27 @@
         </nav>
 
         {{-- Responsive Video List --}}
-        <main class="max-w-7xl mx-auto px-4 md:px-12 lg:px-24 py-8 md:py-12">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
+        <main class="max-w-7xl mx-auto px-4 md:px-12 lg:px-24 py-4 md:py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                 @forelse($videos as $video)
                     <a href="https://youtube.com/watch?v={{ $video['id'] }}" target="_blank" 
-                       class="flex gap-4 md:gap-8 p-3 rounded-3xl hover:bg-white/5 active:scale-[0.98] transition-all group">
+                       class="flex gap-4 md:gap-6 p-2 rounded-2xl hover:bg-white/5 active:scale-[0.98] transition-all group">
                         
                         {{-- Thumbnail --}}
-                        <div class="relative w-36 md:w-56 aspect-video rounded-2xl overflow-hidden flex-shrink-0 bg-black/20 shadow-xl border border-white/5">
+                        <div class="relative w-32 md:w-52 aspect-video rounded-xl md:rounded-2xl overflow-hidden flex-shrink-0 bg-black/20 shadow-lg border border-white/5">
                             <img src="https://img.youtube.com/vi/{{ $video['id'] }}/hqdefault.jpg" 
                                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                            <div class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-[10px] font-bold px-2 py-0.5 rounded text-white tracking-tight uppercase">
+                            <div class="absolute bottom-1.5 right-1.5 bg-black/80 backdrop-blur-sm text-[9px] font-bold px-1.5 py-0.5 rounded text-white tracking-tight uppercase">
                                 Play
                             </div>
                         </div>
 
                         {{-- Info --}}
                         <div class="flex-grow py-1 flex flex-col justify-center min-w-0">
-                            <h3 class="text-sm md:text-2xl font-bold tracking-tight leading-tight line-clamp-2 theme-text mb-1 lowercase">
+                            <h3 class="text-[13px] md:text-lg font-bold tracking-tight leading-tight line-clamp-2 theme-text mb-0.5 lowercase">
                                 {{ $video['title'] }}
                             </h3>
-                            <p class="text-[11px] md:text-sm opacity-40 font-medium line-clamp-2 lowercase tracking-tight leading-relaxed">
+                            <p class="text-[10px] md:text-sm opacity-40 font-medium line-clamp-1 lowercase tracking-tight">
                                 {{ \Illuminate\Support\Str::limit($video['description'] ?? 'our journey', 100) }}
                             </p>
                         </div>
@@ -79,22 +79,11 @@
             </div>
         </main>
 
-        {{-- Premium Footer (Same as Welcome) --}}
-        <footer class="relative z-10 py-12 px-6 border-t theme-border">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold tracking-tight lowercase">{{ $spaceName }}</p>
-                        <p class="text-xs opacity-40 lowercase">all rights reserved © 2026</p>
-                    </div>
-                </div>
-            </div>
+        {{-- Simple Footer (Exactly as Welcome) --}}
+        <footer class="py-12 text-center border-t theme-border bg-transparent">
+            <p class="text-[11px] opacity-50 tracking-tight lowercase">
+                all rights reserved ©copyright 2026 {{ $spaceName }}
+            </p>
         </footer>
     </div>
 </body>
