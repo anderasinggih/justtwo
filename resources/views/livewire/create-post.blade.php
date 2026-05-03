@@ -1,5 +1,4 @@
-<div class="min-h-screen theme-bg select-none" 
-     x-data="{ 
+<div class="min-h-screen theme-bg select-none" x-data="{ 
         step: @entangle('step'),
         isEdit: @js($isEdit),
         localItems: [], // { id, file, url, location, crop }
@@ -270,8 +269,8 @@
                     resolve({ location: null, captured_at: null, lat: null, lon: null });
                     return;
                 }
-                
-                EXIF.getData(file, function() {
+
+                EXIF.getData(file, function () {
                     const lat = EXIF.getTag(this, "GPSLatitude");
                     const lon = EXIF.getTag(this, "GPSLongitude");
                     const latRef = EXIF.getTag(this, "GPSLatitudeRef") || "N";
@@ -307,28 +306,55 @@
     </script>
 
     <style>
-        .cropper-view-box { border-radius: 0; outline: 1px solid rgba(255,255,255,0.3) !important; }
-        .cropper-line, .cropper-point { display: none; }
-        .cropper-container { background-color: #000; }
-        .cropper-modal { opacity: 1 !important; background-color: #000 !important; }
-        .cropper-bg { background-image: none !important; }
-        [x-cloak] { display: none !important; }
+        .cropper-view-box {
+            border-radius: 0;
+            outline: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .cropper-line,
+        .cropper-point {
+            display: none;
+        }
+
+        .cropper-container {
+            background-color: #000;
+        }
+
+        .cropper-modal {
+            opacity: 1 !important;
+            background-color: #000 !important;
+        }
+
+        .cropper-bg {
+            background-image: none !important;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 
     <header class="flex items-center justify-between px-6 h-14 border-b theme-border sticky top-0 theme-bg z-30">
         <div class="flex items-center">
-            <button x-show="step == 2" @click="step = 1; localFiles = []" class="text-xs font-bold theme-text lowercase">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <button x-show="step == 2" @click="step = 1; localFiles = []"
+                class="text-xs font-bold theme-text lowercase">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
             </button>
-            <a x-show="step == 1" href="{{ route('dashboard') }}" wire:navigate class="text-xs font-bold theme-text lowercase">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <a x-show="step == 1" href="{{ route('dashboard') }}" wire:navigate
+                class="text-xs font-bold theme-text lowercase">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
             </a>
         </div>
-        <h2 class="text-sm font-bold theme-text lowercase" x-text="step == 2 ? (isEdit ? 'edit memory' : 'new memory') : 'create'"></h2>
+        <h2 class="text-sm font-bold theme-text lowercase"
+            x-text="step == 2 ? (isEdit ? 'edit memory' : 'new memory') : 'create'"></h2>
         <template x-if="step == 2">
-            <button @click="submitPost" :disabled="isUploading" 
-                    class="text-sm font-bold theme-accent lowercase disabled:opacity-30"
-                    x-text="isEdit ? 'update' : 'share'">
+            <button @click="submitPost" :disabled="isUploading"
+                class="text-sm font-bold theme-accent lowercase disabled:opacity-30"
+                x-text="isEdit ? 'update' : 'share'">
             </button>
         </template>
         <template x-if="step == 1">
@@ -344,9 +370,15 @@
             </div>
 
             <div class="w-full max-w-xs space-y-4">
-                <label class="group relative flex items-center gap-4 p-5 bg-white/5 border theme-border rounded-3xl cursor-pointer hover:bg-brand-500/5 hover:border-brand-500/30 transition-all">
-                    <div class="w-12 h-12 rounded-2xl bg-brand-500/10 flex items-center justify-center text-brand-500 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <label
+                    class="group relative flex items-center gap-4 p-5 bg-white/5 border theme-border rounded-3xl cursor-pointer hover:bg-brand-500/5 hover:border-brand-500/30 transition-all">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-brand-500/10 flex items-center justify-center text-brand-500 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
                     </div>
                     <div class="text-left">
                         <p class="text-sm font-bold theme-text lowercase">from gallery</p>
@@ -356,9 +388,14 @@
                 </label>
 
                 <a href="{{ route('planner.create') }}" wire:navigate
-                        class="w-full group relative flex items-center gap-4 p-5 bg-white/5 border theme-border rounded-3xl cursor-pointer hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all text-left">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    class="w-full group relative flex items-center gap-4 p-5 bg-white/5 border theme-border rounded-3xl cursor-pointer hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all text-left">
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
                     </div>
                     <div class="text-left">
                         <p class="text-sm font-bold theme-text lowercase">plan something</p>
@@ -367,9 +404,14 @@
                 </a>
 
                 <a href="{{ route('savings.create') }}" wire:navigate
-                        class="w-full group relative flex items-center gap-4 p-5 bg-white/5 border theme-border rounded-3xl cursor-pointer hover:bg-amber-500/5 hover:border-amber-500/30 transition-all text-left">
-                    <div class="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.407 2.67 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.407-2.67-1M12 16V7"></path></svg>
+                    class="w-full group relative flex items-center gap-4 p-5 bg-white/5 border theme-border rounded-3xl cursor-pointer hover:bg-amber-500/5 hover:border-amber-500/30 transition-all text-left">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
+                        <svg class="w-11 h-11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.1"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.407 2.67 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.407-2.67-1M12 16V7">
+                            </path>
+                        </svg>
                     </div>
                     <div class="text-left">
                         <p class="text-sm font-bold theme-text lowercase">start saving goal</p>
@@ -387,42 +429,63 @@
                 <template x-if="localItems.length === 0 && existingMedia.length > 0">
                     <div class="w-full h-full">
                         <template x-for="(media, idx) in existingMedia" :key="idx">
-                            <img x-show="currentIndex === idx" :src="'/storage/' + media.file_path_original" class="w-full h-full object-cover">
+                            <img x-show="currentIndex === idx" :src="'/storage/' + media.file_path_original"
+                                class="w-full h-full object-cover">
                         </template>
                     </div>
                 </template>
-                
+
                 <div x-show="localItems[currentIndex]?.location" x-cloak
-                     class="absolute bottom-4 left-4 z-20 flex items-center gap-1.5 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
-                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <span class="text-[10px] text-white font-bold lowercase tracking-wide" x-text="localItems[currentIndex]?.location"></span>
+                    class="absolute bottom-4 left-4 z-20 flex items-center gap-1.5 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
+                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span class="text-[10px] text-white font-bold lowercase tracking-wide"
+                        x-text="localItems[currentIndex]?.location"></span>
                 </div>
 
-                <div x-show="isUploading || isExtracting" class="absolute inset-0 z-50 bg-black/80 flex flex-col items-center justify-center space-y-4">
-                    <div class="w-10 h-10 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin"></div>
-                    <p class="text-[10px] text-white font-bold uppercase tracking-widest" x-text="isExtracting ? 'detecting locations...' : 'posting...'"></p>
+                <div x-show="isUploading || isExtracting"
+                    class="absolute inset-0 z-50 bg-black/80 flex flex-col items-center justify-center space-y-4">
+                    <div class="w-10 h-10 border-2 border-brand-500/30 border-t-brand-500 rounded-full animate-spin">
+                    </div>
+                    <p class="text-[10px] text-white font-bold uppercase tracking-widest"
+                        x-text="isExtracting ? 'detecting locations...' : 'posting...'"></p>
                 </div>
             </div>
 
             <div class="p-4 flex gap-2 overflow-x-auto scrollbar-hide bg-black/5 border-b theme-border">
                 <template x-if="localItems.length > 0">
                     <div class="flex gap-2">
-                        <div class="flex gap-2" x-init="new Sortable($el, { animation: 150, draggable: '.draggable-item', onEnd: (evt) => reorder(evt.oldIndex, evt.newIndex) })">
+                        <div class="flex gap-2"
+                            x-init="new Sortable($el, { animation: 150, draggable: '.draggable-item', onEnd: (evt) => reorder(evt.oldIndex, evt.newIndex) })">
                             <template x-for="(item, index) in localItems" :key="item.id">
                                 <div class="draggable-item shrink-0 relative">
-                                    <button @click="selectPhoto(index)" 
-                                            class="w-16 h-16 rounded-lg overflow-hidden border-2 transition-all"
-                                            :class="currentIndex === index ? 'border-brand-500 scale-95' : 'border-transparent opacity-50'">
+                                    <button @click="selectPhoto(index)"
+                                        class="w-16 h-16 rounded-lg overflow-hidden border-2 transition-all"
+                                        :class="currentIndex === index ? 'border-brand-500 scale-95' : 'border-transparent opacity-50'">
                                         <img :src="item.url" class="w-full h-full object-cover">
                                     </button>
-                                    <button @click.stop="removePhoto(index)" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg">
-                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    <button @click.stop="removePhoto(index)"
+                                        class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg">
+                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
                                     </button>
                                 </div>
                             </template>
                         </div>
-                        <label class="shrink-0 w-16 h-16 rounded-lg border-2 border-dashed theme-border flex items-center justify-center cursor-pointer">
-                            <svg class="w-6 h-6 theme-text opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        <label
+                            class="shrink-0 w-16 h-16 rounded-lg border-2 border-dashed theme-border flex items-center justify-center cursor-pointer">
+                            <svg class="w-6 h-6 theme-text opacity-20" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4"></path>
+                            </svg>
                             <input type="file" multiple class="hidden" accept="image/*" @change="addMoreFiles">
                         </label>
                     </div>
@@ -430,10 +493,16 @@
             </div>
 
             <div class="p-6 space-y-6 pb-32">
-                <div class="flex items-center justify-between p-4 bg-white/5 border theme-border rounded-2xl cursor-pointer" x-on:click="$wire.is_public = !$wire.is_public">
+                <div class="flex items-center justify-between p-4 bg-white/5 border theme-border rounded-2xl cursor-pointer"
+                    x-on:click="$wire.is_public = !$wire.is_public">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-500">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div
+                            class="w-12 h-12 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-500">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                </path>
+                            </svg>
                         </div>
                         <div>
                             <p class="text-xs font-bold theme-text lowercase">public memory</p>
@@ -441,16 +510,26 @@
                         </div>
                     </div>
                     <input type="checkbox" wire:model="is_public" class="sr-only">
-                    <div class="w-9 h-5 rounded-full transition-all" :class="$wire.is_public ? 'bg-brand-500' : 'bg-gray-200'">
-                        <div class="w-4 h-4 bg-white rounded-full mt-0.5 ml-0.5 transition-all" :style="$wire.is_public ? 'transform: translateX(100%)' : ''"></div>
+                    <div class="w-9 h-5 rounded-full transition-all"
+                        :class="$wire.is_public ? 'bg-brand-500' : 'bg-gray-200'">
+                        <div class="w-4 h-4 bg-white rounded-full mt-0.5 ml-0.5 transition-all"
+                            :style="$wire.is_public ? 'transform: translateX(100%)' : ''"></div>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-3 px-1">
-                    <div class="w-8 h-8 rounded-full bg-white/5 border theme-border flex items-center justify-center opacity-40">
-                        <svg class="w-4 h-4 theme-text" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <div
+                        class="w-8 h-8 rounded-full bg-white/5 border theme-border flex items-center justify-center opacity-40">
+                        <svg class="w-4 h-4 theme-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
                     </div>
-                    <input wire:model="location" placeholder="add location" class="flex-1 bg-transparent border-none focus:ring-0 text-sm theme-text p-0 lowercase">
+                    <input wire:model="location" placeholder="add location"
+                        class="flex-1 bg-transparent border-none focus:ring-0 text-sm theme-text p-0 lowercase">
                 </div>
             </div>
         </div>

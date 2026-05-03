@@ -23,8 +23,7 @@ new class extends Component {
                 ),
                 ready: false,
                 init() {
-                    this.ready = true;
-                    sessionStorage.setItem('nav-active', this.active);
+                    // Handled by child x-init for better transition
                 },
                 setPage(index) {
                     this.active = index;
@@ -37,11 +36,22 @@ new class extends Component {
             <div class="absolute inset-y-1.5 w-[calc(20%-1.6px)] pointer-events-none flex justify-center px-1"
                  :class="ready ? 'opacity-100 transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)]' : 'opacity-0'"
                  :style="`transform: translateX(${active * 100}%)`"
-                 style="transform: translateX({{ 
-                    request()->routeIs('dashboard') ? '0' : 
-                    (request()->routeIs('gallery') ? '300%' : 
-                    (request()->routeIs('profile') || request()->routeIs('settings') || request()->routeIs('stats') ? '400%' : '200%'))
-                 }})">
+                 x-init="
+                    let lastActive = sessionStorage.getItem('nav-active');
+                    if (lastActive !== null) {
+                        active = parseInt(lastActive);
+                        setTimeout(() => {
+                            active = @js(
+                                request()->routeIs('dashboard') ? 0 : 
+                                (request()->routeIs('planner*') ? 1 : 
+                                (request()->routeIs('gallery') ? 3 : 
+                                (request()->routeIs('profile*') || request()->routeIs('settings') || request()->routeIs('stats') ? 4 : 2)))
+                            );
+                            sessionStorage.setItem('nav-active', active);
+                        }, 50);
+                    }
+                    ready = true;
+                 ">
                 <div class="w-full h-full bg-white/20 rounded-full shadow-[inset_0_1px_2px_rgba(255,255,255,0.2)]"></div>
             </div>
 
