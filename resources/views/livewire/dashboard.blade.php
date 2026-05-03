@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-1 px-1">
         <div>
             <h2 class="text-[10px] font-bold theme-text opacity-30 lowercase tracking-widest leading-none mb-1">welcome back</h2>
-            <h1 class="text-xl font-bold theme-text lowercase tracking-tighter">Together</h1>
+            <h1 class="text-xl font-bold theme-text lowercase tracking-tighter">{{ $relationship->name ?? 'Together' }}</h1>
         </div>
         <div class="flex -space-x-2">
             @foreach($partners as $partner)
