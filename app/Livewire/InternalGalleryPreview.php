@@ -10,14 +10,13 @@ use Livewire\Component;
 class InternalGalleryPreview extends Component
 {
     public $allMedia = [];
-    public $initialMediaIndex = 0;
+    public $currentIndex = 0;
     public $targetId;
     public $theme = 'light';
 
     public function mount($media)
     {
         $targetMedia = \App\Models\PostMedia::findOrFail($media);
-        $relationship = Auth::user()->relationship;
         $relationshipId = Auth::user()->relationshipMember->relationship_id ?? null;
 
         // Security check
@@ -26,12 +25,12 @@ class InternalGalleryPreview extends Component
         } elseif ($relationshipId && $targetMedia->post?->relationship_id === $relationshipId) {
             // Same relationship has access
         } else {
-            abort(403, "Access Denied. Post Rel: " . ($targetMedia->post?->relationship_id ?? 'NULL') . ", Your Rel: " . ($relationshipId ?? 'NULL'));
+            abort(403, "Access Denied.");
         }
 
         $this->targetId = $targetMedia->post_id;
         
-        // Load all media in this relationship
+        // Load all media
         $mediaRecords = \App\Models\PostMedia::whereHas('post', function ($query) use ($relationshipId) {
             $query->where(function($q) use ($relationshipId) {
                 if ($relationshipId) {
@@ -48,7 +47,7 @@ class InternalGalleryPreview extends Component
         $mediaList = [];
         foreach ($mediaRecords as $m) {
             if ($m->id == $targetMedia->id) {
-                $this->initialMediaIndex = count($mediaList);
+                $this->currentIndex = count($mediaList);
             }
             
             $mediaList[] = [
@@ -110,7 +109,7 @@ class InternalGalleryPreview extends Component
     {
         return view('livewire.public-post-preview', [
             'allMedia' => $this->allMedia,
-            'initialMediaIndex' => $this->initialMediaIndex,
+            'currentIndex' => $this->currentIndex,
             'theme' => $this->theme,
         ])->layout('layouts.guest', ['theme' => $this->theme]);
     }
