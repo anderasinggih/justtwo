@@ -5,7 +5,7 @@
         currentLevel: window.innerWidth > 1024 ? 2 : (window.innerWidth > 768 ? 2 : 1), 
         
         isSelecting: @entangle('isSelecting'),
-        selectedIds: @entangle('selectedMedia').live,
+        selectedIds: @entangle('selectedMedia'),
         selectedUrls: [],
         isDragging: false,
         lastDraggedId: null,
@@ -133,8 +133,7 @@
                     <span x-text="isDownloading ? 'Preparing...' : 'Save'"></span>
                 </button>
                 <button x-show="selectedIds.length > 0"
-                        wire:click="archiveSelected"
-                        wire:loading.attr="disabled"
+                        @click="$wire.archiveSelected(selectedIds)"
                         class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200 disabled:opacity-50">
                     Delete (<span x-text="selectedIds.length"></span>)
                 </button>
