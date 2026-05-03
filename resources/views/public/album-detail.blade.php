@@ -87,8 +87,16 @@
                 @foreach($posts as $post)
                     @foreach($post->media as $media)
                         <a href="{{ route('posts.preview', $post) }}" 
-                           class="relative aspect-square overflow-hidden group">
+                           x-data="{ loaded: false }"
+                           class="relative aspect-square overflow-hidden group bg-gray-200 dark:bg-white/5">
+                            
+                            {{-- Skeleton Loader --}}
+                            <div x-show="!loaded" class="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+
                             <img src="{{ Storage::disk('public')->url($media->file_path_original) }}" 
+                                 @load="loaded = true"
+                                 x-show="loaded"
+                                 x-transition:enter="transition opacity duration-500"
                                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             
                             {{-- Selection Overlay --}}

@@ -28,7 +28,25 @@
             margin: 0; 
             padding: 0; 
         }
+        /* Apple-Style Page Transitions */
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation-duration: 0.4s;
+            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes fade-in { from { opacity: 0; transform: scale(0.98); } }
+        @keyframes fade-out { to { opacity: 0; transform: scale(1.02); } }
     </style>
+    
+    <script>
+        // Global Haptic Feedback
+        window.haptic = function(type = 'light') {
+            if (!window.navigator.vibrate) return;
+            if (type === 'light') window.navigator.vibrate(10);
+            else if (type === 'medium') window.navigator.vibrate(20);
+            else if (type === 'heavy') window.navigator.vibrate([30, 50, 30]);
+        };
+    </script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,6 +69,10 @@
                     this.currentTheme = this.themes[(idx + 1) % this.themes.length];
                 }, 300000);
             }
+            // Listen for cross-document navigation for haptics
+            document.addEventListener('click', e => {
+                if (e.target.closest('a, button')) window.haptic('light');
+            });
         }
     }" 
     :data-theme="currentTheme"

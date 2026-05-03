@@ -51,11 +51,20 @@
                     <a href="https://youtube.com/watch?v={{ $video['id'] }}" target="_blank" 
                        class="flex gap-4 md:gap-6 p-2 rounded-2xl hover:bg-white/5 active:scale-[0.98] transition-all group">
                         
-                        {{-- Thumbnail --}}
-                        <div class="relative w-32 md:w-52 aspect-video rounded-xl md:rounded-2xl overflow-hidden flex-shrink-0 bg-black/20 shadow-lg border border-white/5">
+                        {{-- Thumbnail with Skeleton --}}
+                        <div x-data="{ loaded: false }" 
+                             class="relative w-32 md:w-52 aspect-video rounded-xl md:rounded-2xl overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-white/5 shadow-lg border border-white/5">
+                            
+                            {{-- Skeleton Loader --}}
+                            <div x-show="!loaded" class="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+
                             <img src="https://img.youtube.com/vi/{{ $video['id'] }}/hqdefault.jpg" 
+                                 @load="loaded = true"
+                                 x-show="loaded"
+                                 x-transition:enter="transition opacity duration-500"
                                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                            <div class="absolute bottom-1.5 right-1.5 bg-black/80 backdrop-blur-sm text-[9px] font-bold px-1.5 py-0.5 rounded text-white tracking-tight uppercase">
+                            
+                            <div x-show="loaded" class="absolute bottom-1.5 right-1.5 bg-black/80 backdrop-blur-sm text-[9px] font-bold px-1.5 py-0.5 rounded text-white tracking-tight uppercase">
                                 Play
                             </div>
                         </div>

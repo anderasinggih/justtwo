@@ -22,6 +22,25 @@
     <meta name="theme-color" content="{{ $bgColor }}">
     <title>{{ $spaceName }}</title>
     
+    <style>
+        /* Apple-Style Page Transitions */
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation-duration: 0.4s;
+            animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+    
+    <script>
+        // Global Haptic Feedback
+        window.haptic = function(type = 'light') {
+            if (!window.navigator.vibrate) return;
+            if (type === 'light') window.navigator.vibrate(10);
+            else if (type === 'medium') window.navigator.vibrate(20);
+            else if (type === 'heavy') window.navigator.vibrate([30, 50, 30]);
+        };
+    </script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
@@ -34,7 +53,12 @@
 
 <body x-data="{
         currentTheme: '{{ $currentTheme }}',
-        themes: ['light', 'dark', 'rose', 'midnight', 'sky', 'mint', 'lavender', 'pink']
+        themes: ['light', 'dark', 'rose', 'midnight', 'sky', 'mint', 'lavender', 'pink'],
+        init() {
+            document.addEventListener('click', e => {
+                if (e.target.closest('a, button')) window.haptic('light');
+            });
+        }
     }" 
     :data-theme="currentTheme"
     :class="currentTheme"

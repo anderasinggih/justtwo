@@ -1,4 +1,4 @@
-const CACHE_NAME = 'justtwo-cache-v2';
+const CACHE_NAME = 'justtwo-cache-v3';
 const ASSETS_TO_CACHE = [
     '/',
     '/manifest.json',
@@ -36,13 +36,16 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
 
-    // 1. Image Caching Strategy (Cache First)
-    if (event.request.destination === 'image' || url.pathname.includes('/storage/')) {
+    // 1. Image & Storage Caching Strategy (Cache First)
+    if (event.request.destination === 'image' || url.pathname.includes('/storage/') || url.pathname.includes('/img.youtube.com/')) {
         event.respondWith(
             caches.open(CACHE_NAME).then((cache) => {
                 return cache.match(event.request).then((response) => {
                     return response || fetch(event.request).then((networkResponse) => {
-                        cache.put(event.request, networkResponse.clone());
+                        // Only cache successful responses
+                        if (networkResponse.ok || networkResponse.type === 'opaque') {
+                            cache.put(event.request, networkResponse.clone());
+                        }
                         return networkResponse;
                     });
                 });
@@ -57,7 +60,9 @@ self.addEventListener('fetch', (event) => {
             caches.open(CACHE_NAME).then((cache) => {
                 return cache.match(event.request).then((cachedResponse) => {
                     const fetchedResponse = fetch(event.request).then((networkResponse) => {
-                        cache.put(event.request, networkResponse.clone());
+                        if (networkResponse.ok) {
+                            cache.put(event.request, networkResponse.clone());
+                        }
                         return networkResponse;
                     });
                     return cachedResponse || fetchedResponse;
@@ -67,7 +72,7 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // 3. Default Strategy for everything else (Network First, fallback to cache)
+    // 3. Default Strategy: Network First with Cache Fallback
     event.respondWith(
         fetch(event.request).catch(() => {
             return caches.match(event.request);
