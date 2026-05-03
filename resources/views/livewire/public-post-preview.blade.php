@@ -12,7 +12,7 @@
     {{-- Pinch Zoom Script --}}
     <script src="https://unpkg.com/pinch-zoom-js@2.3.5/dist/pinch-zoom.umd.js"></script>
 
-<div class="fixed inset-0 theme-bg theme-text z-[200] flex flex-col overflow-hidden select-none" x-data="{ 
+ <div class="fixed inset-0 theme-bg theme-text z-[200] flex flex-col overflow-hidden select-none" x-data="{ 
         currentIndex: {{ $initialMediaIndex }},
         total: {{ count($allMedia) }},
         showHeart: false,
@@ -128,6 +128,41 @@
         if (currentIndex >= allMedia.length) { currentIndex = Math.max(0, allMedia.length - 1); }
         $nextTick(() => { $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' }); scrollToThumb(currentIndex); });
      " @touchstart="handleTouchStart($event)" @touchend="handleTouchEnd($event)">
+
+    {{-- Debug Overlay --}}
+    @if(isset($debugInfo) && (isset($debugInfo['error']) || count($allMedia) === 0))
+        <div class="fixed inset-0 bg-black/90 z-[999] flex flex-col items-center justify-center p-8 text-center">
+            <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mb-6">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-2">Something went wrong</h2>
+            <p class="text-white/60 mb-8 max-w-xs">{{ $debugInfo['error'] ?? 'No media items found to display.' }}</p>
+            
+            <div class="w-full max-w-sm bg-white/5 rounded-2xl p-4 text-left font-mono text-[10px] space-y-2 border border-white/10">
+                <p class="text-white/40 uppercase tracking-widest text-[8px] mb-2">Diagnostic Data</p>
+                <div class="flex justify-between border-b border-white/5 pb-1">
+                    <span class="text-white/60">User ID</span>
+                    <span class="text-white">{{ $debugInfo['user_id'] ?? 'N/A' }}</span>
+                </div>
+                <div class="flex justify-between border-b border-white/5 pb-1">
+                    <span class="text-white/60">User Relationship ID</span>
+                    <span class="text-white">{{ $debugInfo['user_relationship_id'] ?? 'N/A' }}</span>
+                </div>
+                <div class="flex justify-between border-b border-white/5 pb-1">
+                    <span class="text-white/60">Post Relationship ID</span>
+                    <span class="text-white">{{ $debugInfo['post_relationship_id'] ?? 'N/A' }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-white/60">Post Owner ID</span>
+                    <span class="text-white">{{ $debugInfo['post_owner_id'] ?? 'N/A' }}</span>
+                </div>
+            </div>
+            
+            <button onclick="window.location.href='/gallery'" class="mt-8 px-6 py-3 bg-white text-black rounded-full font-bold text-sm active:scale-95 transition-transform">
+                Back to Gallery
+            </button>
+        </div>
+    @endif
 
     <nav class="p-4 md:p-6 flex items-center justify-between z-[400] transition-all duration-300"
          :class="isZooming ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'">

@@ -13,28 +13,52 @@ class InternalGalleryPreview extends Component
     public $initialMediaIndex = 0;
     public $targetId;
     public $theme = 'light';
+    public $debugInfo = [];
 
     public function mount($media)
     {
-        $targetMedia = \App\Models\PostMedia::findOrFail($media);
-        $relationshipId = Auth::user()->relationshipMember?->relationship_id;
+        $user = Auth::user();
+        $this->debugInfo['user_id'] = $user->id;
+        
+        $targetMedia = \App\Models\PostMedia::find($media);
+        if (!$targetMedia) {
+            $this->debugInfo['error'] = "Media ID $media not found in PostMedia table.";
+            return;
+        }
 
-        // Security check - allow both partners in the relationship
-        if ($targetMedia->post?->relationship_id !== $relationshipId && $targetMedia->post?->user_id !== Auth::id()) {
-            abort(403, "Access Denied. Rel: " . ($relationshipId ?? 'NULL') . " PostRel: " . ($targetMedia->post?->relationship_id ?? 'NULL'));
+        $relationshipMember = $user->relationshipMember;
+        $relationshipId = $relationshipMember?->relationship_id;
+        
+        $this->debugInfo['user_relationship_id'] = $relationshipId ?? 'NULL';
+        $this->debugInfo['post_relationship_id'] = $targetMedia->post?->relationship_id ?? 'NULL';
+        $this->debugInfo['post_owner_id'] = $targetMedia->post?->user_id ?? 'NULL';
+
+        // Security check - allow both partners in the relationship OR owner
+        $isOwner = $targetMedia->post?->user_id === $user->id;
+        $isPartner = $relationshipId && $targetMedia->post?->relationship_id === $relationshipId;
+
+        if (!$isOwner && !$isPartner) {
+            $this->debugInfo['error'] = "Access Denied. You are not the owner AND not in the correct relationship.";
+            return;
         }
 
         $this->targetId = $targetMedia->post_id;
         
         // Load all media in this relationship
-        $mediaRecords = \App\Models\PostMedia::whereHas('post', function ($query) use ($relationshipId) {
-            $query->where('relationship_id', $relationshipId)
-                  ->where('is_archived', false);
+        $mediaRecords = \App\Models\PostMedia::whereHas('post', function ($query) use ($relationshipId, $user) {
+            $query->where(function($q) use ($relationshipId, $user) {
+                if ($relationshipId) {
+                    $q->where('relationship_id', $relationshipId);
+                }
+                $q->orWhere('user_id', $user->id);
+            })->where('is_archived', false);
         })
         ->with(['post', 'post.user'])
         ->orderBy('captured_at', 'desc')
         ->orderBy('created_at', 'desc')
         ->get();
+
+        $this->debugInfo['total_media_found'] = $mediaRecords->count();
 
         $mediaList = [];
         foreach ($mediaRecords as $m) {
@@ -86,8 +110,8 @@ class InternalGalleryPreview extends Component
         $post = $media->post;
         $relationshipId = Auth::user()->relationshipMember?->relationship_id;
         
-        // Allow both partners
-        if ($post->relationship_id !== $relationshipId) {
+        // Allow owner or relationship partner
+        if ($post->user_id !== Auth::id() && $post->relationship_id !== $relationshipId) {
             return;
         }
 
@@ -107,6 +131,7 @@ class InternalGalleryPreview extends Component
             'initialMediaIndex' => $this->initialMediaIndex,
             'theme' => $this->theme,
             'isInternal' => true,
+            'debugInfo' => $this->debugInfo
         ])->layout('layouts.app');
     }
 }
