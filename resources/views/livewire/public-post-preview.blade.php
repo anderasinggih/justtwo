@@ -9,6 +9,9 @@
     $overlayBg = in_array($theme, ['dark', 'midnight']) ? 'bg-white/10' : 'bg-black/5';
     $iconBg = in_array($theme, ['dark', 'midnight']) ? 'bg-white/10' : 'bg-black/10';
 @endphp
+    {{-- Pinch Zoom Script --}}
+    <script src="https://unpkg.com/pinch-zoom-js@2.3.5/dist/pinch-zoom.umd.js"></script>
+
 <div class="fixed inset-0 theme-bg theme-text z-[200] flex flex-col overflow-hidden select-none" x-data="{ 
         currentIndex: {{ $initialMediaIndex }},
         total: {{ count($allMedia) }},
@@ -18,6 +21,7 @@
         isScrollingCarousel: false,
         isScrollingThumbs: false,
         allMedia: @js($allMedia),
+        isZooming: false,
         handleTouchStart(e) { this.touchStartY = e.touches[0].clientY; },
         handleTouchEnd(e) {
             const touchEndY = e.changedTouches[0].clientY;
@@ -93,7 +97,6 @@
                 });
             }
         },
-        isZooming: false,
         like(postId) {
             $wire.toggleReaction(postId);
             this.showHeart = true;
@@ -103,28 +106,28 @@
         scrollToThumb(currentIndex);
         $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' });
         
-        // Initialize Pinch Zoom for each image
-        document.querySelectorAll('.zoom-container').forEach(el => {
-            new PinchZoom(el, {
-                draggableUnzoomed: false,
-                onZoomStart: () => { this.isZooming = true; },
-                onZoomEnd: (pz) => { 
-                    if (pz.zoomFactor <= 1.05) {
-                        this.isZooming = false;
-                        pz.setZoomFactor(1);
-                    }
-                },
-                onDragStart: () => { if (this.isZooming) return true; },
+        // Safe Initialization of Pinch Zoom
+        const PZ = window.PinchZoom || (window.PinchZoom && window.PinchZoom.default);
+        if (PZ) {
+            document.querySelectorAll('.zoom-container').forEach(el => {
+                new PZ(el, {
+                    draggableUnzoomed: false,
+                    onZoomStart: () => { this.isZooming = true; },
+                    onZoomEnd: (pz) => { 
+                        if (pz.zoomFactor <= 1.05) {
+                            this.isZooming = false;
+                            pz.setZoomFactor(1);
+                        }
+                    },
+                    onDragStart: () => { if (this.isZooming) return true; },
+                });
             });
-        });
-     }, 100)" @media-deleted.window="
+        }
+     }, 200)" @media-deleted.window="
         if (allMedia.length === 0) { window.location.href = '/'; return; }
         if (currentIndex >= allMedia.length) { currentIndex = Math.max(0, allMedia.length - 1); }
         $nextTick(() => { $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' }); scrollToThumb(currentIndex); });
      " @touchstart="handleTouchStart($event)" @touchend="handleTouchEnd($event)">
-
-    {{-- Pinch Zoom Script --}}
-    <script src="https://unpkg.com/pinch-zoom-js@2.3.5/dist/pinch-zoom.umd.js"></script>
 
     <nav class="p-4 md:p-6 flex items-center justify-between z-[400] transition-all duration-300"
          :class="isZooming ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'">
