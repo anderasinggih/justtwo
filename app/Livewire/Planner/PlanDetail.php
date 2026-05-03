@@ -25,7 +25,7 @@ class PlanDetail extends Component
 
     public function mount(Plan $plan)
     {
-        $this->plan = $plan->load(['expenses', 'itineraries']);
+        $this->plan = $plan->load(['expenses', 'itineraries', 'savingGoal']);
         $this->itineraryDate = $this->plan->target_date?->format('Y-m-d') ?? now()->format('Y-m-d');
     }
 

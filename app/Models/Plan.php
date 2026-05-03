@@ -19,9 +19,9 @@ class Plan extends Model
         'status',
     ];
 
-    public function saving(): BelongsTo
+    public function savingGoal(): BelongsTo
     {
-        return $this->belongsTo(Saving::class);
+        return $this->belongsTo(Saving::class, 'saving_id');
     }
 
     protected $casts = [

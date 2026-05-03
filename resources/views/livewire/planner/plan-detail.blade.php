@@ -25,7 +25,7 @@
 
     <div class="max-w-5xl mx-auto px-1.5 sm:px-4 mt-6 space-y-6">
         {{-- Linked Saving Goal (Magic Feature) --}}
-        @if($plan->saving)
+        @if($plan->savingGoal)
             <div class="theme-card border theme-border rounded-[1.5rem] p-5 shadow-sm relative overflow-hidden group">
                 <div class="absolute -right-8 -top-8 w-24 h-24 theme-accent-bg opacity-5 rounded-full blur-2xl group-hover:opacity-10 transition-opacity"></div>
                 <div class="flex justify-between items-center mb-3 relative z-10">
@@ -35,16 +35,16 @@
                         </div>
                         <div>
                             <p class="text-[9px] font-bold uppercase tracking-widest opacity-30 theme-text">linked saving goal</p>
-                            <h3 class="text-sm font-bold theme-text lowercase tracking-tight">{{ $plan->saving->title }}</h3>
+                            <h3 class="text-sm font-bold theme-text lowercase tracking-tight">{{ $plan->savingGoal->title }}</h3>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-[10px] font-bold theme-accent">Rp {{ number_format($plan->saving->current_amount, 0, ',', '.') }}</p>
-                        <p class="text-[8px] opacity-30 theme-text font-bold uppercase tracking-widest">{{ round($plan->saving->progress) }}% saved</p>
+                        <p class="text-[10px] font-bold theme-accent">Rp {{ number_format($plan->savingGoal->current_amount, 0, ',', '.') }}</p>
+                        <p class="text-[8px] opacity-30 theme-text font-bold uppercase tracking-widest">{{ round($plan->savingGoal->progress) }}% saved</p>
                     </div>
                 </div>
                 <div class="h-2 w-full bg-current/5 rounded-full overflow-hidden border theme-border relative z-10">
-                    <div class="h-full theme-accent-bg shadow-[0_0_10px_rgba(var(--accent-color),0.4)]" style="width: {{ $plan->saving->progress }}%"></div>
+                    <div class="h-full theme-accent-bg shadow-[0_0_10px_rgba(var(--accent-color),0.4)]" style="width: {{ $plan->savingGoal->progress }}%"></div>
                 </div>
             </div>
         @endif
