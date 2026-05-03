@@ -62,7 +62,7 @@
     </style>
     
     {{-- Header --}}
-    <header class="fixed top-0 inset-x-0 z-[60] py-5 px-4 transition-all duration-300 bg-black/80 backdrop-blur-2xl border-b border-white/10"
+    <header class="fixed top-0 inset-x-0 z-[100] py-5 px-4 transition-all duration-300 bg-transparent"
             x-show="cols !== 13"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 -translate-y-2"
