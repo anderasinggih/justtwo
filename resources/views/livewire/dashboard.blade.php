@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    {{-- Hero Section: Together Timer (Dynamic Alpine Counter) --}}
+    {{-- Hero Section: Together Timer --}}
     <div class="relative overflow-hidden theme-card border theme-border rounded-[2.5rem] p-7 shadow-sm text-center"
          x-data="{ 
             start: @js($togetherStats['timestamp']),
@@ -108,11 +108,11 @@
                 </div>
                 <div class="grid grid-cols-1 gap-2.5">
                     @forelse($savings as $saving)
-                        <div x-data="{ showAdd: false }" class="theme-card border theme-border rounded-[1.5rem] p-4 shadow-sm group hover:shadow-md transition-all">
-                            <div @click="showAdd = !showAdd" class="cursor-pointer">
-                                <div class="flex justify-between items-start mb-2.5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-full bg-brand-500/5 flex items-center justify-center theme-accent text-lg">
+                        <div x-data="{ showAdd: false }" class="theme-card border theme-border rounded-[1.5rem] p-5 shadow-sm group hover:shadow-md transition-all relative overflow-hidden">
+                            <div @click="showAdd = !showAdd" class="cursor-pointer relative z-10">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="flex items-center gap-3.5">
+                                        <div class="w-10 h-10 rounded-2xl bg-brand-500/5 flex items-center justify-center theme-accent text-xl shadow-inner">
                                             {!! $saving->icon ?: '💰' !!}
                                         </div>
                                         <div>
@@ -122,26 +122,43 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="text-sm font-bold theme-text tracking-tighter">Rp {{ number_format($saving->current_amount, 0, ',', '.') }}</p>
-                                        <p class="text-[9px] theme-accent font-bold uppercase tracking-widest">{{ round($saving->progress) }}% saved</p>
+                                        <div class="flex items-center justify-end gap-1">
+                                            <span class="w-1 h-1 rounded-full theme-accent-bg animate-pulse"></span>
+                                            <p class="text-[9px] theme-accent font-bold uppercase tracking-widest">{{ round($saving->progress) }}% saved</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="h-1.5 w-full bg-current/5 rounded-full overflow-hidden">
-                                    <div class="h-full theme-accent-bg transition-all duration-1000" style="width: {{ $saving->progress }}%"></div>
+                                
+                                {{-- Gamified Progress Bar --}}
+                                <div class="relative h-3 w-full bg-current/5 rounded-full p-0.5 overflow-hidden">
+                                    {{-- Moving Shimmer Effect --}}
+                                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_2s_infinite] pointer-events-none"></div>
+                                    
+                                    <div class="h-full rounded-full transition-all duration-1000 ease-out relative" 
+                                         style="width: {{ $saving->progress }}%; 
+                                                background: linear-gradient(90deg, var(--accent-color) 0%, #f43f5e 100%);
+                                                box-shadow: 0 0 15px rgba(244, 63, 94, 0.3);">
+                                        
+                                        {{-- Moving Mascot/Icon --}}
+                                        <div class="absolute -right-2 -top-1 w-5 h-5 flex items-center justify-center transform group-hover:scale-125 transition-transform">
+                                            <span class="text-[10px] filter drop-shadow-sm">✨</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             {{-- Expandable Add Amount Form --}}
-                            <div x-show="showAdd" x-collapse x-cloak class="mt-3.5 pt-3.5 border-t theme-border">
+                            <div x-show="showAdd" x-collapse x-cloak class="mt-4 pt-4 border-t theme-border relative z-10">
                                 <div class="flex gap-2">
                                     <div class="relative flex-1">
                                         <input type="number" 
                                                wire:model="savingAmounts.{{ $saving->id }}"
-                                               placeholder="amount..." 
+                                               placeholder="add to your dream..." 
                                                class="w-full bg-white/5 border theme-border rounded-xl px-4 py-2.5 text-xs theme-text focus:ring-brand-200">
-                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-bold opacity-20 uppercase">RB</span>
+                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-bold opacity-20 uppercase tracking-tighter">amount</span>
                                     </div>
                                     <button wire:click="addSaving({{ $saving->id }})" 
-                                            class="px-5 py-2.5 theme-accent-bg text-white rounded-xl text-[10px] font-bold shadow-lg shadow-brand-500/20 active:scale-95 transition-all">
+                                            class="px-6 py-2.5 theme-accent-bg text-white rounded-xl text-[10px] font-bold shadow-lg shadow-brand-500/20 active:scale-95 transition-all">
                                         save
                                     </button>
                                 </div>
@@ -186,19 +203,27 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-2.5">
                     @forelse($upcomingPlans as $plan)
                         <a href="{{ route('planner.detail', $plan->id) }}" wire:navigate 
-                           class="theme-card border theme-border rounded-[1.5rem] p-4 shadow-sm flex items-center gap-3.5 group hover:shadow-md transition-all">
-                            <div class="w-11 h-11 shrink-0 rounded-2xl bg-brand-500/5 flex items-center justify-center theme-accent text-lg group-hover:scale-110 transition-transform">
-                                {{ $plan->icon }}
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h4 class="text-sm font-bold theme-text lowercase tracking-tight truncate">{{ $plan->title }}</h4>
-                                <div class="flex items-center gap-2 mt-0.5">
-                                    <span class="text-[9px] opacity-30 theme-text lowercase">{{ $plan->target_date ? $plan->target_date->format('M d') : 'anytime' }}</span>
-                                    <span class="w-1 h-1 rounded-full bg-current opacity-10"></span>
-                                    <span class="text-[9px] theme-accent font-bold uppercase tracking-widest">{{ round($plan->budget_progress) }}% ready</span>
+                           class="theme-card border theme-border rounded-[1.5rem] p-4 shadow-sm group hover:shadow-md transition-all">
+                            <div class="flex items-center gap-3.5 mb-3">
+                                <div class="w-10 h-10 shrink-0 rounded-2xl bg-brand-500/5 flex items-center justify-center theme-accent text-lg group-hover:scale-110 transition-transform">
+                                    {{ $plan->icon }}
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-sm font-bold theme-text lowercase tracking-tight truncate">{{ $plan->title }}</h4>
+                                        <span class="text-[9px] theme-accent font-bold uppercase tracking-widest">{{ round($plan->budget_progress) }}%</span>
+                                    </div>
+                                    <p class="text-[9px] opacity-30 theme-text lowercase mt-0.5">{{ $plan->target_date ? $plan->target_date->format('M d, Y') : 'anytime' }}</p>
                                 </div>
                             </div>
-                            <svg class="w-4 h-4 opacity-10 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            
+                            {{-- Mini Gamified Bar for Plans --}}
+                            <div class="h-1.5 w-full bg-current/5 rounded-full overflow-hidden relative">
+                                <div class="h-full theme-accent-bg transition-all duration-1000 rounded-full" 
+                                     style="width: {{ $plan->budget_progress }}%; 
+                                            background: linear-gradient(90deg, var(--accent-color) 0%, #10b981 100%);">
+                                </div>
+                            </div>
                         </a>
                     @empty
                         <div class="py-12 text-center theme-card border border-dashed theme-border rounded-[1.5rem] opacity-20">
@@ -209,4 +234,11 @@
             </section>
         </div>
     </div>
+    
+    <style>
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
 </div>
