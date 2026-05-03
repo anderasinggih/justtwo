@@ -66,9 +66,9 @@
                             Restore
                         </button>
                         <button @click="$wire.deleteSelectedPermanently(selectedIds).then(() => {
-                                    selectedIds = [];
-                                    isSelecting = false;
-                                })" class="font-bold text-xs text-red-500">
+                                            selectedIds = [];
+                                            isSelecting = false;
+                                        })" class="font-bold text-xs text-red-500">
                             Delete Forever
                         </button>
                     </div>

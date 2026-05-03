@@ -9,10 +9,7 @@
     $overlayBg = in_array($theme, ['dark', 'midnight']) ? 'bg-white/10' : 'bg-black/5';
     $iconBg = in_array($theme, ['dark', 'midnight']) ? 'bg-white/10' : 'bg-black/10';
 @endphp
-    {{-- Pinch Zoom Script --}}
-    <script src="https://unpkg.com/pinch-zoom-js@2.3.5/dist/pinch-zoom.umd.js"></script>
-
- <div class="fixed inset-0 theme-bg theme-text z-[200] flex flex-col overflow-hidden select-none" x-data="{ 
+<div class="fixed inset-0 theme-bg theme-text z-[200] flex flex-col overflow-hidden select-none" x-data="{ 
         currentIndex: {{ $initialMediaIndex }},
         total: {{ count($allMedia) }},
         showHeart: false,
@@ -21,7 +18,6 @@
         isScrollingCarousel: false,
         isScrollingThumbs: false,
         allMedia: @js($allMedia),
-        isZooming: false,
         handleTouchStart(e) { this.touchStartY = e.touches[0].clientY; },
         handleTouchEnd(e) {
             const touchEndY = e.changedTouches[0].clientY;
@@ -105,82 +101,12 @@
      }" x-init="setTimeout(() => {
         scrollToThumb(currentIndex);
         $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' });
-        
-        // Safe Initialization of Pinch Zoom
-        setTimeout(() => {
-            let PZ = window.PinchZoom;
-            
-            // Try to find the constructor if it's nested
-            if (PZ && typeof PZ !== 'function') {
-                if (typeof PZ.default === 'function') PZ = PZ.default;
-                else if (typeof PZ.PinchZoom === 'function') PZ = PZ.PinchZoom;
-            }
-
-            if (typeof PZ === 'function') {
-                document.querySelectorAll('.zoom-container').forEach(el => {
-                    try {
-                        new PZ(el, {
-                            draggableUnzoomed: false,
-                            onZoomStart: () => { this.isZooming = true; },
-                            onZoomEnd: (pz) => { 
-                                if (pz.zoomFactor <= 1.05) {
-                                    this.isZooming = false;
-                                    pz.setZoomFactor(1);
-                                }
-                            },
-                            onDragStart: () => { if (this.isZooming) return true; },
-                        });
-                    } catch (e) {
-                        console.error('Failed to init PinchZoom on element:', el, e);
-                    }
-                });
-            } else {
-                console.error('PinchZoom constructor not found. window.PinchZoom is:', window.PinchZoom);
-            }
-        }, 300);
-     }, 300)" @media-deleted.window="
+     }, 100)" @media-deleted.window="
         if (allMedia.length === 0) { window.location.href = '/'; return; }
         if (currentIndex >= allMedia.length) { currentIndex = Math.max(0, allMedia.length - 1); }
         $nextTick(() => { $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' }); scrollToThumb(currentIndex); });
      " @touchstart="handleTouchStart($event)" @touchend="handleTouchEnd($event)">
-
-    {{-- Debug Overlay --}}
-    @if(isset($debugInfo) && (isset($debugInfo['error']) || count($allMedia) === 0))
-        <div class="fixed inset-0 bg-black/90 z-[999] flex flex-col items-center justify-center p-8 text-center">
-            <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mb-6">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-            </div>
-            <h2 class="text-xl font-bold text-white mb-2">Something went wrong</h2>
-            <p class="text-white/60 mb-8 max-w-xs">{{ $debugInfo['error'] ?? 'No media items found to display.' }}</p>
-            
-            <div class="w-full max-w-sm bg-white/5 rounded-2xl p-4 text-left font-mono text-[10px] space-y-2 border border-white/10">
-                <p class="text-white/40 uppercase tracking-widest text-[8px] mb-2">Diagnostic Data</p>
-                <div class="flex justify-between border-b border-white/5 pb-1">
-                    <span class="text-white/60">User ID</span>
-                    <span class="text-white">{{ $debugInfo['user_id'] ?? 'N/A' }}</span>
-                </div>
-                <div class="flex justify-between border-b border-white/5 pb-1">
-                    <span class="text-white/60">User Relationship ID</span>
-                    <span class="text-white">{{ $debugInfo['user_relationship_id'] ?? 'N/A' }}</span>
-                </div>
-                <div class="flex justify-between border-b border-white/5 pb-1">
-                    <span class="text-white/60">Post Relationship ID</span>
-                    <span class="text-white">{{ $debugInfo['post_relationship_id'] ?? 'N/A' }}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-white/60">Post Owner ID</span>
-                    <span class="text-white">{{ $debugInfo['post_owner_id'] ?? 'N/A' }}</span>
-                </div>
-            </div>
-            
-            <button onclick="window.location.href='/gallery'" class="mt-8 px-6 py-3 bg-white text-black rounded-full font-bold text-sm active:scale-95 transition-transform">
-                Back to Gallery
-            </button>
-        </div>
-    @endif
-
-    <nav class="p-4 md:p-6 flex items-center justify-between z-[400] transition-all duration-300"
-         :class="isZooming ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'">
+    <nav class="p-4 md:p-6 flex items-center justify-between z-30">
         <button onclick="history.back()" class="w-10 h-10 rounded-full {{ $iconBg }} backdrop-blur-xl border {{ $colors['border'] }} flex items-center justify-center transition-transform active:scale-90">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
@@ -192,48 +118,26 @@
                 </div>
             </template>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="relative w-10 h-10">
             @foreach($allMedia as $index => $m)
-                @if(Auth::check() && (isset($isInternal) || $m['user_id'] === Auth::id()))
-                    <div x-show="currentIndex === {{ $index }}" class="flex items-center gap-2 z-40">
-                        {{-- Save Button --}}
-                        <button @click="
-                                if (navigator.share) {
-                                    navigator.share({
-                                        title: 'Memory from JustTwo',
-                                        url: '{{ $m['file_path'] }}'
-                                    }).catch(console.error);
-                                } else {
-                                    const link = document.createElement('a');
-                                    link.href = '{{ $m['file_path'] }}';
-                                    link.download = 'memory.jpg';
-                                    link.click();
-                                }
-                            "
-                            class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white transition-transform active:scale-90">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        </button>
-
-                        {{-- Delete Button --}}
-                        <button @click="$wire.archiveMedia({{ $m['id'] }})" 
-                                class="w-10 h-10 rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/20 flex items-center justify-center text-red-500 transition-transform active:scale-90">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </div>
+                @if(Auth::check() && $m['user_id'] === Auth::id())
+                    <button x-show="currentIndex === {{ $index }}" 
+                            @click="$dispatch('confirm', { 
+                                title: 'Move to Trash', 
+                                message: 'Move this photo to trash? It will be automatically deleted in 30 days.', 
+                                onConfirm: () => { $wire.archiveMedia({{ $m['id'] }}) } 
+                            })" 
+                            class="absolute inset-0 rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/20 flex items-center justify-center text-red-500 transition-transform active:scale-90 z-40">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
                 @endif
             @endforeach
         </div>
     </nav>
-    <main class="flex-1 relative flex flex-col justify-start pt-4 md:pt-10 overflow-hidden"
-          :class="isZooming ? 'z-[500]' : 'z-20'">
-        <div class="relative w-full h-[65vh] md:h-[75vh] flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide" 
-             @scroll="onCarouselScroll($event)" 
-             x-ref="carousel"
-             :class="isZooming ? 'overflow-hidden pointer-events-none' : ''">
+    <main class="flex-1 relative flex flex-col justify-start pt-4 md:pt-10 overflow-hidden">
+        <div class="relative w-full h-[65vh] md:h-[75vh] flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide" @scroll="onCarouselScroll($event)" x-ref="carousel">
             @foreach($allMedia as $index => $m)
-                <div class="flex-none w-full h-full snap-center flex items-center justify-center relative zoom-container" 
-                     @dblclick="like({{ $m['post_id'] }})"
-                     :class="isZooming ? 'pointer-events-auto' : ''">
+                <div class="flex-none w-full h-full snap-center flex items-center justify-center relative" @dblclick="like({{ $m['post_id'] }})">
                     @if(str_contains($m['file_type'], 'video'))
                         <video src="{{ $m['file_path'] }}" class="w-full h-full object-contain" {{ $index === $initialMediaIndex ? 'autoplay' : '' }} loop muted playsinline></video>
                     @else
@@ -246,8 +150,7 @@
             @endforeach
         </div>
     </main>
-    <footer class="pb-16 pt-4 overflow-hidden relative transition-all duration-300 z-30"
-            :class="isZooming ? 'opacity-0 translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'">
+    <footer class="pb-16 pt-4 overflow-hidden relative">
         <div class="absolute left-1/2 top-4 bottom-16 w-[1px] bg-white/20 -translate-x-1/2 z-20 pointer-events-none"></div>
         <div class="flex items-center gap-0 overflow-x-auto scrollbar-hide px-4" @scroll="onThumbsScroll($event)" x-ref="filmstrip">
             <div class="flex-none w-[48vw]"></div>
