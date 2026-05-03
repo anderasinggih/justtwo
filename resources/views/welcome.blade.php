@@ -359,7 +359,7 @@
                 {{-- Watch Journey Button (Contrast Styled) --}}
                 @if($settings->youtube_url)
                     <div class="mt-6 md:mt-10 flex justify-center">
-                        <a href="{{ route('public.journey') }}" wire:navigate
+                        <a href="{{ route('public.journey') }}"
                             class="px-6 py-2.5 bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 text-sm font-semibold rounded-full transition-all duration-500 lowercase flex items-center gap-2">
                             watch all journey
                         </a>
