@@ -107,7 +107,8 @@
     }" 
     :data-theme="currentTheme"
     :class="currentTheme"
-    class="antialiased font-sans theme-text theme-bg transition-colors duration-1000 overflow-hidden">
+    data-theme="{{ $theme }}"
+    class="{{ $theme }} antialiased font-sans theme-text theme-bg transition-colors duration-1000 overflow-hidden">
 
     <div class="fixed inset-0 theme-bg theme-text z-[200] flex flex-col overflow-hidden select-none">
         <nav class="p-4 md:p-6 flex items-center justify-between z-30">

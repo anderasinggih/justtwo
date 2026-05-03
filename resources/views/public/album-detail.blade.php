@@ -34,7 +34,8 @@
     }" 
     :data-theme="currentTheme"
     :class="currentTheme"
-    class="antialiased font-sans theme-text theme-bg transition-colors duration-1000">
+    data-theme="{{ $theme }}"
+    class="{{ $theme }} antialiased font-sans theme-text theme-bg transition-colors duration-1000">
 
     <div class="relative min-h-screen">
         {{-- Hero Header --}}
