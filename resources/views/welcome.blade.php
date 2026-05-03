@@ -6,12 +6,12 @@
 
     <!-- PWA Meta Tags (Must be at the top) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GalleryTwo">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="theme-color" content="#000000">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="{{ asset('images/auth-bg.png') }}">
 
     <meta name="viewport"

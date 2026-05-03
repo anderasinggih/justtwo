@@ -7,6 +7,8 @@
   "theme_color": "#000000",
   "description": "Private gallery for couples",
   "orientation": "portrait",
+  "categories": ["education", "finance"],
+  "lang": "id",
   "scope": "/",
   "icons": [
     {
