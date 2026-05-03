@@ -35,7 +35,7 @@ class Gallery extends Component
         
         foreach ($mediaItems as $media) {
             $post = $media->post;
-            if ($post && $post->user_id === Auth::id()) {
+            if ($post && $post->relationship_id === Auth::user()->relationship_id) {
                 $post->update([
                     'is_archived' => true,
                     'archived_at' => now(),

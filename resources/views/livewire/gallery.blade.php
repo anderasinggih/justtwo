@@ -5,7 +5,7 @@
         currentLevel: window.innerWidth > 1024 ? 2 : (window.innerWidth > 768 ? 2 : 1), 
         
         isSelecting: @entangle('isSelecting'),
-        selectedIds: [],
+        selectedIds: @entangle('selectedMedia'),
         selectedUrls: [],
         isDragging: false,
         lastDraggedId: null,
@@ -71,10 +71,11 @@
 
         archive() {
             if (this.selectedIds.length === 0) return;
-            $wire.set('selectedMedia', this.selectedIds);
-            $wire.archiveSelected();
-            this.selectedIds = [];
-            this.selectedUrls = [];
+            $wire.archiveSelected().then(() => {
+                this.selectedIds = [];
+                this.selectedUrls = [];
+                this.isSelecting = false;
+            });
         }
      }"
      @mouseup.window="handleDragEnd()"
@@ -109,10 +110,15 @@
                         <button @click="$dispatch('confirm', { 
                                     title: 'Delete Items', 
                                     message: 'Move ' + selectedIds.length + ' items to trash? They will be deleted forever in 30 days.', 
-                                    onConfirm: () => archive() 
+                                    onConfirm: () => { 
+                                        $wire.archiveSelected().then(() => {
+                                            selectedIds = [];
+                                            isSelecting = false;
+                                        });
+                                    } 
                                 })" 
-                                class="font-bold text-xs text-red-500">
-                            Delete
+                                class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
+                            Delete (<span x-text="selectedIds.length"></span>)
                         </button>
                     </div>
                 </template>
