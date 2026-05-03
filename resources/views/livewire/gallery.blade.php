@@ -133,16 +133,10 @@
                     <span x-text="isDownloading ? 'Preparing...' : 'Save'"></span>
                 </button>
                 <button x-show="isSelecting && selectedIds.length > 0"
-                        @click="$store.confirm.open({ 
-                                    title: 'Delete Items', 
-                                    message: 'Move ' + selectedIds.length + ' items to trash? They will be deleted forever in 30 days.', 
-                                    onConfirm: () => { 
-                                        $wire.archiveSelected(selectedIds).then(() => {
-                                            selectedIds = [];
-                                            isSelecting = false;
-                                        });
-                                    } 
-                                })" 
+                        @click="$wire.archiveSelected(selectedIds).then(() => {
+                            selectedIds = [];
+                            isSelecting = false;
+                        })" 
                         class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
                     Delete (<span x-text="selectedIds.length"></span>)
                 </button>

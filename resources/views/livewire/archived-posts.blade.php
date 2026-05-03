@@ -65,15 +65,9 @@
                         <button @click="$wire.restoreSelected(selectedIds).then(() => { selectedIds = []; isSelecting = false; })" class="font-bold text-xs theme-accent">
                             Restore
                         </button>
-                        <button @click="$store.confirm.open({ 
-                                    title: 'Delete Forever', 
-                                    message: 'Are you sure you want to permanently delete these ' + selectedIds.length + ' items? This action cannot be undone.', 
-                                    onConfirm: () => { 
-                                        $wire.deleteSelectedPermanently(selectedIds).then(() => {
-                                            selectedIds = [];
-                                            isSelecting = false;
-                                        });
-                                    } 
+                        <button @click="$wire.deleteSelectedPermanently(selectedIds).then(() => {
+                                    selectedIds = [];
+                                    isSelecting = false;
                                 })" class="font-bold text-xs text-red-500">
                             Delete Forever
                         </button>
