@@ -93,7 +93,8 @@ Route::get('invite/{code}', \App\Livewire\InvitePartner::class)
     ->name('invite');
 
 
-Route::get('posts/{post}/preview', \App\Livewire\PublicPostPreview::class)->name('posts.preview');
+Route::get('posts/{post}/preview', [PublicAlbumController::class, 'preview'])->name('posts.preview');
+Route::post('posts/{post}/react', [PublicAlbumController::class, 'toggleReaction'])->name('posts.react');
 Route::get('/stories/{year}/{month}', [PublicAlbumController::class, 'show'])->name('public.album');
 Route::get('our-journey', \App\Livewire\PublicJourney::class)->name('public.journey');
 
