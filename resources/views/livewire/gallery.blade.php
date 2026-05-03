@@ -98,8 +98,7 @@
 
         archive() {
             if (this.selectedIds.length === 0) return;
-            $wire.set('selectedMedia', this.selectedIds);
-            $wire.archiveSelected();
+            $wire.archiveSelected(this.selectedIds);
             this.selectedIds = [];
             this.showConfirm = false;
         }

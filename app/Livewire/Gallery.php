@@ -27,11 +27,12 @@ class Gallery extends Component
         }
     }
 
-    public function archiveSelected()
+    public function archiveSelected($ids = null)
     {
-        if (empty($this->selectedMedia)) return;
+        $targetIds = $ids ?: $this->selectedMedia;
+        if (empty($targetIds)) return;
 
-        $mediaItems = PostMedia::whereIn('id', $this->selectedMedia)->get();
+        $mediaItems = PostMedia::whereIn('id', $targetIds)->get();
         
         $relationshipId = Auth::user()->relationship_id;
         
