@@ -6,13 +6,14 @@ use App\Models\Post;
 use App\Models\PublicSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class PublicAlbumController extends Controller
 {
     public function show($year, $month)
     {
-        // Convert month name to number
-        $monthNumber = date('m', strtotime($month));
+        // Convert month name to number robustly
+        $monthNumber = date('m', strtotime("1 $month $year"));
 
         $settings = PublicSetting::getSettings();
         $theme = $settings->theme ?? 'light';
