@@ -9,9 +9,9 @@
     $heroPost = $posts->first();
 @endphp
 
-<div class="min-h-screen theme-bg theme-text selection:bg-brand-500/20">
-    {{-- iOS Hero Header - TRUE FULLSCREEN (100dvh) --}}
-    <header class="relative w-full h-[100dvh] md:h-[65vh] lg:h-[85vh] overflow-hidden"
+<div class="min-h-screen theme-bg theme-text selection:bg-brand-500/20 pb-10">
+    {{-- iOS Hero Header --}}
+    <header class="relative w-full aspect-[4/5] md:aspect-[21/9] overflow-hidden"
             x-data="{ 
                 active: 0, 
                 images: {{ json_encode($allMediaPaths) }},
@@ -19,41 +19,37 @@
                     if (this.images.length > 1) {
                         setInterval(() => {
                             this.active = (this.active + 1) % this.images.length;
-                        }, 3500);
+                        }, 3000);
                     }
                 }
             }">
         @if(count($allMediaPaths) > 0)
             <template x-for="(img, index) in images" :key="index">
                 <div x-show="active === index" 
-                     x-transition:enter="transition opacity duration-1500 ease-in-out"
-                     x-transition:leave="transition opacity duration-1500 ease-in-out"
+                     x-transition:enter="transition opacity duration-1000 ease-in-out"
+                     x-transition:leave="transition opacity duration-1000 ease-in-out"
                      class="absolute inset-0 w-full h-full">
                     <img :src="img" class="w-full h-full object-cover">
                 </div>
             </template>
         @else
-            <div class="w-full h-full bg-current opacity-[0.03] flex items-center justify-center italic">no preview</div>
+            <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-300 flex items-center justify-center italic opacity-30">no preview</div>
         @endif
 
-        {{-- Top Navigation Bar (Welcome-style Mix-Blend) --}}
-        <nav class="absolute top-0 left-0 right-0 p-6 md:p-12 lg:p-24 flex items-center justify-between z-30 mix-blend-difference text-white">
-            <a href="{{ route('welcome') }}" wire:navigate class="flex items-center gap-2 group">
-                <div class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center transition-all group-hover:bg-white group-hover:text-black">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </div>
-                <span class="text-xs font-bold tracking-widest uppercase hidden md:inline">back</span>
+        {{-- Top Navigation Bar (Transparent to Blur) --}}
+        <div class="absolute top-0 left-0 right-0 p-4 md:p-8 flex items-center justify-between z-20">
+            <a href="{{ route('welcome') }}" wire:navigate class="w-10 h-10 rounded-full bg-black/20 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </a>
-            <div class="text-xl font-bold tracking-tighter lowercase">{{ $spaceName ?? 'justtwo' }}</div>
             <div class="w-10"></div>
-        </nav>
+        </div>
 
-        {{-- Hero Bottom Info (Editorial Style) --}}
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-8 md:p-16 lg:p-24 text-white pointer-events-none">
-            <h1 class="text-5xl md:text-8xl font-bold tracking-tighter lowercase mb-2">{{ $monthName }}</h1>
-            <div class="flex items-center gap-3 opacity-60">
-                <div class="h-[1px] w-12 bg-white"></div>
-                <span class="text-xs md:text-sm font-bold tracking-[0.2em] uppercase">{{ $posts->total() }} captured moments</span>
+        {{-- Hero Bottom Info --}}
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6 md:p-12 text-white pointer-events-none">
+            <h1 class="text-4xl md:text-6xl font-bold tracking-tight lowercase">{{ $monthName }}</h1>
+            <div class="flex items-center gap-2 opacity-80 mt-1">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <span class="text-sm md:text-base font-medium">{{ $posts->total() }} items</span>
             </div>
         </div>
     </header>

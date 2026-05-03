@@ -23,9 +23,25 @@
     <title>{{ $spaceName }} — {{ $settings->journey_title ?? 'Our Journey' }}</title>
     
     <style>
+        :root {
+            --app-height: 100%;
+        }
         html, body { 
             background-color: {{ $bgColor }} !important;
-            margin: 0; padding: 0; min-height: 100vh; width: 100%; overflow-x: hidden;
+            margin: 0; 
+            padding: 0; 
+            height: 100vh;
+            height: -webkit-fill-available;
+            width: 100%; 
+            overflow-x: hidden;
+            position: fixed; /* Lock body to prevent scroll-bounce white gaps */
+        }
+        #app-root {
+            height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
         }
     </style>
     
@@ -70,7 +86,7 @@
         <div class="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-brand-500/10 blur-[120px] rounded-full animate-float-reverse"></div>
     </div>
 
-    <div class="relative z-10 min-h-screen flex flex-col">
+    <div id="app-root" class="relative z-10">
         {{ $slot }}
     </div>
 
