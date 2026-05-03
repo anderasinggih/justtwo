@@ -1,4 +1,4 @@
-<div class="max-w-4xl mx-auto px-1.5 sm:px-4 pt-4 space-y-5 pb-32" wire:poll.30s.visible>
+<div class="max-w-5xl mx-auto px-1.5 sm:px-4 pt-4 space-y-5 pb-32" wire:poll.30s.visible>
     {{-- Minimalist Header --}}
     <div class="flex items-center justify-between mb-2 px-1">
         <div>
