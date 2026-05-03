@@ -87,6 +87,12 @@ class PlanDetail extends Component
         $this->plan->refresh();
     }
 
+    public function deletePlan()
+    {
+        $this->plan->delete();
+        return redirect()->route('planner');
+    }
+
     public function render()
     {
         return view('livewire.planner.plan-detail')->layout('layouts.app');
