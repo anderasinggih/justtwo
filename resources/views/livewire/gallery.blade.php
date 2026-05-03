@@ -137,7 +137,7 @@
                                     title: 'Delete Items', 
                                     message: 'Move ' + selectedIds.length + ' items to trash? They will be deleted forever in 30 days.', 
                                     onConfirm: () => { 
-                                        $wire.archiveSelected().then(() => {
+                                        $wire.archiveSelected(selectedIds).then(() => {
                                             selectedIds = [];
                                             isSelecting = false;
                                         });

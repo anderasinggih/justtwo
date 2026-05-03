@@ -62,13 +62,18 @@
             <div class="flex items-center gap-3">
                 <template x-if="isSelecting && selectedIds.length > 0">
                     <div class="flex items-center gap-3 animate-in fade-in slide-in-from-right-2 duration-200">
-                        <button wire:click="restoreSelected" class="font-bold text-xs theme-accent">
+                        <button @click="$wire.restoreSelected(selectedIds).then(() => { selectedIds = []; isSelecting = false; })" class="font-bold text-xs theme-accent">
                             Restore
                         </button>
                         <button @click="$dispatch('confirm', { 
                                     title: 'Delete Forever', 
                                     message: 'Are you sure you want to permanently delete these ' + selectedIds.length + ' items? This action cannot be undone.', 
-                                    onConfirm: () => { $wire.deleteSelectedPermanently() } 
+                                    onConfirm: () => { 
+                                        $wire.deleteSelectedPermanently(selectedIds).then(() => {
+                                            selectedIds = [];
+                                            isSelecting = false;
+                                        });
+                                    } 
                                 })" class="font-bold text-xs text-red-500">
                             Delete Forever
                         </button>

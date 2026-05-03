@@ -13,14 +13,15 @@ class ArchivedPosts extends Component
     public $isSelecting = false;
     public $selectedMedia = [];
 
-    public function restoreSelected()
+    public function restoreSelected($ids = null)
     {
-        if (empty($this->selectedMedia)) return;
+        $targetIds = $ids ?? $this->selectedMedia;
+        if (empty($targetIds)) return;
 
-        $mediaItems = PostMedia::whereIn('id', $this->selectedMedia)->get();
+        $mediaItems = PostMedia::whereIn('id', $targetIds)->get();
         foreach ($mediaItems as $media) {
             $post = $media->post;
-            if ($post && ($post->user_id === Auth::id() || $post->relationship_id === Auth::user()->relationship_id)) {
+            if ($post && ($post->relationship_id === Auth::user()->relationship_id)) {
                 $post->update(['is_archived' => false, 'archived_at' => null]);
             }
         }
@@ -30,11 +31,12 @@ class ArchivedPosts extends Component
         $this->dispatch('media-restored');
     }
 
-    public function deleteSelectedPermanently()
+    public function deleteSelectedPermanently($ids = null)
     {
-        if (empty($this->selectedMedia)) return;
+        $targetIds = $ids ?? $this->selectedMedia;
+        if (empty($targetIds)) return;
 
-        $mediaItems = PostMedia::whereIn('id', $this->selectedMedia)->get();
+        $mediaItems = PostMedia::whereIn('id', $targetIds)->get();
         foreach ($mediaItems as $media) {
             $post = $media->post;
             if ($post && $post->relationship_id === Auth::user()->relationship_id) {

@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\PostMedia;
-use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -12,26 +11,13 @@ class Gallery extends Component
     public $isSelecting = false;
     public $selectedMedia = [];
 
-    public function toggleSelection()
+    public function archiveSelected($ids = null)
     {
-        $this->isSelecting = !$this->isSelecting;
-        $this->selectedMedia = [];
-    }
+        $targetIds = $ids ?? $this->selectedMedia;
+        
+        if (empty($targetIds)) return;
 
-    public function selectMedia($id)
-    {
-        if (in_array($id, $this->selectedMedia)) {
-            $this->selectedMedia = array_diff($this->selectedMedia, [$id]);
-        } else {
-            $this->selectedMedia[] = $id;
-        }
-    }
-
-    public function archiveSelected()
-    {
-        if (empty($this->selectedMedia)) return;
-
-        $mediaItems = PostMedia::whereIn('id', $this->selectedMedia)->get();
+        $mediaItems = PostMedia::whereIn('id', $targetIds)->get();
         
         foreach ($mediaItems as $media) {
             $post = $media->post;
@@ -43,8 +29,9 @@ class Gallery extends Component
             }
         }
 
-        $this->isSelecting = false;
         $this->selectedMedia = [];
+        $this->isSelecting = false;
+        
         $this->dispatch('media-archived');
     }
 
@@ -57,12 +44,10 @@ class Gallery extends Component
               ->where('is_archived', false);
         })
         ->orderBy('captured_at', 'desc')
-        ->orderBy('created_at', 'desc')
         ->get();
 
         $groupedMedia = $media->groupBy(function($item) {
-            $date = $item->captured_at ?? $item->created_at;
-            return $date->format('Y-F');
+            return $item->captured_at ? $item->captured_at->format('Y-F') : $item->created_at->format('Y-F');
         });
 
         return view('livewire.gallery', [
