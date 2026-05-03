@@ -34,10 +34,6 @@ Route::group(['middleware' => ['auth', 'verified', 'relationship']], function ()
     Route::get('planner/{plan}', \App\Livewire\Planner\PlanDetail::class)->name('planner.detail');
 });
 
-Route::get('relationship/join', \App\Livewire\JoinRelationship::class)
-    ->middleware(['auth', 'verified', 'relationship'])
-    ->name('relationship.join');
-
 Route::get('journal', \App\Livewire\Journal::class)
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('journal');
