@@ -81,9 +81,9 @@
             @php
                 [$year, $month] = explode('-', $monthYear);
             @endphp
-            <section :class="cols === 13 ? 'mb-0' : 'mb-8'" class="transition-all duration-700">
+            <section :class="cols === 13 ? 'mb-0' : 'mb-2'" class="transition-all duration-700">
                 <div class="px-4 transition-all duration-700 overflow-hidden" 
-                     :class="cols === 13 ? 'opacity-0 h-0 py-0' : 'opacity-100 py-4'">
+                     :class="cols === 13 ? 'opacity-0 h-0 py-0' : 'opacity-100 py-2'">
                     <h2 class="text-lg font-bold lowercase tracking-tight">{{ $month }}</h2>
                     <p class="text-[9px] opacity-30 uppercase tracking-widest">{{ $year }}</p>
                 </div>
