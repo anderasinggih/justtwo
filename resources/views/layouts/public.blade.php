@@ -19,22 +19,14 @@
         $spaceName = $relationship?->name ?? 'justtwo';
     @endphp
 
-    <meta id="theme-color-meta" name="theme-color" content="{{ $bgColor }}">
+    <meta name="theme-color" content="{{ $bgColor }}">
     <title>{{ $spaceName }} — {{ $settings->journey_title ?? 'Our Journey' }}</title>
     
     <style>
         html, body { 
-            background-color: {{ $bgColor }} !important;
+            background-color: {{ $bgColor }};
             margin: 0; 
             padding: 0; 
-            min-height: 100%;
-            width: 100%; 
-            overflow-x: hidden;
-            overscroll-behavior-y: auto; /* Allow natural bounce on scrollable pages */
-        }
-        #app-root {
-            width: 100%;
-            min-height: 100vh;
         }
     </style>
     
@@ -51,16 +43,7 @@
 <body x-data="{
         currentTheme: '{{ $currentTheme }}',
         themes: ['light', 'dark', 'rose', 'midnight', 'sky', 'mint', 'lavender', 'pink'],
-        themeColors: @js($themeColors),
-        updateSystemUI() {
-            const color = this.themeColors[this.currentTheme] || '#ffffff';
-            document.getElementById('theme-color-meta').setAttribute('content', color);
-            document.documentElement.style.backgroundColor = color;
-            document.body.style.backgroundColor = color;
-        },
         init() {
-            this.updateSystemUI();
-            this.$watch('currentTheme', () => this.updateSystemUI());
             if (this.currentTheme === 'mix') {
                 this.currentTheme = this.themes[Math.floor(Math.random() * this.themes.length)];
                 setInterval(() => {
@@ -79,7 +62,7 @@
         <div class="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-brand-500/10 blur-[120px] rounded-full animate-float-reverse"></div>
     </div>
 
-    <div id="app-root" class="relative z-10">
+    <div class="relative z-10 min-h-screen">
         {{ $slot }}
     </div>
 
