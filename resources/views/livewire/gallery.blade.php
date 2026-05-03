@@ -1,10 +1,10 @@
 <div class="max-w-xl mx-auto pb-32 pt-4 px-4">
     {{-- Header --}}
-    <header class="py-8 px-4 border-b theme-border">
+    <header class="sticky top-0 z-10 py-6 px-4 bg-transparent">
         <div class="flex items-center justify-between">
-            <h1 class="text-4xl font-bold tracking-tight">Library</h1>
+            <h1 class="text-3xl font-bold tracking-tight">Library</h1>
             <div class="flex items-center gap-4">
-                <button class="text-brand-500 font-bold text-sm tracking-tight">Select</button>
+                <button class="font-bold text-sm tracking-tight theme-accent">Select</button>
             </div>
         </div>
     </header>
@@ -15,11 +15,11 @@
             @php
                 [$year, $month] = explode('-', $monthYear);
             @endphp
-            <section class="mb-8">
-                <div class="px-4 py-3 border-b theme-border flex items-center justify-between">
+            <section class="mb-10">
+                <div class="px-4 py-4 flex items-center justify-between">
                     <div>
-                        <h2 class="text-lg font-bold lowercase">{{ $month }}</h2>
-                        <p class="text-[10px] opacity-40 uppercase tracking-widest">{{ $year }}</p>
+                        <h2 class="text-xl font-bold lowercase tracking-tight">{{ $month }}</h2>
+                        <p class="text-[10px] opacity-30 uppercase tracking-widest">{{ $year }}</p>
                     </div>
                 </div>
 
