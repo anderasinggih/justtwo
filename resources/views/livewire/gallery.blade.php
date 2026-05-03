@@ -1,6 +1,6 @@
 <div class="w-full pb-32 min-h-screen bg-black overflow-x-hidden text-white" 
      x-data="{ 
-        cols: window.innerWidth > 1024 ? 5 : (window.innerWidth > 768 ? 4 : 3), 
+        cols: window.innerWidth > 1024 ? 8 : (window.innerWidth > 768 ? 4 : 3), 
         levels: [1, 3, 5, 13],
         currentLevel: window.innerWidth > 1024 ? 2 : (window.innerWidth > 768 ? 2 : 1), 
         
@@ -62,15 +62,14 @@
     </style>
     
     {{-- Header --}}
-    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-300"
+    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-300 bg-black/60 backdrop-blur-xl border-b border-white/5"
             x-show="cols !== 13"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 -translate-y-2"
             x-transition:enter-end="opacity-100 translate-y-0"
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 translate-y-0"
-            x-transition:leave-end="opacity-0 -translate-y-2"
-            class="bg-black/60 backdrop-blur-xl border-b border-white/5">
+            x-transition:leave-end="opacity-0 -translate-y-2">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
             <div class="flex items-center gap-3">
