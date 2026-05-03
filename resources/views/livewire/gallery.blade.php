@@ -1,4 +1,4 @@
-<div class="w-full pb-32 min-h-screen bg-black overflow-x-hidden text-white" 
+<div class="w-full pb-32 min-h-screen bg-black text-white" 
      x-data="{ 
         cols: window.innerWidth > 1024 ? 8 : (window.innerWidth > 768 ? 4 : 3), 
         levels: [1, 3, 5, 13],
@@ -62,7 +62,7 @@
     </style>
     
     {{-- Header --}}
-    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-300 bg-black/60 backdrop-blur-xl border-b border-white/5"
+    <header class="fixed top-0 inset-x-0 z-[60] py-5 px-4 transition-all duration-300 bg-black/80 backdrop-blur-2xl border-b border-white/10"
             x-show="cols !== 13"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 -translate-y-2"
@@ -107,7 +107,7 @@
     </header>
 
     {{-- Content Grid --}}
-    <main class="w-full">
+    <main class="w-full pt-[84px]">
         @forelse($groupedMedia as $monthYear => $mediaItems)
             @php
                 [$year, $month] = explode('-', $monthYear);
