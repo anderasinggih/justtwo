@@ -84,6 +84,13 @@
 
     @livewireScripts
     <script>
+        // Prevent Global Pinch-to-Zoom (Safari Fix)
+        document.addEventListener('touchmove', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
         // Service Worker Registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Error', err));
