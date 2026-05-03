@@ -1,18 +1,18 @@
-<div class="max-w-xl mx-auto px-4 pt-6 pb-24 space-y-6">
+<div class="max-w-6xl mx-auto px-4 pt-6 pb-32 space-y-8">
     {{-- Header --}}
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between px-2">
         <div>
             <h2 class="text-xs font-bold theme-text opacity-30 lowercase tracking-widest">our journey</h2>
-            <h1 class="text-2xl font-bold theme-text lowercase tracking-tighter">Planner</h1>
+            <h1 class="text-3xl font-bold theme-text lowercase tracking-tighter">Planner</h1>
         </div>
         <a href="{{ route('planner.create') }}" wire:navigate 
-           class="w-10 h-10 rounded-full theme-accent-bg text-white flex items-center justify-center shadow-lg shadow-brand-500/20 active:scale-90 transition-transform">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+           class="w-12 h-12 rounded-full theme-accent-bg text-white flex items-center justify-center shadow-xl shadow-brand-500/20 active:scale-90 transition-all hover:scale-110">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
         </a>
     </div>
 
     {{-- Plans Grid --}}
-    <div class="grid gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($plans as $plan)
             <a href="{{ route('planner.detail', $plan->id) }}" wire:navigate 
                class="theme-card border theme-border rounded-[2rem] overflow-hidden shadow-sm group active:scale-[0.98] transition-all">

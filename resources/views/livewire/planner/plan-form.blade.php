@@ -1,4 +1,4 @@
-<div class="max-w-xl mx-auto px-4 pt-6 pb-24">
+<div class="max-w-3xl mx-auto px-4 pt-6 pb-32">
     <div class="flex items-center gap-4 mb-8">
         <a href="{{ route('planner') }}" wire:navigate class="p-2 rounded-full hover:bg-current/5 transition-colors theme-text opacity-50">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>

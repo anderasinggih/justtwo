@@ -17,9 +17,9 @@ new class extends Component {
         <nav x-data="{ 
                 active: @js(
                     request()->routeIs('dashboard') ? 0 : 
-                    (request()->routeIs('timeline') ? 1 : 
+                    (request()->routeIs('planner*') ? 1 : 
                     (request()->routeIs('gallery') ? 3 : 
-                    (request()->routeIs('profile') || request()->routeIs('settings') || request()->routeIs('stats') ? 4 : 2)))
+                    (request()->routeIs('profile*') || request()->routeIs('settings') || request()->routeIs('stats') ? 4 : 2)))
                 ),
                 ready: false,
                 init() {
