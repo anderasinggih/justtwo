@@ -95,6 +95,6 @@ Route::get('invite/{code}', \App\Livewire\InvitePartner::class)
 
 Route::get('posts/{post}/preview', \App\Livewire\PublicPostPreview::class)->name('posts.preview');
 Route::get('/stories/{year}/{month}', [PublicAlbumController::class, 'show'])->name('public.album');
-Route::get('our-journey', \App\Livewire\PublicJourney::class)->name('public.journey');
+Route::get('our-journey', [PublicAlbumController::class, 'journey'])->name('public.journey');
 
 require __DIR__.'/auth.php';
