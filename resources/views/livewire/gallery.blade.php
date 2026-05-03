@@ -44,29 +44,39 @@
             if (this.selectedUrls.length === 0) return;
             this.isDownloading = true;
             
-            for (let item of this.selectedUrls) {
-                try {
+            try {
+                const files = [];
+                for (let item of this.selectedUrls) {
                     const response = await fetch(item.url);
                     const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'justtwo-' + item.id + '.jpg';
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                    // Small delay to prevent browser blocking multiple downloads
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                } catch (e) {
-                    console.error('Download failed', e);
+                    const file = new File([blob], 'justtwo-' + item.id + '.jpg', { type: blob.type });
+                    files.push(file);
                 }
+
+                if (navigator.canShare && navigator.canShare({ files: files })) {
+                    await navigator.share({
+                        files: files,
+                        title: 'JustTwo Memories',
+                    });
+                } else {
+                    // Fallback for desktop/unsupported browsers
+                    for (let file of files) {
+                        const url = window.URL.createObjectURL(file);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = file.name;
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    }
+                }
+            } catch (e) {
+                console.error('Sharing failed', e);
+            } finally {
+                this.isDownloading = false;
+                this.isSelecting = false;
+                this.selectedIds = [];
+                this.selectedUrls = [];
             }
-            
-            this.isDownloading = false;
-            this.isSelecting = false;
-            this.selectedIds = [];
-            this.selectedUrls = [];
         },
 
         archive() {
@@ -95,19 +105,27 @@
     </style>
     
     {{-- Header --}}
-    <header class="sticky top-0 z-50 py-5 px-4 bg-black/60 backdrop-blur-xl border-b border-white/5" x-show="cols !== 13" x-transition>
+    <header class="fixed top-0 left-0 right-0 z-50 py-5 px-4 bg-black/60 backdrop-blur-xl border-b border-white/5 transition-transform duration-300" 
+            x-show="cols !== 13" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 -translate-y-full"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-300"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-full">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
             <div class="flex items-center gap-3">
-                <template x-if="isSelecting && selectedIds.length > 0">
-                    <div class="flex items-center gap-3 animate-in fade-in slide-in-from-right-2 duration-200">
-                        <button @click="downloadSelected()" class="font-bold text-xs theme-accent flex items-center gap-1">
-                            <template x-if="!isDownloading">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            </template>
-                            <span x-text="isDownloading ? 'Saving...' : 'Save'"></span>
-                        </button>
-                        <button @click="$dispatch('confirm', { 
+                <button x-show="isSelecting && selectedIds.length > 0"
+                        @click="downloadSelected()"
+                        class="font-bold text-xs theme-accent flex items-center gap-1">
+                    <template x-if="!isDownloading">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    </template>
+                    <span x-text="isDownloading ? 'Preparing...' : 'Save'"></span>
+                </button>
+                <button x-show="isSelecting && selectedIds.length > 0"
+                        @click="$dispatch('confirm', { 
                                     title: 'Delete Items', 
                                     message: 'Move ' + selectedIds.length + ' items to trash? They will be deleted forever in 30 days.', 
                                     onConfirm: () => { 
@@ -117,11 +135,9 @@
                                         });
                                     } 
                                 })" 
-                                class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
-                            Delete (<span x-text="selectedIds.length"></span>)
-                        </button>
-                    </div>
-                </template>
+                        class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
+                    Delete (<span x-text="selectedIds.length"></span>)
+                </button>
                 <button @click="isSelecting = !isSelecting; selectedIds = []; selectedUrls = []" 
                         class="font-bold text-xs theme-text opacity-50" 
                         x-text="isSelecting ? 'Cancel' : 'Select'"></button>
@@ -130,7 +146,7 @@
     </header>
 
     {{-- Content Grid --}}
-    <main class="w-full">
+    <main class="w-full" :class="cols !== 13 ? 'pt-20' : 'pt-0'">
         @forelse($groupedMedia as $monthYear => $mediaItems)
             @php
                 [$year, $month] = explode('-', $monthYear);
