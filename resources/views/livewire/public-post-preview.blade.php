@@ -111,22 +111,22 @@
         if (currentIndex >= allMedia.length) { currentIndex = Math.max(0, allMedia.length - 1); }
         $nextTick(() => { $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' }); scrollToThumb(currentIndex); });
      " @touchstart="handleTouchStart($event)" @touchend="handleTouchEnd($event)">
-    <nav class="p-4 md:p-6 flex items-center justify-between z-30">
-        <button onclick="history.back()" class="w-10 h-10 rounded-full {{ $iconBg }} backdrop-blur-xl border {{ $colors['border'] }} flex items-center justify-center transition-transform active:scale-90">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+    <nav class="absolute top-0 left-0 right-0 p-6 md:p-12 flex items-center justify-between z-30 mix-blend-difference text-white">
+        <button onclick="history.back()" class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center transition-all hover:bg-white hover:text-black active:scale-90">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
-        <div class="flex flex-col items-center {{ $overlayBg }} backdrop-blur-md px-6 py-1.5 rounded-full min-w-[150px] cursor-pointer" @click="showInfo = true; $nextTick(() => initMap())">
+        <div class="flex flex-col items-center cursor-pointer" @click="showInfo = true; $nextTick(() => initMap())">
             <template x-for="(media, index) in allMedia">
                 <div x-show="currentIndex === index" class="flex flex-col items-center text-center">
-                    <span class="text-[10px] md:text-xs font-bold leading-tight truncate max-w-[160px] md:max-w-[250px]" x-text="media.location || 'Captured Moment'"></span>
-                    <span class="text-[9px] md:text-[10px] opacity-60 leading-tight" x-text="media.date + ' • ' + media.time"></span>
+                    <span class="text-[10px] md:text-xs font-bold tracking-widest uppercase opacity-80" x-text="media.location || 'Captured Moment'"></span>
+                    <span class="text-[9px] md:text-[10px] opacity-40 uppercase tracking-[0.2em]" x-text="media.date"></span>
                 </div>
             </template>
         </div>
         <div class="w-10"></div>
     </nav>
-    <main class="flex-1 relative flex flex-col justify-start pt-2 md:pt-6 overflow-hidden">
-        <div class="relative w-full h-[75vh] md:h-[85vh] flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide" 
+    <main class="w-full h-[100dvh] relative flex flex-col justify-center overflow-hidden">
+        <div class="relative w-full h-full flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide" 
              @scroll="onCarouselScroll($event)" 
              @click="showInfo = false"
              x-ref="carousel">
@@ -144,9 +144,9 @@
             @endforeach
         </div>
     </main>
-    <footer class="pb-16 pt-4 overflow-hidden relative">
+    <footer class="absolute bottom-0 left-0 right-0 pb-16 pt-4 overflow-hidden z-20 pointer-events-none">
         <div class="absolute left-1/2 top-4 bottom-16 w-[1px] bg-white/20 -translate-x-1/2 z-20 pointer-events-none"></div>
-        <div class="flex items-center gap-0 overflow-x-auto scrollbar-hide px-4" @scroll="onThumbsScroll($event)" x-ref="filmstrip">
+        <div class="flex items-center gap-0 overflow-x-auto scrollbar-hide px-4 pointer-events-auto" @scroll="onThumbsScroll($event)" x-ref="filmstrip">
             <div class="flex-none w-[48vw]"></div>
             @foreach($allMedia as $index => $m)
                 <button @click="currentIndex = {{ $index }}; $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * {{ $index }}, behavior: 'smooth' }); scrollToThumb({{ $index }})" id="thumb-{{ $index }}" class="thumb-item flex-none w-10 h-14 md:w-12 md:h-16 rounded-none overflow-hidden transition-all duration-300" :class="currentIndex === {{ $index }} ? 'scale-125 z-10 opacity-100' : 'opacity-30 scale-90'">
