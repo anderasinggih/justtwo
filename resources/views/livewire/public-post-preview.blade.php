@@ -156,30 +156,28 @@
             <div class="flex-none w-[48vw]"></div>
         </div>
     </footer>
-    <div x-show="showInfo" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full" class="absolute inset-x-0 bottom-0 h-[45vh] theme-card backdrop-blur-3xl rounded-t-[2rem] z-[300] p-6 flex flex-col space-y-4 overflow-hidden">
-        <div class="w-12 h-1 bg-white/10 rounded-full mx-auto mb-2" @click="showInfo = false"></div>
+    <div x-show="showInfo" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full" class="absolute inset-x-0 bottom-0 h-[42vh] theme-bg backdrop-blur-3xl rounded-t-[2.5rem] z-[300] p-6 flex flex-col space-y-4 overflow-hidden border-t theme-border shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+        <div class="w-12 h-1.5 bg-current opacity-20 rounded-full mx-auto mb-1" @click="showInfo = false"></div>
         <div class="flex-1 overflow-y-auto scrollbar-hide">
             <template x-for="(media, index) in allMedia">
-                <div x-show="currentIndex === index" class="flex flex-col space-y-6 pb-10">
+                <div x-show="currentIndex === index" class="flex flex-col space-y-5 pb-10">
                     <div class="flex items-center justify-between px-2">
-                        <p class="text-sm font-medium opacity-80 tracking-tight" x-text="media.date + ' • ' + media.time"></p>
+                        <p class="text-[11px] font-bold opacity-40 uppercase tracking-widest" x-text="media.date + ' • ' + media.time"></p>
                     </div>
                     <div x-show="media.lat && media.lon" class="space-y-4">
-                        <div :id="'map-' + index" class="w-full h-44 rounded-[2rem] overflow-hidden border theme-border shadow-lg"></div>
+                        <div :id="'map-' + index" class="w-full h-40 rounded-[2rem] overflow-hidden border theme-border shadow-lg"></div>
                         <div class="flex items-center justify-between px-2">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 rounded-full bg-current opacity-10 flex items-center justify-center">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                </div>
-                                <p class="text-sm font-bold leading-tight truncate max-w-[200px]" x-text="media.location"></p>
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <p class="text-xs font-bold leading-tight" x-text="media.location"></p>
                             </div>
                         </div>
                     </div>
-                    <div x-show="!media.lat || !media.lon" class="py-12 flex flex-col items-center justify-center text-center space-y-4 bg-current/5 rounded-[2rem]">
-                        <svg class="w-10 h-10 opacity-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <div x-show="!media.lat || !media.lon" class="py-10 flex flex-col items-center justify-center text-center space-y-3 bg-current/[0.03] rounded-[2rem] border theme-border border-dashed">
+                        <svg class="w-8 h-8 opacity-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         <div>
-                            <p class="text-sm font-bold opacity-80" x-text="media.location || 'Moment captured'"></p>
-                            <p class="text-[10px] opacity-40 uppercase tracking-widest mt-1">no GPS metadata found in photo</p>
+                            <p class="text-xs font-bold opacity-60" x-text="media.location || 'Moment captured'"></p>
+                            <p class="text-[9px] opacity-30 uppercase tracking-[0.2em] mt-1">no GPS metadata found</p>
                         </div>
                     </div>
                 </div>
