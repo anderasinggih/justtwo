@@ -9,9 +9,9 @@
     $heroPost = $posts->first();
 @endphp
 
-<div class="min-h-screen theme-bg theme-text selection:bg-brand-500/20 pb-20">
-    {{-- iOS Hero Header --}}
-    <header class="relative w-full aspect-[4/5] md:aspect-[21/9] overflow-hidden"
+<div class="min-h-screen theme-bg theme-text selection:bg-brand-500/20">
+    {{-- iOS Hero Header - FULLSCREEN --}}
+    <header class="relative w-full h-[92vh] md:h-[60vh] lg:h-[80vh] overflow-hidden"
             x-data="{ 
                 active: 0, 
                 images: {{ json_encode($allMediaPaths) }},
