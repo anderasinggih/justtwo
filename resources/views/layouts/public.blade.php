@@ -27,18 +27,14 @@
             background-color: {{ $bgColor }} !important;
             margin: 0; 
             padding: 0; 
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
+            min-height: 100%;
             width: 100%; 
             overflow-x: hidden;
-            overscroll-behavior-y: none; /* Prevent vertical bounce/pull-to-refresh */
+            overscroll-behavior-y: auto; /* Allow natural bounce on scrollable pages */
         }
         #app-root {
             width: 100%;
             min-height: 100vh;
-            min-height: -webkit-fill-available;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
         }
     </style>
     

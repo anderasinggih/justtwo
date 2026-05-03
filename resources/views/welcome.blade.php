@@ -52,6 +52,16 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600&display=swap"
         rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        html, body {
+            overflow-x: hidden;
+            overflow-y: auto !important; /* Force scrollable */
+            height: auto !important;
+            min-height: 100%;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: auto !important;
+        }
+    </style>
     @livewireStyles
 </head>
 
