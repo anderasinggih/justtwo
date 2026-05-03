@@ -45,8 +45,15 @@
     </style>
     
     {{-- Header --}}
-    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-700"
-            :class="cols === 13 ? 'opacity-0 pointer-events-none' : 'bg-black/60 backdrop-blur-xl border-b border-white/5'">
+    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-500 origin-top"
+            x-show="cols !== 13"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 -translate-y-full"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-300"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-full"
+            class="bg-black/60 backdrop-blur-xl border-b border-white/5">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
             <div class="flex items-center gap-4">
