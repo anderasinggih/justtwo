@@ -4,15 +4,17 @@
         startDist: 0,
         levels: [1, 3, 5, 13],
         currentLevel: 1,
-        zoom(delta) {
-            if (delta > 0 && this.currentLevel < this.levels.length - 1) {
-                // Spreading: Try incrementing level (if user thinks spreading is zoom out)
-                this.currentLevel++;
-            } else if (delta < 0 && this.currentLevel > 0) {
-                // Pinching: Try decrementing level
+        zoomIn() {
+            if (this.currentLevel > 0) {
                 this.currentLevel--;
+                this.cols = this.levels[this.currentLevel];
             }
-            this.cols = this.levels[this.currentLevel];
+        },
+        zoomOut() {
+            if (this.currentLevel < this.levels.length - 1) {
+                this.currentLevel++;
+                this.cols = this.levels[this.currentLevel];
+            }
         },
         handleTouchStart(e) {
             if (e.touches.length === 2) {
@@ -29,8 +31,12 @@
                     e.touches[0].pageY - e.touches[1].pageY
                 );
                 let diff = currentDist - this.startDist;
-                if (Math.abs(diff) > 40) {
-                    this.zoom(diff);
+                
+                if (diff > 60) { // Fingers spreading: Zoom IN
+                    this.zoomIn();
+                    this.startDist = currentDist;
+                } else if (diff < -60) { // Fingers pinching: Zoom OUT
+                    this.zoomOut();
                     this.startDist = currentDist;
                 }
             }
@@ -61,7 +67,7 @@
                     <p class="text-[9px] opacity-30 uppercase tracking-widest">{{ $year }}</p>
                 </div>
 
-                <div class="grid gap-[1px] transition-all duration-300"
+                <div class="grid gap-[1px] transition-all duration-200"
                      :class="{
                         'grid-cols-1': cols === 1,
                         'grid-cols-3': cols === 3,
