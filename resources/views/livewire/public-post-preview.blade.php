@@ -118,8 +118,8 @@
         {{-- Center: Location --}}
         <div class="flex justify-center pointer-events-auto">
             <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-full px-5 py-2 text-center max-w-[180px]">
-                <h2 class="text-[10px] font-bold text-white lowercase tracking-tight truncate">{{ $location ?? 'captured moment' }}</h2>
-                <p class="text-[8px] text-white/50 lowercase leading-none mt-0.5">{{ $date }}</p>
+                <h2 class="text-[10px] font-bold text-white lowercase tracking-tight truncate" x-text="allMedia[currentIndex]?.location || 'captured moment'"></h2>
+                <p class="text-[8px] text-white/50 lowercase leading-none mt-0.5" x-text="allMedia[currentIndex]?.date"></p>
             </div>
         </div>
 
