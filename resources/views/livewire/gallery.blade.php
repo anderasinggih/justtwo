@@ -1,19 +1,24 @@
-<div class="w-full pb-32 min-h-screen bg-black" 
+<div class="w-full pb-32 min-h-screen bg-black overflow-x-hidden" 
      x-data="{ 
         cols: 3, 
         startDist: 0,
         levels: [1, 3, 5, 13],
         currentLevel: 1,
+        isZooming: false,
         zoomIn() {
             if (this.currentLevel > 0) {
+                this.isZooming = true;
                 this.currentLevel--;
                 this.cols = this.levels[this.currentLevel];
+                setTimeout(() => { this.isZooming = false }, 600);
             }
         },
         zoomOut() {
             if (this.currentLevel < this.levels.length - 1) {
+                this.isZooming = true;
                 this.currentLevel++;
                 this.cols = this.levels[this.currentLevel];
+                setTimeout(() => { this.isZooming = false }, 600);
             }
         },
         handleTouchStart(e) {
@@ -32,10 +37,10 @@
                 );
                 let scale = currentDist / this.startDist;
                 
-                if (scale > 1.3) { // Spread: Zoom IN
+                if (scale > 1.4) {
                     this.zoomIn();
                     this.startDist = currentDist;
-                } else if (scale < 0.7) { // Pinch: Zoom OUT
+                } else if (scale < 0.6) {
                     this.zoomOut();
                     this.startDist = currentDist;
                 }
@@ -44,6 +49,19 @@
      }"
      @touchstart="handleTouchStart($event)"
      @touchmove.prevent="handleTouchMove($event)">
+
+    <style>
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(var(--grid-cols), 1fr);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: grid-template-columns, gap;
+        }
+        .gallery-item {
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+        }
+    </style>
     
     {{-- Header --}}
     <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-500"
@@ -57,32 +75,26 @@
     </header>
 
     {{-- Content Grid --}}
-    <main class="w-full transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
-          style="will-change: transform, opacity;">
+    <main class="w-full">
         @forelse($groupedMedia as $monthYear => $mediaItems)
             @php
                 [$year, $month] = explode('-', $monthYear);
             @endphp
-            <section :class="cols === 13 ? 'mb-0' : 'mb-8'">
+            <section :class="cols === 13 ? 'mb-0' : 'mb-8'" class="transition-all duration-500">
                 <div class="px-4 py-4 transition-all duration-500" 
-                     x-show="cols < 13"
-                     x-transition:enter="transition ease-out duration-300"
-                     x-transition:enter-start="opacity-0 transform -translate-y-2"
-                     x-transition:enter-end="opacity-100 transform translate-y-0"
-                     x-transition:leave="transition ease-in duration-200"
-                     x-transition:leave-start="opacity-100"
-                     x-transition:leave-end="opacity-0">
+                     :class="cols === 13 ? 'opacity-0 h-0 overflow-hidden py-0' : 'opacity-100'">
                     <h2 class="text-lg font-bold lowercase tracking-tight">{{ $month }}</h2>
                     <p class="text-[9px] opacity-30 uppercase tracking-widest">{{ $year }}</p>
                 </div>
 
-                <div class="grid gap-[1px] transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                     :style="'grid-template-columns: repeat(' + cols + ', minmax(0, 1fr))'">
+                <div class="gallery-grid gap-[1px]"
+                     :style="'--grid-cols: ' + cols">
                     @foreach($mediaItems as $media)
                         <a href="{{ route('gallery.preview', $media->id) }}" wire:navigate 
-                           class="relative aspect-square overflow-hidden bg-white/5 transition-all duration-500">
+                           class="gallery-item relative aspect-square overflow-hidden bg-white/5"
+                           :class="isZooming ? 'scale-[0.98]' : 'scale-100'">
                             <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
-                                 class="w-full h-full object-cover transition-all duration-500"
+                                 class="w-full h-full object-cover"
                                  loading="lazy">
                             
                             @if(str_contains($media->file_type, 'video'))
@@ -108,6 +120,7 @@
         </div>
     </main>
 </div>
+
 
 
 
