@@ -1,129 +1,46 @@
 <?php
-
+ 
 namespace App\Livewire;
-
+ 
 use App\Models\Post;
 use App\Models\PostMedia;
-use App\Models\WishlistItem;
+use App\Models\Saving;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-
+ 
 class Dashboard extends Component
 {
-    public $newWishlistTitle = '';
+    public $savingAmounts = []; // To store inputs for each saving goal
     
-    // Savings Properties
-    public $newSavingTitle = '';
-    public $newSavingTarget = '';
-    public $addAmount = '';
-    public $showAddSavingModal = false;
-
-    public function addSaving()
+    public function addSaving($savingId)
     {
-        $this->validate([
-            'newSavingTitle' => 'required|string|max:255',
-            'newSavingTarget' => 'required|numeric|min:1',
-        ]);
+        $amount = $this->savingAmounts[$savingId] ?? 0;
 
-        Auth::user()->relationship->savings()->create([
-            'title' => $this->newSavingTitle,
-            'target_amount' => $this->newSavingTarget,
-            'current_amount' => 0,
-        ]);
-
-        $this->newSavingTitle = '';
-        $this->newSavingTarget = '';
-        $this->showAddSavingModal = false;
-    }
-
-    public function deposit($savingId)
-    {
-        $this->validate([
-            'addAmount' => 'required|numeric|min:1',
-        ]);
+        if ($amount <= 0) return;
 
         $saving = Auth::user()->relationship->savings()->findOrFail($savingId);
         
-        $saving->increment('current_amount', $this->addAmount);
+        $saving->increment('current_amount', $amount);
         
         $saving->logs()->create([
             'user_id' => Auth::id(),
-            'amount' => $this->addAmount,
+            'amount' => $amount,
         ]);
 
-        $this->addAmount = '';
+        $this->savingAmounts[$savingId] = '';
+        $this->dispatch('savingUpdated');
     }
-
-    public function addToWishlist()
-    {
-        $this->validate([
-            'newWishlistTitle' => 'required|string|max:255',
-        ]);
-
-        Auth::user()->relationship->wishlistItems()->create([
-            'user_id' => Auth::id(),
-            'title' => $this->newWishlistTitle,
-        ]);
-
-        $this->newWishlistTitle = '';
-        $this->dispatch('wishlistUpdated');
-    }
-
-    public function toggleWishlist($id)
-    {
-        $item = Auth::user()->relationship->wishlistItems()->find($id);
-        if ($item) {
-            $item->update([
-                'is_completed' => !$item->is_completed,
-                'completed_at' => !$item->is_completed ? now() : null,
-            ]);
-        }
-    }
-
-    public function deleteWishlist($id)
-    {
-        $item = Auth::user()->relationship->wishlistItems()->find($id);
-        if ($item) {
-            $item->delete();
-        }
-    }
-
+ 
     public function render()
     {
         $relationship = Auth::user()->relationship;
-        $partner = $relationship->users()->where('users.id', '!=', Auth::id())->first();
+        $partners = $relationship->users()->get();
         
-        $anniversaryDate = $relationship->anniversary_date ?? now();
-        $diff = now()->diff($anniversaryDate);
-        
-        $togetherStats = [
-            'total_days' => (int) abs(now()->diffInDays($anniversaryDate)),
-            'timestamp' => $anniversaryDate->timestamp * 1000, // milliseconds for JS
-            'anniversary_formatted' => $anniversaryDate->format('d F Y'),
-        ];
-
-        // Next Milestone Progress
-        $nextMilestone = $relationship->milestones()
-            ->where('event_date', '>', now())
+        $upcomingEvents = $relationship->milestones()
+            ->where('event_date', '>=', now())
             ->orderBy('event_date')
-            ->first();
-
-        $milestoneProgress = 0;
-        $daysRemainingFormatted = '';
-        
-        if ($nextMilestone) {
-            $startDate = $relationship->anniversary_date ?? $nextMilestone->created_at;
-            $totalDays = (int) abs($startDate->diffInDays($nextMilestone->event_date));
-            $daysPassed = (int) abs($startDate->diffInDays(now()));
-            $milestoneProgress = $totalDays > 0 ? min(100, max(0, ($daysPassed / $totalDays) * 100)) : 100;
-            
-            $daysRemainingFormatted = (int) abs(now()->diffInDays($nextMilestone->event_date)) . ' days again';
-        }
-
-        $wishlistItems = $relationship->wishlistItems()
-            ->orderBy('is_completed')
-            ->latest()
+            ->take(3)
             ->get();
 
         $savings = $relationship->savings()
@@ -131,21 +48,18 @@ class Dashboard extends Component
             ->latest()
             ->get();
 
-        $latestPlan = $relationship->plans()
+        $upcomingPlans = $relationship->plans()
             ->where('status', 'planning')
             ->latest()
-            ->first();
-
+            ->take(3)
+            ->get();
+ 
         return view('livewire.dashboard', [
             'relationship' => $relationship,
-            'partner' => $partner,
-            'togetherStats' => $togetherStats,
-            'nextMilestone' => $nextMilestone,
-            'milestoneProgress' => $milestoneProgress,
-            'daysRemainingFormatted' => $daysRemainingFormatted,
-            'wishlistItems' => $wishlistItems,
+            'partners' => $partners,
+            'upcomingEvents' => $upcomingEvents,
             'savings' => $savings,
-            'latestPlan' => $latestPlan,
+            'upcomingPlans' => $upcomingPlans,
             'stats' => [
                 'total_memories' => $relationship->posts()->count(),
                 'total_photos' => PostMedia::whereHas('post', function($q) use ($relationship) {
