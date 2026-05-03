@@ -49,15 +49,15 @@
             @foreach($allMedia as $index => $m)
                 <template x-if="currentIndex === {{ $index }}">
                     <div class="w-full h-full flex items-center justify-center animate-in fade-in zoom-in-95 duration-500">
-                        @if(str_contains($m->file_type, 'video'))
-                            <video src="{{ Storage::disk('public')->url($m->file_path_original) }}" 
+                        @if(str_contains($m['file_type'], 'video'))
+                            <video src="{{ $m['file_path'] }}" 
                                    class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
                                    controls 
                                    autoplay 
                                    loop
                                    playsinline></video>
                         @else
-                            <img src="{{ Storage::disk('public')->url($m->file_path_original) }}" 
+                            <img src="{{ $m['file_path'] }}" 
                                  class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl">
                         @endif
                     </div>
@@ -73,11 +73,11 @@
             @foreach($allMedia as $index => $m)
                 <template x-if="currentIndex === {{ $index }}">
                     <div class="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                        @if($m->location_name)
-                            <p class="text-sm font-bold text-white lowercase tracking-tight">{{ $m->location_name }}</p>
+                        @if($m['location'])
+                            <p class="text-sm font-bold text-white lowercase tracking-tight">{{ $m['location'] }}</p>
                         @endif
                         <p class="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                            {{ \Carbon\Carbon::parse($m->captured_at ?? $m->created_at)->format('M d, Y') }}
+                            {{ $m['date'] }}
                         </p>
                     </div>
                 </template>
@@ -87,7 +87,7 @@
         {{-- Delete Button --}}
         <div class="relative w-10 h-10">
             @foreach($allMedia as $index => $m)
-                @if(Auth::check() && $m->user_id === Auth::id())
+                @if(Auth::check() && $m['user_id'] === Auth::id())
                     <button x-show="currentIndex === {{ $index }}" @click="showConfirm = true" class="absolute inset-0 rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/20 flex items-center justify-center text-red-500 transition-transform active:scale-90 z-40">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
