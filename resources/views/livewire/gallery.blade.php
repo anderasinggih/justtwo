@@ -3,7 +3,7 @@
      x-data="{ 
         cols: window.innerWidth > 1024 ? 8 : (window.innerWidth > 768 ? 4 : 3), 
         levels: [1, 3, 5, 13],
-        currentLevel: window.innerWidth > 1024 ? 1 : 1, // 0:1col, 1:3col, 2:5col, 3:13col
+        currentLevel: window.innerWidth > 1024 ? 1 : 1, 
         
         isSelecting: @entangle('isSelecting'),
         selectedIds: [],
@@ -24,7 +24,7 @@
         },
 
         handleTouchStart(e) {
-            if (e.touches.length === 2) {
+            if (e.touches.length === 2 && !this.isSelecting) {
                 this.initialDist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
                     e.touches[0].pageY - e.touches[1].pageY
@@ -33,9 +33,10 @@
         },
 
         handleTouchMove(e) {
+            // Pinch handler
             if (e.touches.length === 2 && !this.isSelecting) {
                 let now = Date.now();
-                if (now - this.lastPinchTime < 250) return; // Throttling
+                if (now - this.lastPinchTime < 250) return;
 
                 let currentDist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
@@ -44,17 +45,32 @@
                 
                 let diff = currentDist - this.initialDist;
 
-                if (Math.abs(diff) > 50) { // Threshold
+                if (Math.abs(diff) > 50) {
                     if (diff > 0 && this.currentLevel > 0) {
-                        this.currentLevel--; // Zoom In (Larger items)
+                        this.currentLevel--;
                         this.lastPinchTime = now;
                         this.initialDist = currentDist;
                     } else if (diff < 0 && this.currentLevel < this.levels.length - 1) {
-                        this.currentLevel++; // Zoom Out (Smaller items)
+                        this.currentLevel++;
                         this.lastPinchTime = now;
                         this.initialDist = currentDist;
                     }
                     this.updateCols();
+                }
+                return;
+            }
+
+            // Drag select handler
+            if (this.isSelecting && this.isDragging && e.touches.length === 1) {
+                let touch = e.touches[0];
+                let el = document.elementFromPoint(touch.clientX, touch.clientY);
+                let item = el?.closest('.gallery-item');
+                if (item) {
+                    let id = parseInt(item.getAttribute('data-id'));
+                    if (id && this.lastDraggedId !== id) {
+                        this.toggleSelect(id);
+                        this.lastDraggedId = id;
+                    }
                 }
             }
         },
@@ -71,12 +87,6 @@
         handleDragStart(id) {
             if (!this.isSelecting) return;
             this.isDragging = true;
-            this.toggleSelect(id);
-            this.lastDraggedId = id;
-        },
-
-        handleDragOver(id) {
-            if (!this.isDragging || !this.isSelecting || this.lastDraggedId === id) return;
             this.toggleSelect(id);
             this.lastDraggedId = id;
         },
@@ -172,17 +182,10 @@
                     @foreach($mediaItems as $media)
                         <div class="gallery-item relative aspect-square overflow-hidden bg-white/5 group"
                              :class="{ 'selecting': isSelecting }"
-                            @mousedown="handleDragStart({{ $media->id }})" @mouseenter="handleDragOver({{ $media->id }})"
-                            @touchstart.passive="handleDragStart({{ $media->id }})"
-                            @touchmove.passive="
-                                let touch = $event.touches[0];
-                                let el = document.elementFromPoint(touch.clientX, touch.clientY);
-                                let item = el?.closest('.gallery-item');
-                                if (item) {
-                                    let id = parseInt(item.getAttribute('data-id'));
-                                    if (id) handleDragOver(id);
-                                }
-                             " data-id="{{ $media->id }}">
+                             data-id="{{ $media->id }}"
+                             @mousedown="handleDragStart({{ $media->id }})" 
+                             @mouseenter="handleDragOver({{ $media->id }})"
+                             @touchstart="handleDragStart({{ $media->id }})">
                             
                             {{-- Selection Overlay --}}
                             <template x-if="isSelecting">
@@ -190,7 +193,7 @@
                                     class="absolute inset-0 z-30 transition-colors duration-150"
                                     :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500/20' : 'bg-transparent'">
                                     
-                                    <div class="absolute bottom-1.5 left-1.5 w-5 h-5 rounded-full border-2 transition-all duration-150 flex items-center justify-center"
+                                    <div class="absolute bottom-1.5 left-1.5 w-5 h-5 rounded-full border-2 transition-all duration-150 flex items-center justify-center pointer-events-none"
                                         :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500 border-brand-500 text-white' : 'border-white/30 bg-black/20'">
                                         <template x-if="selectedIds.includes({{ $media->id }})">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
