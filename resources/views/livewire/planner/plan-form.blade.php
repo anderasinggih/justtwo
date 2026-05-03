@@ -75,8 +75,18 @@
             <div class="grid grid-cols-2 gap-3">
                 <div class="space-y-1">
                     <label class="text-[9px] font-bold opacity-30 uppercase tracking-widest pl-1">category</label>
-                    <input wire:model="category" placeholder="e.g. travel, life"
-                           class="w-full bg-white/5 border theme-border rounded-xl px-4 py-3 text-[10px] focus:ring-brand-200 theme-text lowercase">
+                    <select wire:model="category" class="w-full bg-white/5 border theme-border rounded-xl px-4 py-3 text-[10px] focus:ring-brand-200 theme-text lowercase">
+                        <option value="">-- select category --</option>
+                        <option value="travel">travel & vacation ✈️</option>
+                        <option value="wedding">wedding planning 💍</option>
+                        <option value="home">home & living 🏠</option>
+                        <option value="finance">finance & investment 💰</option>
+                        <option value="celebration">celebration & event 🎉</option>
+                        <option value="lifestyle">shopping & lifestyle 🛍️</option>
+                        <option value="health">health & fitness 🏥</option>
+                        <option value="education">education & growth 📚</option>
+                        <option value="other">other memories ✨</option>
+                    </select>
                 </div>
 
                 <div class="space-y-1">
