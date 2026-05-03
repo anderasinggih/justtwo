@@ -17,11 +17,8 @@ class CreatePost extends Component
     public $isEdit = false;
     public $existingMedia = [];
     public $photos = [];
-    public $caption = '';
     public $location = '';
     public $is_public = false;
-    public $is_secret = false;
-    public $unlock_at = '';
 
     public function mount($post = null)
     {
@@ -29,11 +26,8 @@ class CreatePost extends Component
             $post = Post::with('media')->findOrFail($post);
             $this->post = $post;
             $this->isEdit = true;
-            $this->caption = $post->content;
             $this->location = $post->location;
             $this->is_public = $post->is_public;
-            $this->is_secret = $post->is_secret;
-            $this->unlock_at = $post->unlock_at ? $post->unlock_at->format('Y-m-d\TH:i') : '';
             $this->existingMedia = $post->media->map(fn($m) => [
                 'id' => $m->id,
                 'file_path_original' => $m->file_path_original
@@ -55,18 +49,14 @@ class CreatePost extends Component
         \Illuminate\Support\Facades\Log::info('savePost started', ['count' => count($base64Images)]);
         try {
             $this->validate([
-                'caption' => 'nullable|string',
-                'unlock_at' => $this->is_secret ? 'required|date|after:now' : 'nullable',
+                'location' => 'nullable|string',
             ]);
 
         if ($this->isEdit) {
             $this->post->update([
-                'title' => Str::limit($this->caption, 100),
-                'content' => $this->caption,
+                'title' => $this->location ?: 'a memory',
                 'location' => $this->location,
                 'is_public' => $this->is_public,
-                'is_secret' => $this->is_secret,
-                'unlock_at' => $this->is_secret ? $this->unlock_at : null,
             ]);
             $post = $this->post;
 
@@ -78,13 +68,11 @@ class CreatePost extends Component
         } else {
             $post = Auth::user()->relationship->posts()->create([
                 'user_id' => Auth::id(),
-                'title' => Str::limit($this->caption, 100),
-                'content' => $this->caption,
+                'title' => $this->location ?: 'a memory',
                 'location' => $this->location,
                 'type' => 'memory',
                 'is_public' => $this->is_public,
-                'is_secret' => $this->is_secret,
-                'unlock_at' => $this->is_secret ? $this->unlock_at : null,
+                'is_secret' => false,
                 'published_at' => now(),
             ]);
         }
