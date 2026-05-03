@@ -71,8 +71,16 @@
             class="bg-black/60 backdrop-blur-xl border-b border-white/5">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
-            <div class="flex items-center gap-4">
-                <button @click="isSelecting = !isSelecting; selectedIds = []" class="font-bold text-xs theme-accent" x-text="isSelecting ? 'Cancel' : 'Select'"></button>
+            <div class="flex items-center gap-3">
+                <template x-if="isSelecting && selectedIds.length > 0">
+                    <button @click="if(confirm('Archive ' + selectedIds.length + ' items?')) archive()" 
+                            class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
+                        Archive (<span x-text="selectedIds.length"></span>)
+                    </button>
+                </template>
+                <button @click="isSelecting = !isSelecting; selectedIds = []" 
+                        class="font-bold text-xs theme-accent" 
+                        x-text="isSelecting ? 'Cancel' : 'Select'"></button>
             </div>
         </div>
     </header>
@@ -154,20 +162,4 @@
             </p>
         </div>
     </main>
-
-    {{-- Selection Action Bar --}}
-    <div x-show="isSelecting && selectedIds.length > 0" 
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="translate-y-20 opacity-0"
-         x-transition:enter-end="translate-y-0 opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="translate-y-0 opacity-100"
-         x-transition:leave-end="translate-y-20 opacity-0"
-         class="fixed bottom-32 inset-x-4 z-[100] flex justify-center">
-        <button @click="if(confirm('Archive ' + selectedIds.length + ' items?')) archive()" 
-                class="flex items-center gap-3 bg-red-500 text-white px-8 py-4 rounded-full shadow-[0_20px_50px_rgba(239,68,68,0.4)] font-bold text-sm active:scale-95 transition-all">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            Archive <span x-text="selectedIds.length"></span> Items
-        </button>
-    </div>
 </div>
