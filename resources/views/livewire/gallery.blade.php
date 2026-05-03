@@ -113,7 +113,7 @@
     </style>
     
     {{-- Header --}}
-    <header class="fixed-header py-5 px-4 bg-black/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300" 
+    <header class="fixed-header py-3 px-4 bg-black/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300" 
             x-show="cols !== 13" 
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 -translate-y-full"
@@ -133,10 +133,8 @@
                     <span x-text="isDownloading ? 'Preparing...' : 'Save'"></span>
                 </button>
                 <button x-show="isSelecting && selectedIds.length > 0"
-                        @click="$wire.archiveSelected(selectedIds).then(() => {
-                            selectedIds = [];
-                            isSelecting = false;
-                        })" 
+                        wire:click="archiveSelected"
+                        @click="selectedIds = []; isSelecting = false;"
                         class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
                     Delete (<span x-text="selectedIds.length"></span>)
                 </button>
@@ -148,7 +146,7 @@
     </header>
 
     {{-- Content Grid --}}
-    <main class="w-full pb-32" :class="cols !== 13 ? 'pt-24' : 'pt-0'">
+    <main class="w-full pb-32" :class="cols !== 13 ? 'pt-16' : 'pt-0'">
         @forelse($groupedMedia as $monthYear => $mediaItems)
             @php
                 [$year, $month] = explode('-', $monthYear);
