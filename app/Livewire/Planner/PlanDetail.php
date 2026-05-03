@@ -23,9 +23,9 @@ class PlanDetail extends Component
     public $itineraryActivity = '';
     public $itineraryNotes = '';
 
-    public function mount($plan)
+    public function mount(Plan $plan)
     {
-        $this->plan = Plan::with(['expenses', 'itineraries'])->findOrFail($plan);
+        $this->plan = $plan->load(['expenses', 'itineraries']);
         $this->itineraryDate = $this->plan->target_date?->format('Y-m-d') ?? now()->format('Y-m-d');
     }
 
