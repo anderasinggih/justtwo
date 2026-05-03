@@ -33,9 +33,11 @@ class Gallery extends Component
 
         $mediaItems = PostMedia::whereIn('id', $this->selectedMedia)->get();
         
+        $relationshipId = Auth::user()->relationship_id;
+        
         foreach ($mediaItems as $media) {
             $post = $media->post;
-            if ($post && $post->user_id === Auth::id()) {
+            if ($post && $post->relationship_id === $relationshipId) {
                 $post->update([
                     'is_archived' => true,
                     'archived_at' => now(),
