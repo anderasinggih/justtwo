@@ -10,7 +10,7 @@
                 this.isZooming = true;
                 this.currentLevel--;
                 this.cols = this.levels[this.currentLevel];
-                setTimeout(() => { this.isZooming = false }, 600);
+                setTimeout(() => { this.isZooming = false }, 800);
             }
         },
         zoomOut() {
@@ -18,7 +18,7 @@
                 this.isZooming = true;
                 this.currentLevel++;
                 this.cols = this.levels[this.currentLevel];
-                setTimeout(() => { this.isZooming = false }, 600);
+                setTimeout(() => { this.isZooming = false }, 800);
             }
         },
         handleTouchStart(e) {
@@ -37,7 +37,7 @@
                 );
                 let scale = currentDist / this.startDist;
                 
-                if (scale > 1.4) {
+                if (scale > 1.5) {
                     this.zoomIn();
                     this.startDist = currentDist;
                 } else if (scale < 0.6) {
@@ -54,17 +54,17 @@
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(var(--grid-cols), 1fr);
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: grid-template-columns, gap;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: grid-template-columns, gap, padding;
         }
         .gallery-item {
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform, opacity;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, opacity, width, height;
         }
     </style>
     
     {{-- Header --}}
-    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-500"
+    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-700"
             :class="cols === 13 ? 'opacity-0 pointer-events-none' : 'bg-black/60 backdrop-blur-xl'">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
@@ -80,19 +80,20 @@
             @php
                 [$year, $month] = explode('-', $monthYear);
             @endphp
-            <section :class="cols === 13 ? 'mb-0' : 'mb-8'" class="transition-all duration-500">
-                <div class="px-4 py-4 transition-all duration-500" 
-                     :class="cols === 13 ? 'opacity-0 h-0 overflow-hidden py-0' : 'opacity-100'">
+            <section :class="cols === 13 ? 'mb-0' : 'mb-8'" class="transition-all duration-700">
+                <div class="px-4 transition-all duration-700 overflow-hidden" 
+                     :class="cols === 13 ? 'opacity-0 h-0 py-0' : 'opacity-100 py-4'">
                     <h2 class="text-lg font-bold lowercase tracking-tight">{{ $month }}</h2>
                     <p class="text-[9px] opacity-30 uppercase tracking-widest">{{ $year }}</p>
                 </div>
 
-                <div class="gallery-grid gap-[1px]"
+                <div class="gallery-grid"
+                     :class="cols === 13 ? 'gap-0' : 'gap-[1px]'"
                      :style="'--grid-cols: ' + cols">
                     @foreach($mediaItems as $media)
                         <a href="{{ route('gallery.preview', $media->id) }}" wire:navigate 
                            class="gallery-item relative aspect-square overflow-hidden bg-white/5"
-                           :class="isZooming ? 'scale-[0.98]' : 'scale-100'">
+                           :class="isZooming ? 'scale-[0.95] opacity-80' : 'scale-100 opacity-100'">
                             <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
                                  class="w-full h-full object-cover"
                                  loading="lazy">
@@ -113,13 +114,14 @@
         @endforelse
 
         {{-- Library Stats --}}
-        <div class="py-12 text-center transition-opacity duration-500" :class="cols === 13 ? 'opacity-0' : 'opacity-100'">
+        <div class="py-12 text-center transition-opacity duration-700" :class="cols === 13 ? 'opacity-0' : 'opacity-100'">
             <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest">
                 {{ $groupedMedia->flatten()->count() }} items • updated just now
             </p>
         </div>
     </main>
 </div>
+
 
 
 
