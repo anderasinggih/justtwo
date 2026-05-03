@@ -107,23 +107,38 @@
         $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' });
         
         // Safe Initialization of Pinch Zoom
-        const PZ = window.PinchZoom || (window.PinchZoom && window.PinchZoom.default);
-        if (PZ) {
-            document.querySelectorAll('.zoom-container').forEach(el => {
-                new PZ(el, {
-                    draggableUnzoomed: false,
-                    onZoomStart: () => { this.isZooming = true; },
-                    onZoomEnd: (pz) => { 
-                        if (pz.zoomFactor <= 1.05) {
-                            this.isZooming = false;
-                            pz.setZoomFactor(1);
-                        }
-                    },
-                    onDragStart: () => { if (this.isZooming) return true; },
+        setTimeout(() => {
+            let PZ = window.PinchZoom;
+            
+            // Try to find the constructor if it's nested
+            if (PZ && typeof PZ !== 'function') {
+                if (typeof PZ.default === 'function') PZ = PZ.default;
+                else if (typeof PZ.PinchZoom === 'function') PZ = PZ.PinchZoom;
+            }
+
+            if (typeof PZ === 'function') {
+                document.querySelectorAll('.zoom-container').forEach(el => {
+                    try {
+                        new PZ(el, {
+                            draggableUnzoomed: false,
+                            onZoomStart: () => { this.isZooming = true; },
+                            onZoomEnd: (pz) => { 
+                                if (pz.zoomFactor <= 1.05) {
+                                    this.isZooming = false;
+                                    pz.setZoomFactor(1);
+                                }
+                            },
+                            onDragStart: () => { if (this.isZooming) return true; },
+                        });
+                    } catch (e) {
+                        console.error('Failed to init PinchZoom on element:', el, e);
+                    }
                 });
-            });
-        }
-     }, 200)" @media-deleted.window="
+            } else {
+                console.error('PinchZoom constructor not found. window.PinchZoom is:', window.PinchZoom);
+            }
+        }, 300);
+     }, 300)" @media-deleted.window="
         if (allMedia.length === 0) { window.location.href = '/'; return; }
         if (currentIndex >= allMedia.length) { currentIndex = Math.max(0, allMedia.length - 1); }
         $nextTick(() => { $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' }); scrollToThumb(currentIndex); });
