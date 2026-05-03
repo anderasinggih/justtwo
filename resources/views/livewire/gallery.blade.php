@@ -30,12 +30,12 @@
                     e.touches[0].pageX - e.touches[1].pageX,
                     e.touches[0].pageY - e.touches[1].pageY
                 );
-                let diff = currentDist - this.startDist;
+                let scale = currentDist / this.startDist;
                 
-                if (diff > 60) { // Fingers spreading: Zoom IN
+                if (scale > 1.2) { // Spread: Zoom IN
                     this.zoomIn();
                     this.startDist = currentDist;
-                } else if (diff < -60) { // Fingers pinching: Zoom OUT
+                } else if (scale < 0.8) { // Pinch: Zoom OUT
                     this.zoomOut();
                     this.startDist = currentDist;
                 }
@@ -43,7 +43,7 @@
         }
      }"
      @touchstart="handleTouchStart($event)"
-     @touchmove="handleTouchMove($event)">
+     @touchmove.prevent="handleTouchMove($event)">
     
     {{-- Header --}}
     <header class="sticky top-0 z-50 py-5 px-4 bg-transparent">
@@ -67,13 +67,8 @@
                     <p class="text-[9px] opacity-30 uppercase tracking-widest">{{ $year }}</p>
                 </div>
 
-                <div class="grid gap-[1px] transition-all duration-200"
-                     :class="{
-                        'grid-cols-1': cols === 1,
-                        'grid-cols-3': cols === 3,
-                        'grid-cols-5': cols === 5,
-                        'grid-cols-[repeat(13,minmax(0,1fr))]': cols === 13
-                     }">
+                <div class="grid gap-[1px] transition-all duration-300"
+                     :style="'grid-template-columns: repeat(' + cols + ', minmax(0, 1fr))'">
                     @foreach($mediaItems as $media)
                         <a href="{{ route('gallery.preview', $media->id) }}" wire:navigate 
                            class="relative aspect-square group overflow-hidden bg-white/5">
@@ -105,5 +100,6 @@
         </div>
     </main>
 </div>
+
 
 
