@@ -210,7 +210,10 @@
                 }
 
                 try {
-                    await @this.savePost(results, keepIds, locations, capturedDates, lats, lons);
+                    const redirectUrl = await @this.savePost(results, keepIds, locations, capturedDates, lats, lons);
+                    if (redirectUrl) {
+                        window.location.replace(redirectUrl);
+                    }
                 } catch (e) {
                     this.isUploading = false;
                     if (e.status !== 422) {

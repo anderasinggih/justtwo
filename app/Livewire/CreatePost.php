@@ -112,10 +112,10 @@ class CreatePost extends Component
         
         $firstMedia = $post->media()->first();
         if ($firstMedia) {
-            return redirect()->route('gallery.preview', $firstMedia->id);
+            return route('gallery.preview', $firstMedia->id);
         }
 
-        return redirect()->route('gallery');
+        return route('gallery');
     } catch (\Exception $e) {
         \Illuminate\Support\Facades\Log::error('savePost failed: ' . $e->getMessage());
         throw $e;
