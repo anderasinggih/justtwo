@@ -31,6 +31,7 @@
         },
         handleTouchMove(e) {
             if (e.touches.length === 2 && this.startDist > 0) {
+                e.preventDefault();
                 let currentDist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
                     e.touches[0].pageY - e.touches[1].pageY
@@ -48,7 +49,7 @@
         }
      }"
      @touchstart="handleTouchStart($event)"
-     @touchmove.prevent="handleTouchMove($event)">
+     @touchmove="handleTouchMove($event)">
 
     <style>
         .gallery-grid {
@@ -92,8 +93,7 @@
                      :style="'--grid-cols: ' + cols">
                     @foreach($mediaItems as $media)
                         <a href="{{ route('gallery.preview', $media->id) }}" wire:navigate 
-                           class="gallery-item relative aspect-square overflow-hidden bg-white/5"
-                           :class="isZooming ? 'scale-[0.95] opacity-80' : 'scale-100 opacity-100'">
+                           class="gallery-item relative aspect-square overflow-hidden bg-white/5">
                             <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
                                  class="w-full h-full object-cover"
                                  loading="lazy">
