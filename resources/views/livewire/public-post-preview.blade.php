@@ -93,6 +93,7 @@
                 });
             }
         },
+        isZooming: false,
         like(postId) {
             $wire.toggleReaction(postId);
             this.showHeart = true;
@@ -101,12 +102,32 @@
      }" x-init="setTimeout(() => {
         scrollToThumb(currentIndex);
         $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' });
+        
+        // Initialize Pinch Zoom for each image
+        document.querySelectorAll('.zoom-container').forEach(el => {
+            new PinchZoom(el, {
+                draggableUnzoomed: false,
+                onZoomStart: () => { this.isZooming = true; },
+                onZoomEnd: (pz) => { 
+                    if (pz.zoomFactor <= 1.05) {
+                        this.isZooming = false;
+                        pz.setZoomFactor(1);
+                    }
+                },
+                onDragStart: () => { if (this.isZooming) return true; },
+            });
+        });
      }, 100)" @media-deleted.window="
         if (allMedia.length === 0) { window.location.href = '/'; return; }
         if (currentIndex >= allMedia.length) { currentIndex = Math.max(0, allMedia.length - 1); }
         $nextTick(() => { $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' }); scrollToThumb(currentIndex); });
      " @touchstart="handleTouchStart($event)" @touchend="handleTouchEnd($event)">
-    <nav class="p-4 md:p-6 flex items-center justify-between z-30">
+
+    {{-- Pinch Zoom Script --}}
+    <script src="https://unpkg.com/pinch-zoom-js@2.3.5/dist/pinch-zoom.umd.js"></script>
+
+    <nav class="p-4 md:p-6 flex items-center justify-between z-[400] transition-all duration-300"
+         :class="isZooming ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'">
         <button onclick="history.back()" class="w-10 h-10 rounded-full {{ $iconBg }} backdrop-blur-xl border {{ $colors['border'] }} flex items-center justify-center transition-transform active:scale-90">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
@@ -150,10 +171,16 @@
             @endforeach
         </div>
     </nav>
-    <main class="flex-1 relative flex flex-col justify-start pt-4 md:pt-10 overflow-hidden">
-        <div class="relative w-full h-[65vh] md:h-[75vh] flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide" @scroll="onCarouselScroll($event)" x-ref="carousel">
+    <main class="flex-1 relative flex flex-col justify-start pt-4 md:pt-10 overflow-hidden"
+          :class="isZooming ? 'z-[500]' : 'z-20'">
+        <div class="relative w-full h-[65vh] md:h-[75vh] flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide" 
+             @scroll="onCarouselScroll($event)" 
+             x-ref="carousel"
+             :class="isZooming ? 'overflow-hidden pointer-events-none' : ''">
             @foreach($allMedia as $index => $m)
-                <div class="flex-none w-full h-full snap-center flex items-center justify-center relative" @dblclick="like({{ $m['post_id'] }})">
+                <div class="flex-none w-full h-full snap-center flex items-center justify-center relative zoom-container" 
+                     @dblclick="like({{ $m['post_id'] }})"
+                     :class="isZooming ? 'pointer-events-auto' : ''">
                     @if(str_contains($m['file_type'], 'video'))
                         <video src="{{ $m['file_path'] }}" class="w-full h-full object-contain" {{ $index === $initialMediaIndex ? 'autoplay' : '' }} loop muted playsinline></video>
                     @else
@@ -166,7 +193,8 @@
             @endforeach
         </div>
     </main>
-    <footer class="pb-16 pt-4 overflow-hidden relative">
+    <footer class="pb-16 pt-4 overflow-hidden relative transition-all duration-300 z-30"
+            :class="isZooming ? 'opacity-0 translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'">
         <div class="absolute left-1/2 top-4 bottom-16 w-[1px] bg-white/20 -translate-x-1/2 z-20 pointer-events-none"></div>
         <div class="flex items-center gap-0 overflow-x-auto scrollbar-hide px-4" @scroll="onThumbsScroll($event)" x-ref="filmstrip">
             <div class="flex-none w-[48vw]"></div>
