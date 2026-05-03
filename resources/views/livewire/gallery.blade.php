@@ -1,21 +1,29 @@
-<div class="max-w-xl mx-auto pb-32 px-4">
-    {{-- Header --}}
-    <header class="sticky top-0 z-20 py-6 px-4 backdrop-blur-xl bg-white/5 dark:bg-black/5">
-        <div class="flex items-center justify-between">
-            <h1 class="text-3xl font-bold tracking-tight">Library</h1>
-            <div class="flex items-center gap-4">
-                <button class="font-bold text-sm tracking-tight theme-accent">Select</button>
+<div class="w-full pb-32">
+    {{-- Floating Header with Fade --}}
+    <header class="fixed top-0 inset-x-0 z-50 pt-12 pb-24 px-6 pointer-events-none">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/90 via-black/40 to-transparent backdrop-blur-sm"></div>
+        
+        <div class="relative flex items-end justify-between pointer-events-auto">
+            <div>
+                <h1 class="text-4xl font-bold tracking-tight text-white">Library</h1>
+                <p class="text-sm font-medium text-white/60 mt-1">{{ $groupedMedia->flatten()->count() }} Items</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <button class="px-5 py-2 rounded-full bg-white/10 backdrop-blur-md font-bold text-sm text-white">Select</button>
             </div>
         </div>
     </header>
 
     {{-- Content Grid --}}
-    <main class="w-full -mx-4 md:mx-0">
+    <main class="w-full">
         @forelse($groupedMedia as $monthYear => $mediaItems)
             @php
                 [$year, $month] = explode('-', $monthYear);
             @endphp
-            <section class="mb-10">
+            <section class="mb-1">
                 <div class="px-4 py-4 flex items-center justify-between">
                     <div>
                         <h2 class="text-xl font-bold lowercase tracking-tight">{{ $month }}</h2>
@@ -23,10 +31,10 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-[1px] md:gap-1 px-[1px]">
+                <div class="grid grid-cols-3 gap-[1px] md:gap-1">
                     @foreach($mediaItems as $media)
                         <a href="{{ route('gallery.preview', $media->id) }}" wire:navigate 
-                           class="relative aspect-square group overflow-hidden bg-current/5 cursor-pointer">
+                           class="relative aspect-square group overflow-hidden bg-white/5 cursor-pointer">
                             <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
                                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                  loading="lazy">
@@ -43,7 +51,7 @@
                 </div>
             </section>
         @empty
-            <div class="py-40 text-center space-y-4">
+            <div class="py-60 text-center space-y-4">
                 <div class="w-20 h-20 bg-current/5 rounded-full mx-auto flex items-center justify-center opacity-20">
                     <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
