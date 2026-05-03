@@ -35,6 +35,7 @@ class Journey extends Component
                 'title' => $p->title ?? 'a memory',
                 'content' => $p->content,
                 'image' => $p->media->first()?->file_path,
+                'media_id' => $p->media->first()?->id,
                 'icon' => 'heart',
                 'color' => 'rose',
             ];

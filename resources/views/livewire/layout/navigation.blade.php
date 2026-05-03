@@ -39,7 +39,6 @@ new class extends Component {
                  :style="`transform: translateX(${active * 100}%)`"
                  style="transform: translateX({{ 
                     request()->routeIs('dashboard') ? '0' : 
-                    (request()->routeIs('timeline') ? '100%' : 
                     (request()->routeIs('gallery') ? '300%' : 
                     (request()->routeIs('profile') || request()->routeIs('settings') || request()->routeIs('stats') ? '400%' : '200%')))
                  }})">

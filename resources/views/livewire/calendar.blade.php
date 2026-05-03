@@ -85,7 +85,7 @@
                         <div class="space-y-4">
                             <p class="text-[10px] font-bold text-brand-600 uppercase tracking-widest">memories</p>
                             @foreach($selectedMemories as $memory)
-                                <a href="{{ route('timeline') }}" wire:navigate class="block bg-white/60 rounded-2xl p-4 border border-white shadow-sm hover:bg-white transition-colors group">
+                                <a href="{{ route('gallery.preview', $memory->media->first()->id) }}" wire:navigate class="block bg-white/60 rounded-2xl p-4 border border-white shadow-sm hover:bg-white transition-colors group">
                                     <div class="flex items-center justify-between mb-2">
                                         <div class="flex items-center gap-2">
                                             <span class="text-lg leading-none">{{ $memory->mood ?? '✨' }}</span>
@@ -123,7 +123,7 @@
                     <p class="text-[10px] font-bold text-brand-600 uppercase tracking-widest mb-4">on this day, {{ Carbon::parse($selectedDate)->year - $onThisDay->published_at->year }} year(s) ago</p>
                     <div class="space-y-4">
                         <p class="text-sm italic text-brand-900 leading-relaxed">"{{ Str::limit($onThisDay->content, 100) }}"</p>
-                        <a href="{{ route('timeline') }}" wire:navigate class="text-xs text-brand-600 font-bold hover:underline lowercase">relive this memory</a>
+                        <a href="{{ route('gallery.preview', $onThisDay->media->first()->id) }}" wire:navigate class="text-xs text-brand-600 font-bold hover:underline lowercase">relive this memory</a>
                     </div>
                 </div>
             @endif

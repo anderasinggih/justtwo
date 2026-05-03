@@ -58,7 +58,7 @@
 
                         @if($item['type'] === 'post')
                             <div class="mt-4 flex justify-end">
-                                <a href="{{ route('timeline') }}" wire:navigate class="text-[10px] font-bold theme-accent lowercase hover:underline">view full memory →</a>
+                                <a href="{{ route('gallery.preview', $item['media_id']) }}" wire:navigate class="text-[10px] font-bold theme-accent lowercase hover:underline">view full memory →</a>
                             </div>
                         @endif
                     </div>

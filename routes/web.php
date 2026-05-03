@@ -8,9 +8,7 @@ Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('dashboard');
 
-Route::get('timeline', \App\Livewire\Timeline::class)
-    ->middleware(['auth', 'verified', 'relationship'])
-    ->name('timeline');
+
 
 Route::get('journey', \App\Livewire\Journey::class)
     ->middleware(['auth', 'verified', 'relationship'])

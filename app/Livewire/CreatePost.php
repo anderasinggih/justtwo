@@ -121,7 +121,13 @@ class CreatePost extends Component
         }
 
         \Illuminate\Support\Facades\Log::info('savePost finished');
-        return redirect()->route('timeline');
+        
+        $firstMedia = $post->media()->first();
+        if ($firstMedia) {
+            return redirect()->route('gallery.preview', $firstMedia->id);
+        }
+
+        return redirect()->route('gallery');
     } catch (\Exception $e) {
         \Illuminate\Support\Facades\Log::error('savePost failed: ' . $e->getMessage());
         throw $e;

@@ -91,7 +91,7 @@
     <div x-show="tab === 'posts'" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-0.5">
         @forelse($posts as $post)
             @foreach($post->media as $index => $item)
-                <a href="{{ route('timeline') }}?post={{ $post->id }}&index={{ $index }}" wire:navigate 
+                <a href="{{ route('gallery.preview', $item->id) }}" wire:navigate 
                    class="relative aspect-[1/1] bg-white/5 overflow-hidden group">
                     @if($item->file_path_original)
                         <img src="{{ Storage::disk('public')->url($item->file_path_thumbnail ?? $item->file_path_original) }}" 
@@ -123,7 +123,7 @@
     <div x-show="tab === 'bookmarks'" x-cloak class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-0.5">
         @forelse($bookmarkedPosts as $post)
             @foreach($post->media as $index => $item)
-                <a href="{{ route('timeline') }}?post={{ $post->id }}&index={{ $index }}" wire:navigate 
+                <a href="{{ route('gallery.preview', $item->id) }}" wire:navigate 
                    class="relative aspect-[1/1] bg-white/5 overflow-hidden group">
                     @if($item->file_path_original)
                         <img src="{{ Storage::disk('public')->url($item->file_path_thumbnail ?? $item->file_path_original) }}" 
