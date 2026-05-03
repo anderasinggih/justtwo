@@ -146,7 +146,7 @@
     </main>
     <footer class="pb-16 pt-4 overflow-hidden relative">
         <div class="absolute left-1/2 top-4 bottom-16 w-[1px] bg-white/20 -translate-x-1/2 z-20 pointer-events-none"></div>
-        <div class="flex items-center gap-0 overflow-x-auto scrollbar-hide px-4" @scroll="onThumbsScroll($event)" x-ref="filmstrip">
+        <div class="flex items-center gap-0 overflow-x-auto overflow-y-hidden scrollbar-hide px-4 py-4" @scroll="onThumbsScroll($event)" x-ref="filmstrip">
             <div class="flex-none w-[48vw]"></div>
             @foreach($allMedia as $index => $m)
                 <button @click="currentIndex = {{ $index }}; $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * {{ $index }}, behavior: 'smooth' }); scrollToThumb({{ $index }})" id="thumb-{{ $index }}" class="thumb-item flex-none w-10 h-14 md:w-12 md:h-16 rounded-none overflow-hidden transition-all duration-300" :class="currentIndex === {{ $index }} ? 'scale-125 z-10 opacity-100' : 'opacity-30 scale-90'">
