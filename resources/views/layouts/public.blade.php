@@ -11,31 +11,21 @@
         $settings = \App\Models\PublicSetting::getSettings();
         $currentTheme = $theme ?? ($settings->theme ?? 'light');
         $themeColors = [
-            'light' => '#ffffff',
-            'dark' => '#000000',
-            'rose' => '#fff1f2',
-            'midnight' => '#020617',
-            'sky' => '#f0f9ff',
-            'mint' => '#f0fdf4',
-            'lavender' => '#f5f3ff',
-            'pink' => '#fff5f5',
+            'light' => '#ffffff', 'dark' => '#000000', 'rose' => '#fff1f2', 'midnight' => '#020617',
+            'sky' => '#f0f9ff', 'mint' => '#f0fdf4', 'lavender' => '#f5f3ff', 'pink' => '#fff5f5'
         ];
         $bgColor = $themeColors[$currentTheme] ?? '#ffffff';
         $relationship = \App\Models\Relationship::orderBy('id', 'desc')->first();
         $spaceName = $relationship?->name ?? 'justtwo';
     @endphp
 
-    <meta name="theme-color" content="{{ $bgColor }}">
+    <meta id="theme-color-meta" name="theme-color" content="{{ $bgColor }}">
     <title>{{ $spaceName }} — {{ $settings->journey_title ?? 'Our Journey' }}</title>
     
     <style>
         html, body { 
             background-color: {{ $bgColor }} !important;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            width: 100%;
-            overflow-x: hidden;
+            margin: 0; padding: 0; min-height: 100vh; width: 100%; overflow-x: hidden;
         }
     </style>
     
@@ -52,7 +42,16 @@
 <body x-data="{
         currentTheme: '{{ $currentTheme }}',
         themes: ['light', 'dark', 'rose', 'midnight', 'sky', 'mint', 'lavender', 'pink'],
+        themeColors: @js($themeColors),
+        updateSystemUI() {
+            const color = this.themeColors[this.currentTheme] || '#ffffff';
+            document.getElementById('theme-color-meta').setAttribute('content', color);
+            document.documentElement.style.backgroundColor = color;
+            document.body.style.backgroundColor = color;
+        },
         init() {
+            this.updateSystemUI();
+            this.$watch('currentTheme', () => this.updateSystemUI());
             if (this.currentTheme === 'mix') {
                 this.currentTheme = this.themes[Math.floor(Math.random() * this.themes.length)];
                 setInterval(() => {

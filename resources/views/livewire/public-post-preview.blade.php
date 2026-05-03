@@ -156,7 +156,14 @@
             <div class="flex-none w-[48vw]"></div>
         </div>
     </footer>
-    <div x-show="showInfo" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full" class="absolute inset-x-0 bottom-0 h-[42vh] theme-bg backdrop-blur-3xl rounded-t-[2.5rem] z-[300] p-6 flex flex-col space-y-4 overflow-hidden border-t theme-border shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
+    <div x-show="showInfo" x-cloak 
+         x-transition:enter="transition transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)]" 
+         x-transition:enter-start="translate-y-full" 
+         x-transition:enter-end="translate-y-0" 
+         x-transition:leave="transition transform duration-400 ease-[cubic-bezier(0.19,1,0.22,1)]" 
+         x-transition:leave-start="translate-y-0" 
+         x-transition:leave-end="translate-y-full" 
+         class="absolute inset-x-0 bottom-0 h-[42vh] theme-bg backdrop-blur-3xl rounded-t-[2.5rem] z-[300] p-6 flex flex-col space-y-4 overflow-hidden border-t theme-border shadow-[0_-10px_40px_rgba(0,0,0,0.1)]">
         <div class="w-12 h-1.5 bg-current opacity-20 rounded-full mx-auto mb-1" @click="showInfo = false"></div>
         <div class="flex-1 overflow-y-auto scrollbar-hide">
             <template x-for="(media, index) in allMedia">
