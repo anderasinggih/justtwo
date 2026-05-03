@@ -5,7 +5,7 @@
         currentLevel: window.innerWidth > 1024 ? 2 : (window.innerWidth > 768 ? 2 : 1), 
         
         isSelecting: @entangle('isSelecting'),
-        selectedIds: @entangle('selectedMedia'),
+        selectedIds: @entangle('selectedMedia').live,
         selectedUrls: [],
         isDragging: false,
         lastDraggedId: null,

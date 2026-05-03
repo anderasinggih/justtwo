@@ -37,7 +37,7 @@ class ArchivedPosts extends Component
         $mediaItems = PostMedia::whereIn('id', $this->selectedMedia)->get();
         foreach ($mediaItems as $media) {
             $post = $media->post;
-            if ($post && $post->user_id === Auth::id()) {
+            if ($post && $post->relationship_id === Auth::user()->relationship_id) {
                 Storage::disk('public')->delete($media->file_path_original);
                 if ($media->file_path_thumbnail) {
                     Storage::disk('public')->delete($media->file_path_thumbnail);
