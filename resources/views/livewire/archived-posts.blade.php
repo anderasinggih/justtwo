@@ -65,7 +65,11 @@
                         <button wire:click="restoreSelected" class="font-bold text-xs theme-accent">
                             Restore
                         </button>
-                        <button wire:click="deleteSelectedPermanently" wire:confirm="permanently delete these items?" class="font-bold text-xs text-red-500">
+                        <button @click="$dispatch('confirm', { 
+                                    title: 'Delete Forever', 
+                                    message: 'Are you sure you want to permanently delete these ' + selectedIds.length + ' items? This action cannot be undone.', 
+                                    onConfirm: () => { $wire.deleteSelectedPermanently() } 
+                                })" class="font-bold text-xs text-red-500">
                             Delete Forever
                         </button>
                     </div>

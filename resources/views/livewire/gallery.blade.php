@@ -73,7 +73,11 @@
             <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
             <div class="flex items-center gap-3">
                 <button x-show="isSelecting && selectedIds.length > 0"
-                        @click="if(confirm('Delete ' + selectedIds.length + ' items?')) archive()" 
+                        @click="$dispatch('confirm', { 
+                            title: 'Delete Items', 
+                            message: 'Move ' + selectedIds.length + ' items to trash? They will be deleted forever in 30 days.', 
+                            onConfirm: () => archive() 
+                        })" 
                         class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
                     Delete (<span x-text="selectedIds.length"></span>)
                 </button>

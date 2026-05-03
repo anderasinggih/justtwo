@@ -120,6 +120,64 @@
             }
         })(document, window.navigator, 'standalone');
     </script>
-</body>
+    {{-- Global Custom Confirmation Modal --}}
+    <div x-data="{ 
+            show: false, 
+            title: '', 
+            message: '', 
+            confirmCallback: null,
+            trigger(data) {
+                this.title = data.title || 'Are you sure?';
+                this.message = data.message || '';
+                this.confirmCallback = data.onConfirm;
+                this.show = true;
+            },
+            confirm() {
+                if (this.confirmCallback) this.confirmCallback();
+                this.show = false;
+            }
+         }"
+         @confirm.window="trigger($event.detail)"
+         class="relative z-[9999]"
+         x-show="show"
+         x-cloak>
+        
+        {{-- Backdrop --}}
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" 
+             x-show="show" 
+             x-transition:enter="ease-out duration-300" 
+             x-transition:enter-start="opacity-0" 
+             x-transition:enter-end="opacity-100" 
+             x-transition:leave="ease-in duration-200" 
+             x-transition:leave-start="opacity-100" 
+             x-transition:leave-end="opacity-0"></div>
 
+        {{-- Modal Content --}}
+        <div class="fixed inset-0 z-10 flex items-center justify-center p-6 text-center">
+            <div class="w-full max-w-xs theme-card border theme-border rounded-[2.5rem] p-8 shadow-2xl space-y-6"
+                 x-show="show"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 scale-95 translate-y-4">
+                
+                <div class="space-y-2">
+                    <h3 class="text-xl font-bold theme-text lowercase tracking-tighter" x-text="title"></h3>
+                    <p class="text-xs theme-text opacity-40 lowercase leading-relaxed" x-text="message"></p>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <button @click="confirm()" class="w-full py-4 theme-accent-bg text-white rounded-3xl font-bold text-sm active:scale-95 transition-all shadow-lg shadow-brand-500/20">
+                        Yes, do it
+                    </button>
+                    <button @click="show = false" class="w-full py-4 bg-white/5 theme-text rounded-3xl font-bold text-sm active:scale-95 transition-all">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
