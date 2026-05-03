@@ -40,7 +40,7 @@ new class extends Component {
                  style="transform: translateX({{ 
                     request()->routeIs('dashboard') ? '0' : 
                     (request()->routeIs('gallery') ? '300%' : 
-                    (request()->routeIs('profile') || request()->routeIs('settings') || request()->routeIs('stats') ? '400%' : '200%')))
+                    (request()->routeIs('profile') || request()->routeIs('settings') || request()->routeIs('stats') ? '400%' : '200%'))
                  }})">
                 <div class="w-full h-full bg-white/20 rounded-full shadow-[inset_0_1px_2px_rgba(255,255,255,0.2)]"></div>
             </div>
