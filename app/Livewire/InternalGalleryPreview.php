@@ -17,7 +17,8 @@ class InternalGalleryPreview extends Component
     public function mount($media)
     {
         $targetMedia = \App\Models\PostMedia::findOrFail($media);
-        $relationshipId = Auth::user()->relationship_id;
+        $relationship = Auth::user()->relationship;
+        $relationshipId = $relationship?->id;
 
         // Security check - allow both partners in the relationship
         if ($targetMedia->post?->relationship_id !== $relationshipId && $targetMedia->post?->user_id !== Auth::id()) {
@@ -85,8 +86,10 @@ class InternalGalleryPreview extends Component
         $media = \App\Models\PostMedia::findOrFail($mediaId);
         $post = $media->post;
         
+        $relationship = Auth::user()->relationship;
+        
         // Allow both partners
-        if ($post->relationship_id !== Auth::user()->relationship_id) {
+        if ($post->relationship_id !== $relationship?->id) {
             return;
         }
 
