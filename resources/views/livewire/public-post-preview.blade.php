@@ -133,9 +133,9 @@
             @foreach($allMedia as $index => $m)
                 <div class="flex-none w-full h-full snap-center flex items-center justify-center relative" @dblclick="like({{ $m['post_id'] }})">
                     @if(str_contains($m['file_type'], 'video'))
-                        <video src="{{ $m['file_path'] }}" class="w-full h-full object-contain" {{ $index === $initialMediaIndex ? 'autoplay' : '' }} loop muted playsinline></video>
+                        <video src="{{ $m['file_path'] }}" class="w-full h-full object-cover md:object-contain" {{ $index === $initialMediaIndex ? 'autoplay' : '' }} loop muted playsinline></video>
                     @else
-                        <img src="{{ $m['file_path'] }}" draggable="false" class="w-full h-full object-contain">
+                        <img src="{{ $m['file_path'] }}" draggable="false" class="w-full h-full object-cover md:object-contain">
                     @endif
                     <div x-show="showHeart && currentIndex === {{ $index }}" x-cloak x-transition:enter="transition-all ease-[cubic-bezier(0.175,0.885,0.32,1.275)] duration-500" x-transition:enter-start="opacity-0 scale-50" x-transition:enter-end="opacity-100 scale-125" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 scale-125" x-transition:leave-end="opacity-0 scale-150" class="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
                         <svg class="w-32 h-32 text-brand-500 fill-current filter drop-shadow-[0_0_30px_rgba(244,63,94,0.6)]" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
