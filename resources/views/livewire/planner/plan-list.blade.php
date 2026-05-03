@@ -16,17 +16,7 @@
         @forelse($plans as $plan)
             <a href="{{ route('planner.detail', $plan->id) }}" wire:navigate 
                class="theme-card border theme-border rounded-[2rem] overflow-hidden shadow-sm group active:scale-[0.98] transition-all mx-1.5 sm:mx-0">
-                @if($plan->cover_image)
-                    <div class="h-32 w-full relative">
-                        <img src="{{ Storage::disk('public')->url($plan->cover_image) }}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                    </div>
-                @else
-                    <div class="h-24 w-full bg-current/5 flex items-center justify-center">
-                        <svg class="w-10 h-10 opacity-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                    </div>
-                @endif
-
+                
                 <div class="p-6 space-y-4">
                     <div class="flex items-start justify-between">
                         <div>

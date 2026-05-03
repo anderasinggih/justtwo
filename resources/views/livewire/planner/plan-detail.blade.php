@@ -1,32 +1,25 @@
-<div x-data="{ tab: 'itinerary' }" class="pb-32">
-    {{-- Hero/Cover Section --}}
-    <div class="relative h-64 md:h-80 w-full overflow-hidden">
-        @if($plan->cover_image)
-            <img src="{{ Storage::disk('public')->url($plan->cover_image) }}" class="w-full h-full object-cover">
-        @else
-            <div class="w-full h-full bg-current/5"></div>
-        @endif
-        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-        
-        <div class="absolute top-8 left-4 right-4 flex items-center justify-between max-w-5xl mx-auto">
-            <a href="{{ route('planner') }}" wire:navigate class="p-2.5 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition-all">
+<div x-data="{ tab: 'itinerary' }" class="pb-32 pt-8">
+    {{-- Clean Header Section --}}
+    <div class="max-w-5xl mx-auto px-1.5 sm:px-4 mb-8">
+        <div class="flex items-center justify-between mb-6">
+            <a href="{{ route('planner') }}" wire:navigate class="p-2.5 rounded-full bg-current/5 theme-text hover:bg-current/10 transition-all">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </a>
-            <a href="{{ route('planner.create', ['plan' => $plan->id]) }}" wire:navigate class="p-2.5 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-            </a>
+            <div class="flex gap-2">
+                <a href="{{ route('planner.create', ['plan' => $plan->id]) }}" wire:navigate class="p-2.5 rounded-full bg-current/5 theme-text hover:bg-current/10 transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                </a>
+            </div>
         </div>
 
-        <div class="absolute bottom-8 left-0 right-0">
-            <div class="max-w-5xl mx-auto px-6">
-                <span class="text-[10px] font-bold px-3 py-1 rounded-full bg-brand-500 text-white uppercase tracking-widest mb-3 inline-block shadow-lg">
-                    {{ $plan->status }}
-                </span>
-                <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tighter lowercase">{{ $plan->title }}</h1>
-                <p class="text-sm text-white/60 lowercase mt-2 font-medium">
-                    {{ $plan->target_date ? $plan->target_date->format('l, F d, Y') : 'date not set' }}
-                </p>
-            </div>
+        <div>
+            <span class="text-[9px] font-bold px-3 py-1 rounded-full bg-brand-500/10 theme-accent uppercase tracking-widest mb-3 inline-block">
+                {{ $plan->status }}
+            </span>
+            <h1 class="text-4xl font-bold theme-text tracking-tighter lowercase">{{ $plan->title }}</h1>
+            <p class="text-xs opacity-40 theme-text lowercase mt-2 font-medium">
+                {{ $plan->target_date ? $plan->target_date->format('l, F d, Y') : 'date not set' }}
+            </p>
         </div>
     </div>
 
