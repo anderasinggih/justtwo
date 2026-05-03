@@ -38,11 +38,11 @@
      @touchmove="handleTouchMove($event)">
     
     {{-- Header --}}
-    <header class="sticky top-0 z-50 py-5 px-4 bg-black/60 backdrop-blur-xl border-b border-white/5">
+    <header class="sticky top-0 z-50 py-5 px-4 bg-transparent">
         <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
+            <h1 class="text-2xl font-bold tracking-tight text-white drop-shadow-md">Library</h1>
             <div class="flex items-center gap-4">
-                <button class="font-bold text-xs theme-accent">Select</button>
+                <button class="font-bold text-xs theme-accent drop-shadow-md">Select</button>
             </div>
         </div>
     </header>
