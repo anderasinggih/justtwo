@@ -17,28 +17,19 @@ class InternalGalleryPreview extends Component
     public function mount($media)
     {
         $targetMedia = \App\Models\PostMedia::findOrFail($media);
-        $relationship = Auth::user()->relationship;
-        $relationshipId = Auth::user()->relationshipMember->relationship_id ?? null;
+        $relationshipId = Auth::user()->relationship_id;
 
-        // Security check
-        if ($targetMedia->post?->user_id === Auth::id()) {
-            // Owner always has access
-        } elseif ($relationshipId && $targetMedia->post?->relationship_id === $relationshipId) {
-            // Same relationship has access
-        } else {
-            abort(403, "Access Denied. Post Rel: " . ($targetMedia->post?->relationship_id ?? 'NULL') . ", Your Rel: " . ($relationshipId ?? 'NULL'));
+        // Security check - allow both partners in the relationship
+        if ($targetMedia->post?->relationship_id !== $relationshipId && $targetMedia->post?->user_id !== Auth::id()) {
+            abort(403, "Access Denied.");
         }
 
         $this->targetId = $targetMedia->post_id;
         
         // Load all media in this relationship
         $mediaRecords = \App\Models\PostMedia::whereHas('post', function ($query) use ($relationshipId) {
-            $query->where(function($q) use ($relationshipId) {
-                if ($relationshipId) {
-                    $q->where('relationship_id', $relationshipId);
-                }
-                $q->orWhere('user_id', Auth::id());
-            })->where('is_archived', false);
+            $query->where('relationship_id', $relationshipId)
+                  ->where('is_archived', false);
         })
         ->with(['post', 'post.user'])
         ->orderBy('captured_at', 'desc')
@@ -62,7 +53,8 @@ class InternalGalleryPreview extends Component
                 'captured_at' => $m->captured_at ? $m->captured_at->toISOString() : null,
                 'date' => ($m->captured_at ?: ($m->post?->created_at ?? now()))->format('l, j M Y'),
                 'time' => ($m->captured_at ?: ($m->post?->created_at ?? now()))->format('g:i A'),
-                'user_id' => $m->post?->user_id
+                'user_id' => $m->post?->user_id,
+                'relationship_id' => $m->post?->relationship_id
             ];
         }
 
@@ -93,7 +85,8 @@ class InternalGalleryPreview extends Component
         $media = \App\Models\PostMedia::findOrFail($mediaId);
         $post = $media->post;
         
-        if (Auth::id() !== $post->user_id) {
+        // Allow both partners
+        if ($post->relationship_id !== Auth::user()->relationship_id) {
             return;
         }
 
@@ -112,6 +105,7 @@ class InternalGalleryPreview extends Component
             'allMedia' => $this->allMedia,
             'initialMediaIndex' => $this->initialMediaIndex,
             'theme' => $this->theme,
-        ])->layout('layouts.guest', ['theme' => $this->theme]);
+            'isInternal' => true,
+        ])->layout('layouts.app');
     }
 }
