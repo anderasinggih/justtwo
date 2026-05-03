@@ -9,11 +9,33 @@
     
     @php
         $settings = \App\Models\PublicSetting::getSettings();
+        $currentTheme = $theme ?? ($settings->theme ?? 'light');
+        $themeColors = [
+            'light' => '#ffffff',
+            'dark' => '#000000',
+            'rose' => '#fff1f2',
+            'midnight' => '#020617',
+            'sky' => '#f0f9ff',
+            'mint' => '#f0fdf4',
+            'lavender' => '#f5f3ff',
+            'pink' => '#fff5f5',
+        ];
+        $bgColor = $themeColors[$currentTheme] ?? '#ffffff';
         $relationship = \App\Models\Relationship::orderBy('id', 'desc')->first();
         $spaceName = $relationship?->name ?? 'justtwo';
     @endphp
 
+    <meta name="theme-color" content="{{ $bgColor }}">
     <title>{{ $spaceName }} — {{ $settings->journey_title ?? 'Our Journey' }}</title>
+    
+    <style>
+        html, body { 
+            background-color: {{ $bgColor }} !important;
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+    </style>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
