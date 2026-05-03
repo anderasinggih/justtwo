@@ -26,11 +26,17 @@ Route::get('gallery/preview/{media}', \App\Livewire\InternalGalleryPreview::clas
 
 Route::get('memory/new', \App\Livewire\CreatePost::class)
     ->middleware(['auth', 'verified', 'relationship'])
-    ->name('memories.create');
+    ->name('memory.new');
 
-Route::get('memories/{post}/edit', \App\Livewire\CreatePost::class)
+Route::group(['middleware' => ['auth', 'verified', 'relationship']], function () {
+    Route::get('planner', \App\Livewire\Planner\PlanList::class)->name('planner');
+    Route::get('planner/create', \App\Livewire\Planner\PlanForm::class)->name('planner.create');
+    Route::get('planner/{plan}', \App\Livewire\Planner\PlanDetail::class)->name('planner.detail');
+});
+
+Route::get('relationship/join', \App\Livewire\JoinRelationship::class)
     ->middleware(['auth', 'verified', 'relationship'])
-    ->name('memories.edit');
+    ->name('relationship.join');
 
 Route::get('journal', \App\Livewire\Journal::class)
     ->middleware(['auth', 'verified', 'relationship'])

@@ -130,6 +130,41 @@
         @endforelse
     </div>
 
+    {{-- Section: Latest Plan --}}
+    @if($latestPlan)
+    <div class="space-y-3">
+        <div class="flex items-center justify-between px-2">
+            <h2 class="text-[10px] font-bold lowercase tracking-tight theme-text opacity-50">latest plan</h2>
+            <a href="{{ route('planner') }}" wire:navigate class="text-[9px] font-bold theme-accent uppercase tracking-widest">view all</a>
+        </div>
+
+        <a href="{{ route('planner.detail', $latestPlan->id) }}" wire:navigate 
+           class="theme-card border theme-border rounded-3xl p-4 shadow-sm flex items-center gap-4 group active:scale-95 transition-all">
+            <div class="w-12 h-12 rounded-2xl overflow-hidden bg-current/5 shrink-0 border theme-border">
+                @if($latestPlan->cover_image)
+                    <img src="{{ Storage::disk('public')->url($latestPlan->cover_image) }}" class="w-full h-full object-cover">
+                @else
+                    <div class="w-full h-full flex items-center justify-center">
+                        <svg class="w-5 h-5 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                    </div>
+                @endif
+            </div>
+            <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-bold theme-text tracking-tight lowercase truncate">{{ $latestPlan->title }}</h4>
+                <div class="flex items-center gap-2 mt-0.5">
+                    <div class="flex-1 h-1 bg-current/5 rounded-full overflow-hidden">
+                        <div class="h-full theme-accent-bg" style="width: {{ $latestPlan->budget_progress }}%"></div>
+                    </div>
+                    <span class="text-[8px] font-bold theme-accent">{{ round($latestPlan->budget_progress) }}%</span>
+                </div>
+            </div>
+            <div class="p-2 rounded-full bg-current/5 theme-text opacity-30 group-hover:opacity-100 group-hover:theme-accent transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+        </a>
+    </div>
+    @endif
+
     {{-- Add Saving Modal --}}
     @if($showAddSavingModal)
     <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-reveal">

@@ -72,6 +72,11 @@ class Relationship extends Model
         return $this->hasMany(Saving::class);
     }
 
+    public function plans()
+    {
+        return $this->hasMany(Plan::class);
+    }
+
     public static function formatNumber($number)
     {
         if ($number >= 1000000) {

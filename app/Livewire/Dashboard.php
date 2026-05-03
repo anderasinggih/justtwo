@@ -131,6 +131,11 @@ class Dashboard extends Component
             ->latest()
             ->get();
 
+        $latestPlan = $relationship->plans()
+            ->where('status', 'planning')
+            ->latest()
+            ->first();
+
         return view('livewire.dashboard', [
             'relationship' => $relationship,
             'partner' => $partner,
@@ -140,6 +145,7 @@ class Dashboard extends Component
             'daysRemainingFormatted' => $daysRemainingFormatted,
             'wishlistItems' => $wishlistItems,
             'savings' => $savings,
+            'latestPlan' => $latestPlan,
             'stats' => [
                 'total_memories' => $relationship->posts()->count(),
                 'total_photos' => PostMedia::whereHas('post', function($q) use ($relationship) {
