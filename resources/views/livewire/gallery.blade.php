@@ -1,4 +1,4 @@
-<div class="w-full pb-32 min-h-screen bg-black overflow-x-hidden text-white" 
+<div class="w-full min-h-screen bg-black text-white relative" 
      x-data="{ 
         cols: window.innerWidth > 1024 ? 5 : (window.innerWidth > 768 ? 4 : 3), 
         levels: [1, 3, 5, 13],
@@ -59,7 +59,6 @@
                         title: 'JustTwo Memories',
                     });
                 } else {
-                    // Fallback for desktop/unsupported browsers
                     for (let file of files) {
                         const url = window.URL.createObjectURL(file);
                         const a = document.createElement('a');
@@ -102,10 +101,19 @@
             -webkit-user-drag: none;
             touch-action: none;
         }
+        /* Memastikan header benar-benar fixed di kasta tertinggi */
+        .fixed-header {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 999 !important;
+        }
     </style>
     
     {{-- Header --}}
-    <header class="fixed top-0 left-0 right-0 z-50 py-5 px-4 bg-black/60 backdrop-blur-xl border-b border-white/5 transition-transform duration-300" 
+    <header class="fixed-header py-5 px-4 bg-black/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300" 
             x-show="cols !== 13" 
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0 -translate-y-full"
@@ -146,7 +154,7 @@
     </header>
 
     {{-- Content Grid --}}
-    <main class="w-full" :class="cols !== 13 ? 'pt-20' : 'pt-0'">
+    <main class="w-full pb-32" :class="cols !== 13 ? 'pt-24' : 'pt-0'">
         @forelse($groupedMedia as $monthYear => $mediaItems)
             @php
                 [$year, $month] = explode('-', $monthYear);
