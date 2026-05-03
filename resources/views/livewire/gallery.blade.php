@@ -72,12 +72,11 @@
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
             <div class="flex items-center gap-3">
-                <template x-if="isSelecting && selectedIds.length > 0">
-                    <button @click="if(confirm('Delete ' + selectedIds.length + ' items?')) archive()" 
-                            class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
-                        Delete (<span x-text="selectedIds.length"></span>)
-                    </button>
-                </template>
+                <button x-show="isSelecting && selectedIds.length > 0"
+                        @click="if(confirm('Delete ' + selectedIds.length + ' items?')) archive()" 
+                        class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
+                    Delete (<span x-text="selectedIds.length"></span>)
+                </button>
                 <button @click="isSelecting = !isSelecting; selectedIds = []" 
                         class="font-bold text-xs theme-accent" 
                         x-text="isSelecting ? 'Cancel' : 'Select'"></button>
