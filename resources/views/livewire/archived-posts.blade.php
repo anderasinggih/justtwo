@@ -133,10 +133,10 @@
                             {{-- Days Left Badge --}}
                             <div class="absolute top-1 right-1 px-1 py-0.5 bg-black/60 backdrop-blur-md rounded text-[7px] text-white/70 font-bold uppercase z-10">
                                 @php 
-                                    $archivedAt = $media->archived_at ?? $media->created_at;
+                                    $archivedAt = \Carbon\Carbon::parse($media->archived_at ?? $media->created_at);
                                     $daysLeft = 30 - now()->diffInDays($archivedAt);
                                 @endphp
-                                {{ max(0, $daysLeft) }}d left
+                                {{ (int) max(0, $daysLeft) }}d left
                             </div>
                         </div>
                     @endforeach
