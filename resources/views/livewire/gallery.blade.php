@@ -4,7 +4,6 @@
         levels: [1, 3, 5, 13],
         currentLevel: window.innerWidth > 1024 ? 2 : (window.innerWidth > 768 ? 2 : 1), 
         
-        {{-- Selection State --}}
         isSelecting: @entangle('isSelecting'),
         selectedIds: [],
         isDragging: false,
@@ -56,6 +55,7 @@
         .gallery-item {
             user-select: none;
             -webkit-user-drag: none;
+            touch-action: none;
         }
     </style>
     
@@ -100,29 +100,37 @@
                              @touchmove.passive="
                                 let touch = $event.touches[0];
                                 let el = document.elementFromPoint(touch.clientX, touch.clientY);
-                                let id = el?.closest('.gallery-item')?.getAttribute('data-id');
-                                if (id) handleDragOver(parseInt(id));
+                                let item = el?.closest('.gallery-item');
+                                if (item) {
+                                    let id = parseInt(item.getAttribute('data-id'));
+                                    if (id) handleDragOver(id);
+                                }
                              "
                              data-id="{{ $media->id }}">
                             
-                            {{-- Selection Overlay (Simple & Fast) --}}
-                            <div x-show="isSelecting" 
-                                 class="absolute inset-0 z-20 transition-colors duration-150 flex items-center justify-center"
-                                 :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500/20' : 'bg-transparent'">
-                                <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-150"
-                                     :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500 border-brand-500 text-white' : 'border-white/30 bg-black/10'">
-                                    <template x-if="selectedIds.includes({{ $media->id }})">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                    </template>
+                            {{-- Selection Overlay --}}
+                            <template x-if="isSelecting">
+                                <div @click="toggleSelect({{ $media->id }})" 
+                                     class="absolute inset-0 z-30 transition-colors duration-150"
+                                     :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500/20' : 'bg-transparent'">
+                                    
+                                    {{-- Icon in Bottom Left --}}
+                                    <div class="absolute bottom-1.5 left-1.5 w-5 h-5 rounded-full border-2 transition-all duration-150 flex items-center justify-center"
+                                         :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500 border-brand-500 text-white' : 'border-white/30 bg-black/20'">
+                                        <template x-if="selectedIds.includes({{ $media->id }})">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                        </template>
+                                    </div>
                                 </div>
-                            </div>
+                            </template>
 
-                            <a x-show="!isSelecting" href="{{ route('gallery.preview', $media->id) }}" wire:navigate class="absolute inset-0 z-10"></a>
+                            <template x-if="!isSelecting">
+                                <a href="{{ route('gallery.preview', $media->id) }}" wire:navigate class="absolute inset-0 z-10"></a>
+                            </template>
 
                             <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
-                                 class="w-full h-full object-cover"
-                                 loading="lazy"
-                                 draggable="false">
+                                 class="w-full h-full object-cover pointer-events-none"
+                                 loading="lazy">
                             
                             @if(str_contains($media->file_type, 'video'))
                                 <div class="absolute bottom-1.5 right-1.5 bg-black/40 backdrop-blur-md rounded p-0.5 z-0" x-show="cols < 5">
@@ -155,7 +163,7 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="translate-y-0 opacity-100"
          x-transition:leave-end="translate-y-20 opacity-0"
-         class="fixed bottom-24 inset-x-4 z-[100] flex justify-center">
+         class="fixed bottom-32 inset-x-4 z-[100] flex justify-center">
         <button @click="if(confirm('Archive ' + selectedIds.length + ' items?')) archive()" 
                 class="flex items-center gap-3 bg-red-500 text-white px-8 py-4 rounded-full shadow-[0_20px_50px_rgba(239,68,68,0.4)] font-bold text-sm active:scale-95 transition-all">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
