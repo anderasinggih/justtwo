@@ -52,6 +52,8 @@
         .gallery-item {
             user-select: none;
             -webkit-user-drag: none;
+        }
+        .gallery-item.selecting {
             touch-action: none;
         }
     </style>
@@ -105,6 +107,7 @@
                 <div class="gallery-grid gap-[1px]" :style="'--grid-cols: ' + cols">
                     @foreach($mediaItems as $media)
                         <div class="gallery-item relative aspect-square overflow-hidden bg-white/5 group"
+                             :class="{ 'selecting': isSelecting }"
                              @mousedown="handleDragStart({{ $media->id }})"
                              @mouseenter="handleDragOver({{ $media->id }})"
                              @touchstart.passive="handleDragStart({{ $media->id }})"
