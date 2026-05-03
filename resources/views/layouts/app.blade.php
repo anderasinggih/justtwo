@@ -118,6 +118,56 @@
                 }, false);
             }
         })(document, window.navigator, 'standalone');
+
+        // Global Swipe Navigation
+        (function() {
+            let touchstartX = 0;
+            let touchstartY = 0;
+            let touchendX = 0;
+            let touchendY = 0;
+
+            const routes = ['/dashboard', '/planner', '/memory/new', '/gallery', '/profile'];
+
+            function handleGesture(event) {
+                const deltax = touchendX - touchstartX;
+                const deltay = touchendY - touchstartY;
+
+                // Threshold 80px, must be horizontal
+                if (Math.abs(deltax) > Math.abs(deltay) && Math.abs(deltax) > 80) {
+                    // Ignore swipes on horizontal scroll areas or interactive elements
+                    if (event.target.closest('.overflow-x-auto, .snap-x, .pinch-zoom-container, input, textarea, button')) return;
+
+                    const currentPath = window.location.pathname;
+                    let currentIndex = routes.findIndex(r => currentPath.startsWith(r));
+                    
+                    if (currentIndex === -1 && currentPath === '/') currentIndex = 0;
+                    if (currentIndex === -1) return;
+
+                    if (deltax < 0) {
+                        // Swipe Left -> Next Menu
+                        if (currentIndex < routes.length - 1) {
+                            Livewire.navigate(routes[currentIndex + 1]);
+                        }
+                    } else {
+                        // Swipe Right -> Prev Menu
+                        if (currentIndex > 0) {
+                            Livewire.navigate(routes[currentIndex - 1]);
+                        }
+                    }
+                }
+            }
+
+            document.addEventListener('touchstart', e => {
+                touchstartX = e.changedTouches[0].screenX;
+                touchstartY = e.changedTouches[0].screenY;
+            }, {passive: true});
+
+            document.addEventListener('touchend', e => {
+                touchendX = e.changedTouches[0].screenX;
+                touchendY = e.changedTouches[0].screenY;
+                handleGesture(e);
+            }, {passive: true});
+        })();
     </script>
 </body>
 

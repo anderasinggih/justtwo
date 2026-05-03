@@ -1,13 +1,13 @@
-<div class="max-w-6xl mx-auto px-4 pt-6 pb-32 space-y-8">
+<div class="max-w-4xl mx-auto px-4 pt-10 pb-32 space-y-8">
     {{-- Header --}}
-    <div class="flex items-center justify-between px-2">
+    <div class="flex items-center justify-between px-2 sm:px-4">
         <div>
             <h2 class="text-xs font-bold theme-text opacity-30 lowercase tracking-widest">our journey</h2>
-            <h1 class="text-3xl font-bold theme-text lowercase tracking-tighter">Planner</h1>
+            <h1 class="text-3xl md:text-4xl font-bold theme-text lowercase tracking-tighter">Planner</h1>
         </div>
         <a href="{{ route('planner.create') }}" wire:navigate 
-           class="w-12 h-12 rounded-full theme-accent-bg text-white flex items-center justify-center shadow-xl shadow-brand-500/20 active:scale-90 transition-all hover:scale-110">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+           class="w-12 h-12 md:w-14 md:h-14 rounded-full theme-accent-bg text-white flex items-center justify-center shadow-xl shadow-brand-500/20 active:scale-90 transition-all hover:scale-110">
+            <svg class="w-7 h-7 md:w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
         </a>
     </div>
 
