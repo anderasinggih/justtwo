@@ -98,23 +98,15 @@
 
 /* Global scrollbar hide and disable pull-to-refresh */
 html, body {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
     -ms-overflow-style: none;
     scrollbar-width: none;
     overscroll-behavior-y: contain; /* Disable pull-to-refresh */
     touch-action: pan-x pan-y; /* Prevent pinch-zoom and double-tap zoom */
     -webkit-text-size-adjust: 100%; /* Prevent automatic text resizing */
-    position: fixed;
-    overflow: hidden;
 }
 
 #main-content {
-    height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    min-height: 100vh;
 }
 
 /* Hide Livewire 3 Navigation Progress Bar */

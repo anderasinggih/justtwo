@@ -69,7 +69,7 @@
         }
     }" :data-theme="currentTheme" :class="currentTheme"
     class="antialiased font-sans theme-text theme-bg transition-colors duration-1000">
-    <div class="relative min-h-screen" id="main-content">
+    <div class="relative min-h-screen">
 
         {{-- Nav --}}
         <nav

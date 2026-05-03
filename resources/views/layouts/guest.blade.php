@@ -42,7 +42,7 @@
 @endphp
 
 <body class="font-sans antialiased theme-bg theme-text transition-colors duration-1000" data-theme="{{ $theme }}">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-0 sm:pt-0" id="main-content">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-0 sm:pt-0">
         <div
             class="w-full sm:max-w-md sm:mt-6 px-6 py-12 sm:px-10 sm:py-12 sm:theme-card sm:shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden sm:rounded-[2.5rem] sm:border theme-border">
             {{ $slot }}

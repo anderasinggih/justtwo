@@ -11,22 +11,34 @@ class InternalGalleryPreview extends Component
 {
     public $allMedia = [];
     public $initialMediaIndex = 0;
+    public $targetId;
     public $theme = 'light';
 
     public function mount($media)
     {
+        $targetMedia = \App\Models\PostMedia::findOrFail($media);
         $relationship = Auth::user()->relationship;
-        $targetMedia = PostMedia::findOrFail($media);
+        $relationshipId = Auth::user()->relationshipMember->relationship_id ?? null;
 
         // Security check
-        if ($targetMedia->post->relationship_id !== $relationship->id) {
-            abort(403);
+        if ($targetMedia->post?->user_id === Auth::id()) {
+            // Owner always has access
+        } elseif ($relationshipId && $targetMedia->post?->relationship_id === $relationshipId) {
+            // Same relationship has access
+        } else {
+            abort(403, "Access Denied. Post Rel: " . ($targetMedia->post?->relationship_id ?? 'NULL') . ", Your Rel: " . ($relationshipId ?? 'NULL'));
         }
 
-        // Load all media in the relationship
-        $mediaRecords = PostMedia::whereHas('post', function ($query) use ($relationship) {
-            $query->where('relationship_id', $relationship->id)
-                ->where('is_archived', false);
+        $this->targetId = $targetMedia->post_id;
+        
+        // Load all media in this relationship
+        $mediaRecords = \App\Models\PostMedia::whereHas('post', function ($query) use ($relationshipId) {
+            $query->where(function($q) use ($relationshipId) {
+                if ($relationshipId) {
+                    $q->where('relationship_id', $relationshipId);
+                }
+                $q->orWhere('user_id', Auth::id());
+            })->where('is_archived', false);
         })
         ->with(['post', 'post.user'])
         ->orderBy('captured_at', 'desc')
@@ -44,23 +56,23 @@ class InternalGalleryPreview extends Component
                 'post_id' => $m->post_id,
                 'file_path' => \Storage::disk('public')->url($m->file_path_original),
                 'file_type' => $m->file_type,
-                'location' => $m->location ?: $m->post->location,
+                'location' => $m->location ?: ($m->post?->location ?? ''),
                 'lat' => $m->lat,
                 'lon' => $m->lon,
                 'captured_at' => $m->captured_at ? $m->captured_at->toISOString() : null,
-                'date' => ($m->captured_at ?: $m->post->created_at)->format('l, j M Y'),
-                'time' => ($m->captured_at ?: $m->post->created_at)->format('g:i A'),
-                'user_id' => $m->post->user_id
+                'date' => ($m->captured_at ?: ($m->post?->created_at ?? now()))->format('l, j M Y'),
+                'time' => ($m->captured_at ?: ($m->post?->created_at ?? now()))->format('g:i A'),
+                'user_id' => $m->post?->user_id
             ];
         }
 
         $this->allMedia = $mediaList;
-        $this->theme = $relationship->theme ?? 'light';
+        $this->theme = $relationship?->theme ?? 'light';
     }
 
     public function toggleReaction($postId)
     {
-        $post = Post::findOrFail($postId);
+        $post = \App\Models\Post::findOrFail($postId);
         $userId = Auth::id();
 
         $reaction = $post->reactions()->where('user_id', $userId)->where('type', 'heart')->first();
@@ -78,7 +90,7 @@ class InternalGalleryPreview extends Component
 
     public function deleteMedia($mediaId)
     {
-        $media = PostMedia::findOrFail($mediaId);
+        $media = \App\Models\PostMedia::findOrFail($mediaId);
         $post = $media->post;
         
         if (Auth::id() !== $post->user_id) {
@@ -92,14 +104,16 @@ class InternalGalleryPreview extends Component
             $post->delete();
         }
 
-        $this->allMedia = array_values(array_filter($this->allMedia, fn($m) => $m['id'] !== (int)$mediaId));
+        $this->allMedia = array_values(array_filter($this->allMedia, fn($m) => $m['id'] !== $mediaId));
         $this->dispatch('media-deleted');
     }
 
     public function render()
     {
-        // Reuse the public view but it works because it uses standard variables
-        return view('livewire.public-post-preview')
-            ->layout('layouts.app');
+        return view('livewire.public-post-preview', [
+            'allMedia' => $this->allMedia,
+            'initialMediaIndex' => $this->initialMediaIndex,
+            'theme' => $this->theme,
+        ])->layout('layouts.app');
     }
 }

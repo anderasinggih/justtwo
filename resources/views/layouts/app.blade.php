@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-    data-theme="{{ Auth::user()->relationship->theme ?? 'light' }}">
+    data-theme="{{ Auth::user()->relationship?->theme ?? 'light' }}">
 
 <head>
     <meta charset="utf-8">
@@ -39,14 +39,14 @@
 
 <body class="font-sans antialiased transition-colors duration-300"
     style="background-color: var(--bg-primary); color: var(--text-primary);" x-data="{ 
-            theme: '{{ Auth::user()->relationship->theme ?? 'light' }}',
+            theme: '{{ Auth::user()->relationship?->theme ?? 'light' }}',
             setTheme(newTheme) {
                 this.theme = newTheme;
                 document.documentElement.setAttribute('data-theme', newTheme);
             }
           }" x-init="setTheme(theme)" @theme-updated.window="setTheme($event.detail.theme)">
 
-    <div class="min-h-screen pb-24" id="main-content">
+    <div class="min-h-screen pb-24">
         {{-- Navigation --}}
         <livewire:layout.navigation />
 
