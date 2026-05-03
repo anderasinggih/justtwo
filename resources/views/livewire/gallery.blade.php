@@ -5,10 +5,12 @@
         levels: [1, 3, 5, 13],
         currentLevel: 1,
         zoom(delta) {
-            if (delta > 0 && this.currentLevel > 0) {
-                this.currentLevel--;
-            } else if (delta < 0 && this.currentLevel < this.levels.length - 1) {
+            if (delta > 0 && this.currentLevel < this.levels.length - 1) {
+                // Spreading: Try incrementing level (if user thinks spreading is zoom out)
                 this.currentLevel++;
+            } else if (delta < 0 && this.currentLevel > 0) {
+                // Pinching: Try decrementing level
+                this.currentLevel--;
             }
             this.cols = this.levels[this.currentLevel];
         },
