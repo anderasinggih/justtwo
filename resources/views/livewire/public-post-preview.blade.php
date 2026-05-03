@@ -113,7 +113,7 @@
         <div class="flex flex-col items-center {{ $overlayBg }} backdrop-blur-md px-6 py-1.5 rounded-full min-w-[150px] cursor-pointer" @click="showInfo = true; $nextTick(() => initMap())">
             <template x-for="(media, index) in allMedia">
                 <div x-show="currentIndex === index" class="flex flex-col items-center text-center">
-                    <span class="text-[10px] md:text-xs font-bold leading-tight" x-text="media.location || 'Captured Moment'"></span>
+                    <span class="text-[10px] md:text-xs font-bold leading-tight truncate max-w-[160px] md:max-w-[250px]" x-text="media.location || 'Captured Moment'"></span>
                     <span class="text-[9px] md:text-[10px] opacity-60 leading-tight" x-text="media.date + ' • ' + media.time"></span>
                 </div>
             </template>
@@ -171,7 +171,7 @@
                                 <div class="w-8 h-8 rounded-full bg-current opacity-10 flex items-center justify-center">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                 </div>
-                                <p class="text-sm font-bold leading-tight" x-text="media.location"></p>
+                                <p class="text-sm font-bold leading-tight truncate max-w-[200px]" x-text="media.location"></p>
                             </div>
                         </div>
                     </div>
