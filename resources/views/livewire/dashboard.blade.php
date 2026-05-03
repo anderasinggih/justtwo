@@ -110,7 +110,7 @@
                         <a href="{{ route('planner.detail', $plan->id) }}" wire:navigate 
                            class="theme-card border theme-border rounded-[1.5rem] p-4 shadow-sm flex items-center gap-4 group hover:shadow-md transition-all">
                             <div class="w-12 h-12 shrink-0 rounded-2xl bg-brand-500/5 flex items-center justify-center theme-accent text-xl group-hover:scale-110 transition-transform">
-                                🗺️
+                                {{ $plan->icon }}
                             </div>
                             <div class="min-w-0 flex-1">
                                 <h4 class="text-sm font-bold theme-text lowercase tracking-tight truncate">{{ $plan->title }}</h4>

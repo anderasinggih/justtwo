@@ -53,4 +53,19 @@ class Plan extends Model
         if ($this->total_budget <= 0) return 0;
         return min(100, ($this->getSpentBudgetAttribute() / $this->total_budget) * 100);
     }
+
+    public function getIconAttribute(): string
+    {
+        $title = strtolower($this->title);
+        
+        if (str_contains($title, 'nikah') || str_contains($title, 'wedding') || str_contains($title, 'kawin')) return '💍';
+        if (str_contains($title, 'rumah') || str_contains($title, 'home') || str_contains($title, 'apart')) return '🏠';
+        if (str_contains($title, 'makan') || str_contains($title, 'dinner') || str_contains($title, 'date') || str_contains($title, 'resto')) return '🍽️';
+        if (str_contains($title, 'nonton') || str_contains($title, 'movie') || str_contains($title, 'cinema') || str_contains($title, 'film')) return '🎬';
+        if (str_contains($title, 'jalan') || str_contains($title, 'trip') || str_contains($title, 'libur') || str_contains($title, 'bali') || str_contains($title, 'travel')) return '✈️';
+        if (str_contains($title, 'beli') || str_contains($title, 'shop')) return '🛍️';
+        if (str_contains($title, 'pesta') || str_contains($title, 'party') || str_contains($title, 'ultah') || str_contains($title, 'birth')) return '🎉';
+        
+        return '✨';
+    }
 }
