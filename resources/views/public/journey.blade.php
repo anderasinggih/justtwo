@@ -33,29 +33,16 @@
     class="antialiased font-sans theme-text theme-bg transition-colors duration-1000">
 
     <div class="relative min-h-screen">
-        {{-- Hero Header --}}
-        <header class="relative w-full h-[40vh] md:h-[50vh] lg:h-[60vh] overflow-hidden bg-black flex flex-col items-center justify-center text-center px-6">
-            <div class="absolute inset-0 opacity-40">
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/80"></div>
-                @if(count($videos) > 0)
-                    <img src="https://img.youtube.com/vi/{{ $videos[0]['id'] }}/maxresdefault.jpg" class="w-full h-full object-cover blur-sm">
-                @endif
-            </div>
-
-            <nav class="absolute top-0 left-0 right-0 p-4 md:p-8 flex items-center justify-between z-20">
-                <a href="{{ route('welcome') }}" class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white transition-transform active:scale-90">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </a>
-                <div class="w-10"></div>
-            </nav>
-
-            <div class="relative z-10 space-y-2">
-                <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tighter lowercase drop-shadow-2xl">
-                    {{ $settings->journey_title ?? 'Our Journey' }}
-                </h1>
-                <p class="text-white/60 text-sm md:text-lg max-w-md mx-auto">Shared memories captured in motion</p>
-            </div>
-        </header>
+        {{-- Simple Top Nav --}}
+        <nav class="max-w-5xl mx-auto p-6 md:p-12 flex items-center justify-between">
+            <a href="{{ route('welcome') }}" class="w-10 h-10 rounded-full hover:bg-white/5 flex items-center justify-center transition-transform active:scale-90">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </a>
+            <h1 class="text-xl md:text-4xl font-bold tracking-tighter lowercase">
+                {{ $settings->journey_title ?? 'all journey' }}
+            </h1>
+            <div class="w-10"></div>
+        </nav>
 
         {{-- Responsive Video List --}}
         <main class="max-w-5xl mx-auto px-4 py-12 md:py-16">
