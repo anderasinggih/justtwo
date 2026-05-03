@@ -24,6 +24,31 @@
     </div>
 
     <div class="max-w-5xl mx-auto px-1.5 sm:px-4 mt-6 space-y-6">
+        {{-- Linked Saving Goal (Magic Feature) --}}
+        @if($plan->saving)
+            <div class="theme-card border theme-border rounded-[1.5rem] p-5 shadow-sm relative overflow-hidden group">
+                <div class="absolute -right-8 -top-8 w-24 h-24 theme-accent-bg opacity-5 rounded-full blur-2xl group-hover:opacity-10 transition-opacity"></div>
+                <div class="flex justify-between items-center mb-3 relative z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-500/5 flex items-center justify-center theme-accent">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-bold uppercase tracking-widest opacity-30 theme-text">linked saving goal</p>
+                            <h3 class="text-sm font-bold theme-text lowercase tracking-tight">{{ $plan->saving->title }}</h3>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] font-bold theme-accent">Rp {{ number_format($plan->saving->current_amount, 0, ',', '.') }}</p>
+                        <p class="text-[8px] opacity-30 theme-text font-bold uppercase tracking-widest">{{ round($plan->saving->progress) }}% saved</p>
+                    </div>
+                </div>
+                <div class="h-2 w-full bg-current/5 rounded-full overflow-hidden border theme-border relative z-10">
+                    <div class="h-full theme-accent-bg shadow-[0_0_10px_rgba(var(--accent-color),0.4)]" style="width: {{ $plan->saving->progress }}%"></div>
+                </div>
+            </div>
+        @endif
+
         {{-- Custom Tab Navigation (Slim) --}}
         @if($plan->total_budget > 0)
             <div class="flex p-0.5 bg-current/5 rounded-xl max-w-[280px] mx-auto">

@@ -10,6 +10,7 @@ class Plan extends Model
 {
     protected $fillable = [
         'relationship_id',
+        'saving_id',
         'title',
         'target_date',
         'total_budget',
@@ -17,6 +18,11 @@ class Plan extends Model
         'description',
         'status',
     ];
+
+    public function saving(): BelongsTo
+    {
+        return $this->belongsTo(Saving::class);
+    }
 
     protected $casts = [
         'target_date' => 'date',
