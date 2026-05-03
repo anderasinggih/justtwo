@@ -149,30 +149,41 @@
 
                             {{-- Expandable Add Amount Form --}}
                             <div x-show="showAdd" x-collapse x-cloak class="mt-4 pt-4 border-t theme-border relative z-10">
-                                <div class="flex gap-2">
-                                    <div class="relative flex-1" x-data="{ 
-                                        displayAmount: '',
-                                        rawAmount: @entangle('savingAmounts.' . $saving->id)
-                                    }" x-init="$watch('rawAmount', v => { if(!v) displayAmount = '' })">
-                                        <input type="text" 
-                                               inputmode="numeric"
-                                               x-model="displayAmount"
-                                               x-mask:dynamic="'Rp ' + $money($input, '.', ',')"
-                                               x-on:input="rawAmount = displayAmount.replace(/[^\d]/g, '')"
-                                               placeholder="Rp 0" 
-                                               class="w-full bg-white/5 border theme-border rounded-xl px-4 py-2.5 text-xs theme-text focus:ring-brand-200 placeholder:text-[10px] placeholder:opacity-30">
-                                        
-                                        @if (session()->has('saving-success-' . $saving->id))
-                                            <span class="absolute -top-6 right-0 text-[10px] theme-accent font-bold animate-bounce">
-                                                {{ session('saving-success-' . $saving->id) }}
-                                            </span>
-                                        @endif
+                                @if($saving->current_amount >= $saving->target_amount)
+                                    <div class="flex items-center justify-center py-2 gap-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                                        <span class="text-xs font-bold text-emerald-500 lowercase tracking-tight">goal reached! well done. 🏆</span>
                                     </div>
-                                    <button wire:click="addSaving({{ $saving->id }})" 
-                                            class="px-6 py-2.5 theme-accent-bg text-white rounded-xl text-[10px] font-bold shadow-lg shadow-brand-500/20 active:scale-95 transition-all">
-                                        save
-                                    </button>
-                                </div>
+                                @else
+                                    <div class="flex gap-2">
+                                        <div class="relative flex-1" x-data="{ 
+                                            displayAmount: '',
+                                            rawAmount: @entangle('savingAmounts.' . $saving->id)
+                                        }" x-init="$watch('rawAmount', v => { if(!v) displayAmount = '' })">
+                                            <input type="text" 
+                                                   inputmode="numeric"
+                                                   x-model="displayAmount"
+                                                   x-mask:dynamic="'Rp ' + $money($input, '.', ',')"
+                                                   x-on:input="rawAmount = displayAmount.replace(/[^\d]/g, '')"
+                                                   placeholder="Rp 0" 
+                                                   class="w-full bg-white/5 border theme-border rounded-xl px-4 py-2.5 text-xs theme-text focus:ring-brand-200 placeholder:text-[10px] placeholder:opacity-30">
+                                            
+                                            @if (session()->has('saving-success-' . $saving->id))
+                                                <span class="absolute -top-6 right-0 text-[10px] theme-accent font-bold animate-bounce">
+                                                    {{ session('saving-success-' . $saving->id) }}
+                                                </span>
+                                            @endif
+                                            @if (session()->has('saving-error-' . $saving->id))
+                                                <span class="absolute -top-6 right-0 text-[10px] text-red-500 font-bold">
+                                                    {{ session('saving-error-' . $saving->id) }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <button wire:click="addSaving({{ $saving->id }})" 
+                                                class="px-6 py-2.5 theme-accent-bg text-white rounded-xl text-[10px] font-bold shadow-lg shadow-brand-500/20 active:scale-95 transition-all">
+                                            save
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @empty

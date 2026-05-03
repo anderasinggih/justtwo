@@ -34,6 +34,7 @@ Route::group(['middleware' => ['auth', 'verified', 'relationship']], function ()
     Route::get('planner', \App\Livewire\Planner\PlanList::class)->name('planner');
     Route::get('planner/create', \App\Livewire\Planner\PlanForm::class)->name('planner.create');
     Route::get('planner/{plan}', \App\Livewire\Planner\PlanDetail::class)->name('planner.detail');
+    Route::get('savings/create', \App\Livewire\Planner\SavingForm::class)->name('savings.create');
 });
 
 Route::get('journal', \App\Livewire\Journal::class)

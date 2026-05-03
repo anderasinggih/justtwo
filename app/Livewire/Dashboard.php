@@ -24,22 +24,32 @@ class Dashboard extends Component
 
     public function addSaving($savingId)
     {
+        $saving = Auth::user()->relationship->savings()->findOrFail($savingId);
+        
+        // Prevent adding if already reached target
+        if ($saving->current_amount >= $saving->target_amount) {
+            session()->flash('saving-error-' . $savingId, 'Goal reached! 🎉');
+            return;
+        }
+
         $amount = (int) ($this->savingAmounts[$savingId] ?? 0);
         if ($amount <= 0) return;
+
+        // Optional: Cap the amount to not exceed target
+        $remaining = $saving->target_amount - $saving->current_amount;
+        $finalAmount = min($amount, $remaining);
         
-        $saving = Auth::user()->relationship->savings()->findOrFail($savingId);
-        $saving->increment('current_amount', $amount);
+        $saving->increment('current_amount', $finalAmount);
         
         $saving->logs()->create([
             'user_id' => Auth::id(),
-            'amount' => $amount,
+            'amount' => $finalAmount,
         ]);
         
         $this->savingAmounts[$savingId] = '';
         $this->dispatch('savingUpdated');
         
-        // Optional: send success message
-        session()->flash('saving-success-' . $savingId, 'Success!');
+        session()->flash('saving-success-' . $savingId, 'Saved! 💰');
     }
  
     public function render()
