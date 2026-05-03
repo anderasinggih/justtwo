@@ -1,6 +1,6 @@
-<div class="max-w-5xl mx-auto px-1.5 sm:px-4 pt-4 space-y-5 pb-32" wire:poll.30s.visible>
+<div class="max-w-5xl mx-auto px-1.5 sm:px-4 pt-4 space-y-3.5 pb-32" wire:poll.30s.visible>
     {{-- Minimalist Header --}}
-    <div class="flex items-center justify-between mb-2 px-1">
+    <div class="flex items-center justify-between mb-1 px-1">
         <div>
             <h2 class="text-[10px] font-bold theme-text opacity-30 lowercase tracking-widest leading-none mb-1">welcome back</h2>
             <h1 class="text-xl font-bold theme-text lowercase tracking-tighter">Together</h1>
@@ -21,7 +21,7 @@
     </div>
 
     {{-- Hero Section: Together Timer (Dynamic Alpine Counter) --}}
-    <div class="relative overflow-hidden theme-card border theme-border rounded-[2.5rem] p-8 shadow-sm text-center"
+    <div class="relative overflow-hidden theme-card border theme-border rounded-[2.5rem] p-7 shadow-sm text-center"
          x-data="{ 
             start: @js($togetherStats['timestamp']),
             days: 0, hours: 0, mins: 0, secs: 0,
@@ -39,83 +39,80 @@
         <div class="absolute -right-24 -top-24 w-48 h-48 bg-brand-500/5 rounded-full blur-3xl opacity-40"></div>
         <div class="absolute -left-24 -bottom-24 w-48 h-48 theme-accent-bg opacity-5 rounded-full blur-3xl"></div>
         
-        <div class="relative z-10 space-y-5">
-            <div class="flex justify-center items-center gap-6 md:gap-12">
+        <div class="relative z-10 space-y-4">
+            <div class="flex justify-center items-center gap-6 md:gap-10">
                 @php $currentPartner = $partners->where('id', Auth::id())->first(); @endphp
                 <div class="flex flex-col items-center">
-                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 theme-border overflow-hidden shadow-sm">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 theme-border overflow-hidden shadow-sm">
                         @if($currentPartner?->profile_photo_path)
                             <img src="{{ Storage::disk('public')->url($currentPartner->profile_photo_path) }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full bg-current/5 flex items-center justify-center theme-text opacity-20 font-bold uppercase text-xs">{{ substr(Auth::user()->name, 0, 1) }}</div>
                         @endif
                     </div>
-                    <p class="text-[9px] font-bold mt-2 lowercase theme-text opacity-40">{{ Auth::user()->name }}</p>
+                    <p class="text-[8px] font-bold mt-1.5 lowercase theme-text opacity-40">{{ Auth::user()->name }}</p>
                 </div>
                 
                 <div class="flex flex-col items-center">
-                    <div class="w-10 h-10 bg-brand-500/5 rounded-full flex items-center justify-center theme-accent animate-pulse">
-                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <div class="w-9 h-9 bg-brand-500/5 rounded-full flex items-center justify-center theme-accent animate-pulse">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                     </div>
                 </div>
 
                 @php $otherPartner = $partners->where('id', '!=', Auth::id())->first(); @endphp
                 <div class="flex flex-col items-center">
-                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 theme-border overflow-hidden shadow-sm">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 theme-border overflow-hidden shadow-sm">
                         @if($otherPartner?->profile_photo_path)
                             <img src="{{ Storage::disk('public')->url($otherPartner->profile_photo_path) }}" class="w-full h-full object-cover">
                         @else
                             <div class="w-full h-full bg-current/5 flex items-center justify-center theme-text opacity-20 font-bold uppercase text-xs">?</div>
                         @endif
                     </div>
-                    <p class="text-[9px] font-bold mt-2 lowercase theme-text opacity-40">{{ $otherPartner?->name ?? 'wait' }}</p>
+                    <p class="text-[8px] font-bold mt-1.5 lowercase theme-text opacity-40">{{ $otherPartner?->name ?? 'wait' }}</p>
                 </div>
             </div>
 
-            <div class="pt-2">
-                <div class="flex items-center justify-center gap-2 md:gap-4">
-                    <div class="text-center">
-                        <h1 class="text-3xl md:text-4xl font-bold tracking-tighter theme-text" x-text="days"></h1>
-                        <p class="text-[8px] font-bold theme-text opacity-20 uppercase tracking-widest">days</p>
+            <div class="pt-1">
+                <div class="flex items-center justify-center gap-4 md:gap-8">
+                    <div class="text-center min-w-[40px]">
+                        <h1 class="text-2xl md:text-3xl font-bold tracking-tighter theme-text" x-text="days"></h1>
+                        <p class="text-[7px] font-bold theme-text opacity-20 uppercase tracking-widest">days</p>
                     </div>
-                    <div class="text-3xl md:text-4xl font-bold theme-text opacity-10">:</div>
-                    <div class="text-center">
-                        <h1 class="text-3xl md:text-4xl font-bold tracking-tighter theme-text" x-text="hours"></h1>
-                        <p class="text-[8px] font-bold theme-text opacity-20 uppercase tracking-widest">hours</p>
+                    <div class="text-center min-w-[40px]">
+                        <h1 class="text-2xl md:text-3xl font-bold tracking-tighter theme-text" x-text="hours"></h1>
+                        <p class="text-[7px] font-bold theme-text opacity-20 uppercase tracking-widest">hours</p>
                     </div>
-                    <div class="text-3xl md:text-4xl font-bold theme-text opacity-10">:</div>
-                    <div class="text-center">
-                        <h1 class="text-3xl md:text-4xl font-bold tracking-tighter theme-text" x-text="mins"></h1>
-                        <p class="text-[8px] font-bold theme-text opacity-20 uppercase tracking-widest">mins</p>
+                    <div class="text-center min-w-[40px]">
+                        <h1 class="text-2xl md:text-3xl font-bold tracking-tighter theme-text" x-text="mins"></h1>
+                        <p class="text-[7px] font-bold theme-text opacity-20 uppercase tracking-widest">mins</p>
                     </div>
-                    <div class="text-3xl md:text-4xl font-bold theme-text opacity-10">:</div>
-                    <div class="text-center">
-                        <h1 class="text-3xl md:text-4xl font-bold tracking-tighter theme-accent" x-text="secs"></h1>
-                        <p class="text-[8px] font-bold theme-text opacity-20 uppercase tracking-widest">secs</p>
+                    <div class="text-center min-w-[40px]">
+                        <h1 class="text-2xl md:text-3xl font-bold tracking-tighter theme-accent" x-text="secs"></h1>
+                        <p class="text-[7px] font-bold theme-text opacity-20 uppercase tracking-widest">secs</p>
                     </div>
                 </div>
-                <p class="text-[9px] opacity-30 theme-text lowercase tracking-wide mt-4 font-medium">
+                <p class="text-[8px] opacity-30 theme-text lowercase tracking-wide mt-3 font-medium">
                     since {{ $togetherStats['anniversary_formatted'] }}
                 </p>
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
         {{-- Left Column: Savings & Events --}}
-        <div class="lg:col-span-7 space-y-5">
+        <div class="lg:col-span-7 space-y-3.5">
             {{-- Shared Savings --}}
-            <section class="space-y-3">
+            <section class="space-y-2.5">
                 <div class="flex items-center justify-between px-1">
                     <h3 class="text-[10px] font-bold theme-text opacity-30 uppercase tracking-widest">shared savings</h3>
                 </div>
-                <div class="grid grid-cols-1 gap-3">
+                <div class="grid grid-cols-1 gap-2.5">
                     @forelse($savings as $saving)
                         <div x-data="{ showAdd: false }" class="theme-card border theme-border rounded-[1.5rem] p-4 shadow-sm group hover:shadow-md transition-all">
                             <div @click="showAdd = !showAdd" class="cursor-pointer">
-                                <div class="flex justify-between items-start mb-3">
+                                <div class="flex justify-between items-start mb-2.5">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-brand-500/5 flex items-center justify-center theme-accent text-lg">
+                                        <div class="w-9 h-9 rounded-full bg-brand-500/5 flex items-center justify-center theme-accent text-lg">
                                             {!! $saving->icon ?: '💰' !!}
                                         </div>
                                         <div>
@@ -134,7 +131,7 @@
                             </div>
 
                             {{-- Expandable Add Amount Form --}}
-                            <div x-show="showAdd" x-collapse x-cloak class="mt-4 pt-4 border-t theme-border">
+                            <div x-show="showAdd" x-collapse x-cloak class="mt-3.5 pt-3.5 border-t theme-border">
                                 <div class="flex gap-2">
                                     <div class="relative flex-1">
                                         <input type="number" 
@@ -159,13 +156,13 @@
             </section>
 
             {{-- Upcoming Events --}}
-            <section class="space-y-3">
+            <section class="space-y-2.5">
                 <div class="flex items-center justify-between px-1">
                     <h3 class="text-[10px] font-bold theme-text opacity-30 uppercase tracking-widest">upcoming events</h3>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                     @forelse($upcomingEvents as $event)
-                        <div class="theme-card border theme-border rounded-[1.2rem] p-3 shadow-sm text-center space-y-1 group">
+                        <div class="theme-card border theme-border rounded-[1.2rem] p-3 shadow-sm text-center space-y-0.5 group">
                             <p class="text-[8px] font-bold theme-accent uppercase tracking-widest">{{ $event->date->format('M d') }}</p>
                             <h4 class="text-[11px] font-bold theme-text lowercase tracking-tight truncate">{{ $event->title }}</h4>
                             <p class="text-[8px] opacity-30 theme-text lowercase">{{ $event->date->diffForHumans() }}</p>
@@ -180,17 +177,17 @@
         </div>
 
         {{-- Right Column: Upcoming Plans --}}
-        <div class="lg:col-span-5 space-y-5">
-            <section class="space-y-3">
+        <div class="lg:col-span-5 space-y-3.5">
+            <section class="space-y-2.5">
                 <div class="flex items-center justify-between px-1">
                     <h3 class="text-[10px] font-bold theme-text opacity-30 uppercase tracking-widest">latest plans</h3>
                     <a href="{{ route('planner') }}" wire:navigate class="text-[9px] font-bold theme-accent uppercase tracking-widest hover:opacity-70 transition-opacity">view all</a>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-2.5">
                     @forelse($upcomingPlans as $plan)
                         <a href="{{ route('planner.detail', $plan->id) }}" wire:navigate 
-                           class="theme-card border theme-border rounded-[1.5rem] p-4 shadow-sm flex items-center gap-4 group hover:shadow-md transition-all">
-                            <div class="w-12 h-12 shrink-0 rounded-2xl bg-brand-500/5 flex items-center justify-center theme-accent text-xl group-hover:scale-110 transition-transform">
+                           class="theme-card border theme-border rounded-[1.5rem] p-4 shadow-sm flex items-center gap-3.5 group hover:shadow-md transition-all">
+                            <div class="w-11 h-11 shrink-0 rounded-2xl bg-brand-500/5 flex items-center justify-center theme-accent text-lg group-hover:scale-110 transition-transform">
                                 {{ $plan->icon }}
                             </div>
                             <div class="min-w-0 flex-1">
