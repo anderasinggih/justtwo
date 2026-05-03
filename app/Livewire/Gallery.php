@@ -11,39 +11,30 @@ class Gallery extends Component
 {
     public $isSelecting = false;
     public $selectedMedia = [];
-    public $showConfirmModal = false;
 
-    public function confirmDelete()
+    public function archiveSelected($ids = null)
     {
-        if (empty($this->selectedMedia)) return;
-        $this->showConfirmModal = true;
-    }
+        $targetIds = $ids ?? $this->selectedMedia;
+        
+        if (empty($targetIds)) return;
 
-    public function cancelDelete()
-    {
-        $this->showConfirmModal = false;
-    }
-
-    public function archiveSelected()
-    {
-        if (empty($this->selectedMedia)) return;
-
-        $postIds = PostMedia::whereIn('id', $this->selectedMedia)
+        // Get the Post IDs from the Media IDs to be more accurate
+        $postIds = PostMedia::whereIn('id', $targetIds)
             ->pluck('post_id')
             ->toArray();
 
-        if (!empty($postIds)) {
-            Post::whereIn('id', $postIds)
-                ->where('relationship_id', Auth::user()->relationship_id)
-                ->update([
-                    'is_archived' => true,
-                    'archived_at' => now(),
-                ]);
-        }
+        if (empty($postIds)) return;
+
+        // Direct database update for speed and reliability
+        Post::whereIn('id', $postIds)
+            ->where('relationship_id', Auth::user()->relationship_id)
+            ->update([
+                'is_archived' => true,
+                'archived_at' => now(),
+            ]);
 
         $this->selectedMedia = [];
         $this->isSelecting = false;
-        $this->showConfirmModal = false;
         
         $this->dispatch('media-archived');
     }
