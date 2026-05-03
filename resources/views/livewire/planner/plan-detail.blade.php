@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <div class="max-w-5xl mx-auto px-4 mt-8 space-y-10">
+    <div class="max-w-5xl mx-auto px-1.5 sm:px-4 mt-8 space-y-10">
         {{-- Custom Tab Navigation --}}
         <div class="flex p-1 bg-current/5 rounded-2xl max-w-sm mx-auto">
             <button @click="tab = 'itinerary'" 

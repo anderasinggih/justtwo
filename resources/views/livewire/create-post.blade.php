@@ -139,7 +139,7 @@
 
         async selectPhoto(index) {
             if (this.localItems.length === 0) return;
-            if (this.cropper && this.localItems[this.currentIndex]) {
+            if (this.cropper) {
                 const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
                 this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.7);
             }
@@ -151,7 +151,7 @@
             this.isUploading = true;
             try {
                 // Save current crop
-                if (this.localItems.length > 0 && this.cropper && this.localItems[this.currentIndex]) {
+                if (this.localItems.length > 0 && this.cropper) {
                     const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
                     this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.7);
                 }
@@ -347,7 +347,7 @@
         </template>
     </header>
 
-    <div class="max-w-4xl mx-auto sm:px-6">
+    <div class="max-w-4xl mx-auto px-1.5 sm:px-4">
         {{-- Body --}}
         <div>
             {{-- Step 1: Select Type --}}
@@ -416,7 +416,7 @@
                     <div x-show="localItems[currentIndex]?.location" x-cloak
                          class="absolute bottom-4 left-4 z-20 flex items-center gap-1.5 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
                         <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <span class="text-[10px] text-white font-bold lowercase tracking-wide" x-text="localItems[currentIndex]?.location"></span>
+                        <span class="text-[10px] text-white font-bold lowercase tracking-wide" x-text="localItems[currentIndex].location"></span>
                     </div>
 
                     {{-- Loading Overlay --}}

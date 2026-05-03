@@ -1,4 +1,4 @@
-<div class="max-w-3xl mx-auto pb-32 pt-2" wire:poll.30s.visible>
+<div class="max-w-3xl mx-auto pb-32 pt-2 px-1.5 sm:px-4" wire:poll.30s.visible>
     {{-- Search Bar (Slim) --}}
     <div class="px-4 mb-4">
         <div class="relative group">

@@ -1,6 +1,6 @@
 <div class="max-w-5xl mx-auto pb-32" x-data="{ tab: 'posts' }">
     {{-- IG Style Top Header --}}
-    <header class="flex items-center justify-between px-4 h-14 sticky top-0 theme-bg z-30">
+    <header class="flex items-center justify-between px-2 h-14 sticky top-0 theme-bg z-30">
         <div class="w-10">
             <a href="{{ route('memory.new') }}" wire:navigate class="theme-text hover:opacity-70 transition-opacity">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>

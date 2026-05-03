@@ -109,12 +109,9 @@ html, body {
     min-height: 100vh;
 }
 
-/* Instagram-style Navigation Progress Bar */
+/* Hide Livewire 3 Navigation Progress Bar */
 .livewire-progress-bar {
-    height: 2px !important;
-    background-color: var(--accent-color) !important;
-    box-shadow: 0 0 10px var(--accent-color);
-    z-index: 9999 !important;
+    display: none !important;
 }
 
 /* Custom Atmospheric Animations */
@@ -148,37 +145,13 @@ html, body {
 }
 
 /* Premium Page Transition & Interaction */
-.page-reveal, .slide-from-right, .slide-from-left {
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-    perspective: 1000px;
-}
-
 .page-reveal {
-    animation: reveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.slide-from-right {
-    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.slide-from-left {
-    animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes reveal {
-    from { opacity: 0; transform: scale(0.98) translateY(10px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(30px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-30px); }
-    to { opacity: 1; transform: translateX(0); }
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .hover-lift {
