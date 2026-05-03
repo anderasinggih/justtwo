@@ -67,7 +67,7 @@ class InternalGalleryPreview extends Component
         }
 
         $this->allMedia = $mediaList;
-        $this->theme = $relationship?->theme ?? 'light';
+        $this->theme = 'dark';
     }
 
     public function toggleReaction($postId)
@@ -114,6 +114,6 @@ class InternalGalleryPreview extends Component
             'allMedia' => $this->allMedia,
             'initialMediaIndex' => $this->initialMediaIndex,
             'theme' => $this->theme,
-        ])->layout('layouts.app');
+        ])->layout('layouts.guest');
     }
 }

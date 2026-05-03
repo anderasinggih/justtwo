@@ -21,7 +21,7 @@ Route::get('gallery', \App\Livewire\Gallery::class)
     ->name('gallery');
 
 Route::get('gallery/preview/{media}', \App\Livewire\InternalGalleryPreview::class)
-    ->middleware(['auth', 'verified', 'relationship'])
+    ->middleware(['auth', 'verified'])
     ->name('gallery.preview');
 
 Route::get('memory/new', \App\Livewire\CreatePost::class)
