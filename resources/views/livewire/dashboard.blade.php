@@ -20,6 +20,39 @@
         </div>
     </div>
 
+    {{-- Anniversary Timer Card --}}
+    <div class="theme-card border theme-border rounded-[2.5rem] p-8 shadow-sm relative overflow-hidden group">
+        <div class="absolute -right-16 -top-16 w-64 h-64 theme-accent-bg opacity-5 rounded-full blur-3xl group-hover:opacity-10 transition-opacity"></div>
+        <div class="relative z-10 space-y-6">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-[10px] font-bold theme-text opacity-30 uppercase tracking-[0.2em] mb-2">Together Since</h2>
+                    <p class="text-xs font-bold theme-text lowercase opacity-60">{{ $togetherStats['anniversary_formatted'] }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-4xl font-bold theme-text tracking-tighter leading-none">{{ $togetherStats['total_days'] }}</p>
+                    <p class="text-[10px] font-bold theme-accent uppercase tracking-widest mt-1">days of love</p>
+                </div>
+            </div>
+
+            {{-- Milestone Progress --}}
+            @if($nextMilestone)
+            <div class="space-y-3 pt-4 border-t theme-border">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <p class="text-[9px] font-bold theme-accent uppercase tracking-widest mb-1">{{ $nextMilestone->title }}</p>
+                        <p class="text-[11px] font-bold theme-text lowercase opacity-40">{{ $daysRemainingFormatted }}</p>
+                    </div>
+                    <p class="text-[10px] font-bold theme-text opacity-30">{{ round($milestoneProgress) }}%</p>
+                </div>
+                <div class="h-1.5 w-full bg-current/5 rounded-full overflow-hidden">
+                    <div class="h-full theme-accent-bg shadow-[0_0_15px_rgba(var(--accent-color),0.4)]" style="width: {{ $milestoneProgress }}%"></div>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {{-- Left Column: Savings & Events --}}
         <div class="lg:col-span-7 space-y-5">
