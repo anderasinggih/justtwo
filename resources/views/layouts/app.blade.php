@@ -51,7 +51,7 @@
         <livewire:layout.navigation />
 
         {{-- Main Content --}}
-        <main class="page-reveal">
+        <main id="main-content" class="page-reveal">
             {{ $slot }}
         </main>
 
@@ -146,16 +146,28 @@
                     if (deltax < 0) {
                         // Swipe Left -> Next Menu
                         if (currentIndex < routes.length - 1) {
+                            sessionStorage.setItem('navDirection', 'right');
                             Livewire.navigate(routes[currentIndex + 1]);
                         }
                     } else {
                         // Swipe Right -> Prev Menu
                         if (currentIndex > 0) {
+                            sessionStorage.setItem('navDirection', 'left');
                             Livewire.navigate(routes[currentIndex - 1]);
                         }
                     }
                 }
             }
+
+            document.addEventListener('livewire:navigated', () => {
+                const direction = sessionStorage.getItem('navDirection');
+                const main = document.getElementById('main-content');
+                if (direction && main) {
+                    main.classList.remove('page-reveal');
+                    main.classList.add(direction === 'right' ? 'slide-from-right' : 'slide-from-left');
+                    sessionStorage.removeItem('navDirection');
+                }
+            });
 
             document.addEventListener('touchstart', e => {
                 touchstartX = e.changedTouches[0].screenX;
