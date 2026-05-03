@@ -88,7 +88,7 @@ class InternalGalleryPreview extends Component
         }
     }
 
-    public function deleteMedia($mediaId)
+    public function archiveMedia($mediaId)
     {
         $media = \App\Models\PostMedia::findOrFail($mediaId);
         $post = $media->post;
@@ -97,15 +97,13 @@ class InternalGalleryPreview extends Component
             return;
         }
 
-        \Illuminate\Support\Facades\Storage::disk('public')->delete($media->file_path_original);
-        $media->delete();
-
-        if ($post->media()->count() === 0) {
-            $post->delete();
-        }
+        $post->update([
+            'is_archived' => true,
+            'archived_at' => now(),
+        ]);
 
         $this->allMedia = array_values(array_filter($this->allMedia, fn($m) => $m['id'] !== $mediaId));
-        $this->dispatch('media-deleted');
+        $this->dispatch('media-archived');
     }
 
     public function render()

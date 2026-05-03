@@ -3,11 +3,51 @@
 namespace App\Livewire;
 
 use App\Models\PostMedia;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Gallery extends Component
 {
+    public $isSelecting = false;
+    public $selectedMedia = [];
+
+    public function toggleSelection()
+    {
+        $this->isSelecting = !$this->isSelecting;
+        $this->selectedMedia = [];
+    }
+
+    public function selectMedia($id)
+    {
+        if (in_array($id, $this->selectedMedia)) {
+            $this->selectedMedia = array_diff($this->selectedMedia, [$id]);
+        } else {
+            $this->selectedMedia[] = $id;
+        }
+    }
+
+    public function archiveSelected()
+    {
+        if (empty($this->selectedMedia)) return;
+
+        $mediaItems = PostMedia::whereIn('id', $this->selectedMedia)->get();
+        
+        foreach ($mediaItems as $media) {
+            $post = $media->post;
+            if ($post && $post->user_id === Auth::id()) {
+                $post->update([
+                    'is_archived' => true,
+                    'archived_at' => now(),
+                ]);
+            }
+        }
+
+        $this->isSelecting = false;
+        $this->selectedMedia = [];
+        $this->dispatch('media-archived');
+    }
+
     public function render()
     {
         $relationship = Auth::user()->relationship;

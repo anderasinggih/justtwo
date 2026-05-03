@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Plan extends Model
 {
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function ($plan) {
+            $plan->expenses()->delete();
+            $plan->itineraries()->delete();
+        });
+    }
     protected $fillable = [
         'relationship_id',
         'saving_id',
