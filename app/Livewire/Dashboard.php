@@ -12,6 +12,48 @@ use Livewire\Component;
 class Dashboard extends Component
 {
     public $newWishlistTitle = '';
+    
+    // Savings Properties
+    public $newSavingTitle = '';
+    public $newSavingTarget = '';
+    public $addAmount = '';
+    public $showAddSavingModal = false;
+
+    public function addSaving()
+    {
+        $this->validate([
+            'newSavingTitle' => 'required|string|max:255',
+            'newSavingTarget' => 'required|numeric|min:1',
+        ]);
+
+        Auth::user()->relationship->savings()->create([
+            'title' => $this->newSavingTitle,
+            'target_amount' => $this->newSavingTarget,
+            'current_amount' => 0,
+        ]);
+
+        $this->newSavingTitle = '';
+        $this->newSavingTarget = '';
+        $this->showAddSavingModal = false;
+    }
+
+    public function deposit($savingId)
+    {
+        $this->validate([
+            'addAmount' => 'required|numeric|min:1',
+        ]);
+
+        $saving = Auth::user()->relationship->savings()->findOrFail($savingId);
+        
+        $saving->increment('current_amount', $this->addAmount);
+        
+        $saving->logs()->create([
+            'user_id' => Auth::id(),
+            'amount' => $this->addAmount,
+        ]);
+
+        $this->addAmount = '';
+    }
 
     public function addToWishlist()
     {
@@ -84,6 +126,11 @@ class Dashboard extends Component
             ->latest()
             ->get();
 
+        $savings = $relationship->savings()
+            ->with(['logs', 'logs.user'])
+            ->latest()
+            ->get();
+
         return view('livewire.dashboard', [
             'relationship' => $relationship,
             'partner' => $partner,
@@ -92,6 +139,7 @@ class Dashboard extends Component
             'milestoneProgress' => $milestoneProgress,
             'daysRemainingFormatted' => $daysRemainingFormatted,
             'wishlistItems' => $wishlistItems,
+            'savings' => $savings,
             'stats' => [
                 'total_memories' => $relationship->posts()->count(),
                 'total_photos' => PostMedia::whereHas('post', function($q) use ($relationship) {

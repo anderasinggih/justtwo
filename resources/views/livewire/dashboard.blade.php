@@ -68,6 +68,101 @@
         </div>
     </div>
 
+    {{-- Section: Shared Savings --}}
+    <div class="space-y-3">
+        <div class="flex items-center justify-between px-2">
+            <h2 class="text-[10px] font-bold lowercase tracking-tight theme-text opacity-50">shared savings</h2>
+            <button wire:click="$set('showAddSavingModal', true)" class="text-[9px] font-bold theme-accent uppercase tracking-widest">+ add goal</button>
+        </div>
+
+        @forelse($savings as $saving)
+            <div class="theme-card border theme-border rounded-3xl p-5 shadow-sm space-y-4 relative overflow-hidden group">
+                <div class="absolute -right-8 -top-8 w-24 h-24 theme-accent-bg opacity-5 rounded-full blur-2xl group-hover:opacity-10 transition-opacity"></div>
+                
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <h3 class="text-sm font-bold lowercase tracking-tight theme-text">{{ $saving->title }}</h3>
+                        <p class="text-[10px] opacity-40 theme-text">target: <span class="font-bold">Rp {{ number_format($saving->target_amount, 0, ',', '.') }}</span></p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold theme-accent tracking-tighter">Rp {{ number_format($saving->current_amount, 0, ',', '.') }}</p>
+                        <p class="text-[9px] opacity-30 theme-text font-bold uppercase tracking-widest">{{ round($saving->progress) }}% saved</p>
+                    </div>
+                </div>
+
+                {{-- Progress Bar --}}
+                <div class="relative h-2 w-full bg-white/10 rounded-full overflow-hidden border theme-border">
+                    <div class="absolute inset-y-0 left-0 theme-accent-bg transition-all duration-1000 ease-out rounded-full shadow-[0_0_10px_rgba(var(--accent-color),0.5)]"
+                         style="width: {{ $saving->progress }}%"></div>
+                </div>
+
+                {{-- Quick Add Amount --}}
+                <div class="flex items-center gap-2 pt-1 relative z-10">
+                    <div class="relative flex-1">
+                        <input type="number" wire:model="addAmount" placeholder="amount..."
+                               class="w-full bg-white/5 border theme-border rounded-xl pl-3 pr-8 py-1.5 text-[10px] focus:ring-brand-200 placeholder:text-gray-500 lowercase theme-text">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[8px] opacity-30 font-bold">rb</span>
+                    </div>
+                    <button wire:click="deposit({{ $saving->id }})" 
+                            class="px-4 py-1.5 theme-accent-bg text-white rounded-xl text-[10px] font-bold hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand-500/20">
+                        save
+                    </button>
+                </div>
+
+                {{-- Last Contribution Log --}}
+                @if($saving->logs->first())
+                    <div class="pt-1 flex items-center gap-2 opacity-30">
+                        <div class="w-1 h-1 rounded-full theme-accent-bg"></div>
+                        <p class="text-[8px] italic lowercase theme-text">
+                            {{ $saving->logs->first()->user->name }} added {{ number_format($saving->logs->first()->amount, 0, ',', '.') }} {{ $saving->logs->first()->created_at->diffForHumans() }}
+                        </p>
+                    </div>
+                @endif
+            </div>
+        @empty
+            <div class="theme-card border border-dashed theme-border rounded-3xl p-8 text-center space-y-3">
+                <div class="w-12 h-12 bg-current/5 rounded-full mx-auto flex items-center justify-center opacity-20">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <p class="text-[10px] opacity-30 theme-text lowercase italic tracking-wide">no saving goals yet. let's plan something big together!</p>
+                <button wire:click="$set('showAddSavingModal', true)" class="text-[9px] font-bold theme-accent border border-brand-500/30 rounded-full px-4 py-1.5 hover:bg-brand-500/5 transition-all">create first goal</button>
+            </div>
+        @endforelse
+    </div>
+
+    {{-- Add Saving Modal --}}
+    @if($showAddSavingModal)
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-reveal">
+        <div class="theme-card border theme-border rounded-[2.5rem] w-full max-w-sm p-8 shadow-2xl space-y-6">
+            <div class="text-center space-y-1">
+                <h3 class="text-lg font-bold lowercase tracking-tight theme-text">New Saving Goal</h3>
+                <p class="text-[10px] opacity-40 theme-text lowercase">what are we dreaming of today?</p>
+            </div>
+
+            <form wire:submit.prevent="addSaving" class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold opacity-30 uppercase tracking-widest pl-1">goal name</label>
+                    <input wire:model="newSavingTitle" placeholder="e.g. bali vacation"
+                           class="w-full bg-white/5 border theme-border rounded-2xl px-4 py-3 text-sm focus:ring-brand-200 theme-text lowercase">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold opacity-30 uppercase tracking-widest pl-1">target amount</label>
+                    <input type="number" wire:model="newSavingTarget" placeholder="e.g. 5000000"
+                           class="w-full bg-white/5 border theme-border rounded-2xl px-4 py-3 text-sm focus:ring-brand-200 theme-text">
+                </div>
+
+                <div class="flex gap-3 pt-4">
+                    <button type="button" wire:click="$set('showAddSavingModal', false)" 
+                            class="flex-1 px-4 py-3 bg-white/5 theme-text rounded-2xl text-xs font-bold hover:bg-white/10 transition-all">cancel</button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-3 theme-accent-bg text-white rounded-2xl text-xs font-bold hover:scale-105 active:scale-95 transition-all shadow-xl shadow-brand-500/20">create goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+
     {{-- Section: Our Next Big Event --}}
     @if($nextMilestone)
     <div class="theme-card border theme-border rounded-3xl p-4 shadow-sm space-y-3">

@@ -67,6 +67,11 @@ class Relationship extends Model
         return $this->hasMany(WishlistItem::class);
     }
 
+    public function savings()
+    {
+        return $this->hasMany(Saving::class);
+    }
+
     public static function formatNumber($number)
     {
         if ($number >= 1000000) {
