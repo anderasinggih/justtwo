@@ -6,9 +6,10 @@
 
     <!-- PWA Meta Tags (Must be at the top) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="GalleryTwo">
     <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="theme-color" content="#000000">
     <meta name="mobile-web-app-capable" content="yes">
     <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
     <link rel="apple-touch-icon" href="{{ asset('images/auth-bg.png') }}">
@@ -41,7 +42,7 @@
 @endphp
 
 <body class="font-sans antialiased theme-bg theme-text transition-colors duration-1000" data-theme="{{ $theme }}">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-0 sm:pt-0">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-0 sm:pt-0" id="main-content">
         <div
             class="w-full sm:max-w-md sm:mt-6 px-6 py-12 sm:px-10 sm:py-12 sm:theme-card sm:shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden sm:rounded-[2.5rem] sm:border theme-border">
             {{ $slot }}
