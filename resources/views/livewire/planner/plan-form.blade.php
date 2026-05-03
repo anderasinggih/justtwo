@@ -1,12 +1,12 @@
-<div class="max-w-2xl mx-auto px-1.5 sm:px-4 pt-4 pb-32">
-    <div class="flex items-center gap-3 mb-6 px-2">
+<div class="max-w-2xl mx-auto px-5 sm:px-8 pt-4 pb-32">
+    <div class="flex items-center gap-3 mb-6 px-1">
         <a href="{{ route('planner') }}" wire:navigate class="p-2 rounded-full hover:bg-current/5 transition-colors theme-text opacity-50">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </a>
         <h1 class="text-xl font-bold theme-text lowercase tracking-tighter">{{ $planId ? 'edit' : 'new' }} plan</h1>
     </div>
 
-    <form wire:submit.prevent="save" class="space-y-4 px-2" x-data="{ 
+    <form wire:submit.prevent="save" class="space-y-4" x-data="{ 
         rawBudget: @entangle('total_budget').live,
         get isDreamPlan() { return !this.rawBudget || this.rawBudget == 0 }
     }">

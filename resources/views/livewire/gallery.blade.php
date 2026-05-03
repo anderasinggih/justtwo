@@ -1,4 +1,4 @@
-<div class="w-full pb-32 min-h-screen bg-black text-white" 
+<div class="w-full pb-32 min-h-screen bg-black overflow-x-hidden text-white" 
      x-data="{ 
         cols: window.innerWidth > 1024 ? 8 : (window.innerWidth > 768 ? 4 : 3), 
         levels: [1, 3, 5, 13],
@@ -9,7 +9,6 @@
         isDragging: false,
         lastDraggedId: null,
         showConfirm: false,
-        scrolled: false,
 
         toggleSelect(id) {
             if (!this.isSelecting) return;
@@ -46,7 +45,6 @@
             this.showConfirm = false;
         }
      }"
-     @scroll.window="scrolled = window.pageYOffset > 20"
      @mouseup.window="handleDragEnd()"
      @touchend.window="handleDragEnd()">
 
@@ -61,30 +59,23 @@
             -webkit-user-drag: none;
             touch-action: none;
         }
-        header {
-            will-change: background-color, backdrop-filter;
-            -webkit-backdrop-filter: blur(16px);
-        }
     </style>
     
-    {{-- Dynamic Header --}}
-    <header class="fixed top-0 inset-x-0 z-[9999] px-4 pt-8 pb-5 transition-all duration-500"
+    {{-- Header --}}
+    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-300 bg-black/60 backdrop-blur-xl border-b border-white/5"
             x-show="cols !== 13"
-            :class="scrolled ? 'bg-black/80 backdrop-blur-2xl border-b border-white/5' : 'bg-transparent'"
-            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 -translate-y-2"
             x-transition:enter-end="opacity-100 translate-y-0"
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 -translate-y-2">
-        
-        <div class="flex items-center justify-between max-w-7xl mx-auto">
-            <h1 class="text-2xl font-bold tracking-tight text-white drop-shadow-2xl">Library</h1>
-            
-            <div class="flex items-center gap-4">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
+            <div class="flex items-center gap-3">
                 <template x-if="isSelecting && selectedIds.length > 0">
-                    <div class="flex items-center gap-4 animate-in fade-in slide-in-from-right-2">
-                        {{-- Bulk Save (Share to Photos) --}}
+                    <div class="flex items-center gap-3 animate-in fade-in slide-in-from-right-2 duration-200">
+                        {{-- Bulk Save --}}
                         <button @click="
                             let mediaItems = @js($groupedMedia->flatten());
                             let selectedMedia = mediaItems.filter(m => selectedIds.includes(m.id));
@@ -98,27 +89,25 @@
                                     navigator.share({ files: readyFiles, title: 'Save to Photos' });
                                 }
                             });
-                        " class="font-bold text-sm text-brand-400">
+                        " class="font-bold text-xs theme-accent">
                             Save (<span x-text="selectedIds.length"></span>)
                         </button>
 
                         {{-- Bulk Delete --}}
-                        <button @click="showConfirm = true" class="font-bold text-sm text-red-500">
+                        <button @click="showConfirm = true" class="font-bold text-xs text-red-500">
                             Delete
                         </button>
                     </div>
                 </template>
-
                 <button @click="isSelecting = !isSelecting; selectedIds = []" 
-                        class="font-bold text-sm px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/5 transition-all active:scale-90" 
-                        x-text="isSelecting ? 'Cancel' : 'Select'">
-                </button>
+                        class="font-bold text-xs theme-accent" 
+                        x-text="isSelecting ? 'Cancel' : 'Select'"></button>
             </div>
         </div>
     </header>
 
     {{-- Content Grid --}}
-    <main class="w-full pt-[90px]">
+    <main class="w-full">
         @forelse($groupedMedia as $monthYear => $mediaItems)
             @php
                 [$year, $month] = explode('-', $monthYear);
@@ -187,7 +176,7 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-[10000] flex items-center justify-center px-6 bg-black/80 backdrop-blur-md"
+         class="fixed inset-0 z-[100] flex items-center justify-center px-6 bg-black/80 backdrop-blur-md"
          x-cloak>
         <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-8 w-full max-w-sm text-center shadow-2xl animate-in zoom-in-95 duration-300">
             <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">

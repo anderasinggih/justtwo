@@ -333,7 +333,7 @@
         </template>
     </header>
 
-    <div class="max-w-4xl mx-auto px-1.5 sm:px-4">
+    <div class="max-w-4xl mx-auto px-5 sm:px-8">
         <div x-show="step == 1" class="flex flex-col items-center justify-center py-12 px-6 text-center space-y-12">
             <div class="space-y-2">
                 <h3 class="text-2xl font-bold theme-text lowercase">start something new</h3>
