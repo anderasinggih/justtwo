@@ -141,8 +141,8 @@
                                         
                                         {{-- Moving Mascot/Icon --}}
                                         <div class="absolute -right-2 -top-1 w-5 h-5 flex items-center justify-center transform group-hover:scale-125 transition-transform">
-                                            <svg class="w-3.5 h-3.5 text-amber-300 animate-[twinkle_2s_infinite] drop-shadow-[0_0_8px_rgba(252,211,77,0.8)]" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            <svg class="w-4 h-4 text-white animate-[twinkle_1.5s_infinite] drop-shadow-[0_0_10px_rgba(255,255,255,0.9)]" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
                                             </svg>
                                         </div>
                                     </div>
@@ -267,8 +267,8 @@
             100% { transform: translateX(100%); }
         }
         @keyframes twinkle {
-            0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 5px rgba(252,211,77,0.8)); }
-            50% { opacity: 0.7; transform: scale(1.2) rotate(15deg); filter: drop-shadow(0 0 15px rgba(252,211,77,1)); }
+            0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 5px rgba(255,255,255,0.8)); }
+            50% { opacity: 0.7; transform: scale(1.2) rotate(15deg); filter: drop-shadow(0 0 15px rgba(255,255,255,1)); }
         }
     </style>
 </div>
