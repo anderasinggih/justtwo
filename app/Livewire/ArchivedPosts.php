@@ -68,7 +68,7 @@ class ArchivedPosts extends Component
 
         $groupedMedia = $media->groupBy(function($item) {
             $date = $item->archived_at ?? $item->created_at;
-            return $date->format('Y-F');
+            return \Carbon\Carbon::parse($date)->format('Y-F');
         });
 
         return view('livewire.archived-posts', [
