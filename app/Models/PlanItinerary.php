@@ -13,10 +13,12 @@ class PlanItinerary extends Model
         'event_time',
         'activity',
         'notes',
+        'is_completed',
     ];
 
     protected $casts = [
         'event_date' => 'date',
+        'is_completed' => 'boolean',
     ];
 
     public function plan(): BelongsTo

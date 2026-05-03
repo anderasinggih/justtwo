@@ -22,8 +22,8 @@
                            class="w-full bg-white/5 border theme-border rounded-2xl px-5 py-4 text-sm focus:ring-brand-200 theme-text">
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-[10px] font-bold opacity-30 uppercase tracking-widest pl-2">total budget</label>
-                    <input type="number" wire:model="total_budget" placeholder="nominal..."
+                    <label class="text-[10px] font-bold opacity-30 uppercase tracking-widest pl-2">total budget (optional)</label>
+                    <input type="number" wire:model="total_budget" placeholder="e.g. 0 if no budget"
                            class="w-full bg-white/5 border theme-border rounded-2xl px-5 py-4 text-sm focus:ring-brand-200 theme-text">
                 </div>
             </div>

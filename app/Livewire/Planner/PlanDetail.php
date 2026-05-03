@@ -74,6 +74,13 @@ class PlanDetail extends Component
         $this->plan->refresh();
     }
 
+    public function toggleItinerary($id)
+    {
+        $item = $this->plan->itineraries()->findOrFail($id);
+        $item->update(['is_completed' => !$item->is_completed]);
+        $this->plan->refresh();
+    }
+
     public function deleteItinerary($id)
     {
         $this->plan->itineraries()->findOrFail($id)->delete();

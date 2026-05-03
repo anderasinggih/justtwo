@@ -24,24 +24,26 @@
     </div>
 
     <div class="max-w-5xl mx-auto px-1.5 sm:px-4 mt-8 space-y-10">
-        {{-- Custom Tab Navigation --}}
-        <div class="flex p-1 bg-current/5 rounded-2xl max-w-sm mx-auto">
-            <button @click="tab = 'itinerary'" 
-                    :class="tab === 'itinerary' ? 'theme-card theme-text shadow-sm' : 'theme-text opacity-40'"
-                    class="flex-1 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all">
-                itinerary
-            </button>
-            <button @click="tab = 'budget'" 
-                    :class="tab === 'budget' ? 'theme-card theme-text shadow-sm' : 'theme-text opacity-40'"
-                    class="flex-1 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all">
-                budget
-            </button>
-        </div>
+        {{-- Custom Tab Navigation (Only show budget if total_budget > 0) --}}
+        @if($plan->total_budget > 0)
+            <div class="flex p-1 bg-current/5 rounded-2xl max-w-sm mx-auto">
+                <button @click="tab = 'itinerary'" 
+                        :class="tab === 'itinerary' ? 'theme-card theme-text shadow-sm' : 'theme-text opacity-40'"
+                        class="flex-1 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all">
+                    itinerary
+                </button>
+                <button @click="tab = 'budget'" 
+                        :class="tab === 'budget' ? 'theme-card theme-text shadow-sm' : 'theme-text opacity-40'"
+                        class="flex-1 py-2.5 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all">
+                    budget
+                </button>
+            </div>
+        @endif
 
         {{-- Itinerary Tab Content --}}
         <div x-show="tab === 'itinerary'" x-transition class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
             {{-- Left Column: Form --}}
-            <div class="md:col-span-5 space-y-6 sticky top-24">
+            <div class="md:col-span-5 space-y-6 md:sticky md:top-24">
                 <div class="theme-card border theme-border rounded-[2rem] p-6 shadow-sm space-y-5">
                     <h3 class="text-[10px] font-bold theme-text opacity-30 uppercase tracking-widest pl-1">add activity</h3>
                     <div class="grid grid-cols-2 gap-4">
@@ -75,16 +77,21 @@
                             @foreach($items as $item)
                                 <div class="flex gap-4 group">
                                     <div class="flex flex-col items-center">
-                                        <div class="w-2.5 h-2.5 rounded-full theme-accent-bg mt-2.5 shadow-[0_0_8px_rgba(var(--accent-color),0.5)]"></div>
+                                        <button wire:click="toggleItinerary({{ $item->id }})" 
+                                                class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all mt-2 {{ $item->is_completed ? 'bg-green-500 border-green-500 text-white shadow-[0_0_10px_rgba(34,197,94,0.4)]' : 'theme-border bg-transparent' }}">
+                                            @if($item->is_completed)
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            @endif
+                                        </button>
                                         <div class="w-[1px] flex-1 bg-current/10 my-2"></div>
                                     </div>
-                                    <div class="flex-1 theme-card border theme-border rounded-2xl p-5 relative hover:bg-white/5 transition-all shadow-sm">
+                                    <div class="flex-1 theme-card border theme-border rounded-2xl p-5 relative hover:bg-white/5 transition-all shadow-sm {{ $item->is_completed ? 'opacity-40' : '' }}">
                                         <div class="flex justify-between items-start">
                                             <div class="space-y-1">
-                                                <p class="text-[10px] font-bold theme-accent uppercase tracking-wider">{{ $item->event_time ? \Carbon\Carbon::parse($item->event_time)->format('g:i A') : 'anytime' }}</p>
-                                                <h4 class="text-base font-bold theme-text tracking-tight lowercase">{{ $item->activity }}</h4>
+                                                <p class="text-[10px] font-bold theme-accent uppercase tracking-wider {{ $item->is_completed ? 'line-through' : '' }}">{{ $item->event_time ? \Carbon\Carbon::parse($item->event_time)->format('g:i A') : 'anytime' }}</p>
+                                                <h4 class="text-base font-bold theme-text tracking-tight lowercase {{ $item->is_completed ? 'line-through' : '' }}">{{ $item->activity }}</h4>
                                                 @if($item->notes)
-                                                    <p class="text-xs opacity-40 theme-text mt-2 lowercase leading-relaxed">{{ $item->notes }}</p>
+                                                    <p class="text-xs opacity-40 theme-text mt-2 lowercase leading-relaxed {{ $item->is_completed ? 'line-through' : '' }}">{{ $item->notes }}</p>
                                                 @endif
                                             </div>
                                             <button wire:click="deleteItinerary({{ $item->id }})" class="opacity-0 group-hover:opacity-100 p-2 text-red-400/50 hover:text-red-500 transition-all">
@@ -105,9 +112,10 @@
         </div>
 
         {{-- Budget Tab Content --}}
+        @if($plan->total_budget > 0)
         <div x-show="tab === 'budget'" x-transition class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
             {{-- Left Column: Overview & Form --}}
-            <div class="md:col-span-5 space-y-6 sticky top-24">
+            <div class="md:col-span-5 space-y-6 md:sticky md:top-24">
                 {{-- Budget Overview Card --}}
                 <div class="theme-card border theme-border rounded-[2.5rem] p-8 shadow-sm space-y-6 relative overflow-hidden">
                     <div class="absolute -right-8 -top-8 w-32 h-32 theme-accent-bg opacity-5 rounded-full blur-3xl"></div>
@@ -197,5 +205,6 @@
                 @endforelse
             </div>
         </div>
+        @endif
     </div>
 </div>
