@@ -464,7 +464,7 @@
                 <div class="text-center mb-8 md:mb-12">
                     <h2 class="text-xl md:text-3xl font-bold tracking-tighter lowercase">our soundtrack</h2>
                 </div>
-                <div class="rounded-3xl overflow-hidden shadow-2xl border theme-border">
+                <div class="rounded-xl overflow-hidden shadow-2xl">
                     <iframe style="border-radius:12px" src="{{ $spotifyEmbedUrl }}" width="100%" height="152"
                         frameBorder="0" allowfullscreen=""
                         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
