@@ -104,7 +104,7 @@ class PublicPostPreview extends Component
         }
     }
 
-    public function archiveMedia($mediaId)
+    public function deleteMedia($mediaId)
     {
         $media = \App\Models\PostMedia::findOrFail($mediaId);
         $post = $media->post;
@@ -113,15 +113,17 @@ class PublicPostPreview extends Component
             return;
         }
 
-        $post->update([
-            'is_archived' => true,
-            'archived_at' => now()
-        ]);
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($media->file_path_original);
+        $media->delete();
+
+        if ($post->media()->count() === 0) {
+            $post->delete();
+        }
 
         // Remove from the local array to update UI immediately
         $this->allMedia = array_values(array_filter($this->allMedia, fn($m) => $m['id'] !== $mediaId));
         
-        $this->dispatch('media-archived');
+        $this->dispatch('media-deleted');
     }
 
     public function render()

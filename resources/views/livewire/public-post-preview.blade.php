@@ -9,12 +9,10 @@
         prev() {
             if (this.currentIndex > 0) this.currentIndex--;
         },
-        archiveMedia() {
-            let media = this.allMedia[this.currentIndex];
-            if (media) {
-                $wire.archiveMedia(media.id);
-                this.showConfirm = false;
-            }
+        archive() {
+            let mediaId = this.allMedia[this.currentIndex].id;
+            $wire.archiveMedia(mediaId);
+            this.showConfirm = false;
         }
      }"
      @keydown.right.window="next()"
@@ -50,14 +48,14 @@
                 <template x-if="currentIndex === {{ $index }}">
                     <div class="w-full h-full flex items-center justify-center animate-in fade-in zoom-in-95 duration-500">
                         @if(str_contains($m['file_type'], 'video'))
-                            <video src="{{ $m['file_path'] }}" 
+                            <video src="{{ Storage::disk('public')->url($m['file_path_original']) }}" 
                                    class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
                                    controls 
                                    autoplay 
                                    loop
                                    playsinline></video>
                         @else
-                            <img src="{{ $m['file_path'] }}" 
+                            <img src="{{ Storage::disk('public')->url($m['file_path_original']) }}" 
                                  class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl">
                         @endif
                     </div>
@@ -73,11 +71,11 @@
             @foreach($allMedia as $index => $m)
                 <template x-if="currentIndex === {{ $index }}">
                     <div class="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                        @if($m['location'])
-                            <p class="text-sm font-bold text-white lowercase tracking-tight">{{ $m['location'] }}</p>
+                        @if($m['location_name'])
+                            <p class="text-sm font-bold text-white lowercase tracking-tight">{{ $m['location_name'] }}</p>
                         @endif
                         <p class="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-                            {{ $m['date'] }}
+                            {{ \Carbon\Carbon::parse($m['captured_at'] ?? $m['created_at'])->format('M d, Y') }}
                         </p>
                     </div>
                 </template>
@@ -88,7 +86,9 @@
         <div class="relative w-10 h-10">
             @foreach($allMedia as $index => $m)
                 @if(Auth::check() && $m['user_id'] === Auth::id())
-                    <button x-show="currentIndex === {{ $index }}" @click="showConfirm = true" class="absolute inset-0 rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/20 flex items-center justify-center text-red-500 transition-transform active:scale-90 z-40">
+                    <button x-show="currentIndex === {{ $index }}" 
+                            @click="showConfirm = true" 
+                            class="absolute inset-0 rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/20 flex items-center justify-center text-red-500 transition-transform active:scale-90 z-40">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 @endif
@@ -97,30 +97,32 @@
     </div>
 
     {{-- Premium Confirmation Modal --}}
-    <div x-show="showConfirm" 
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-[100] flex items-center justify-center px-6 bg-black/80 backdrop-blur-md"
-         x-cloak>
-        <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-8 w-full max-w-sm text-center shadow-2xl animate-in zoom-in-95 duration-300">
-            <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-            </div>
-            <h3 class="text-xl font-bold text-white mb-2">Delete photo?</h3>
-            <p class="text-sm text-white/50 mb-8 lowercase">this photo will be moved to deleted items and permanently removed after 30 days.</p>
-            
-            <div class="flex flex-col gap-3">
-                <button @click="archiveMedia()" class="w-full py-4 bg-red-500 text-white rounded-2xl font-bold text-sm active:scale-95 transition-all">
-                    Delete
-                </button>
-                <button @click="showConfirm = false" class="w-full py-4 bg-white/5 text-white/70 rounded-2xl font-bold text-sm active:scale-95 transition-all">
-                    Cancel
-                </button>
+    <template x-teleport="body">
+        <div x-show="showConfirm" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-[200] flex items-center justify-center px-6 bg-black/80 backdrop-blur-md"
+             x-cloak>
+            <div @click.away="showConfirm = false" class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-8 w-full max-w-sm text-center shadow-2xl animate-in zoom-in-95 duration-300">
+                <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Delete photo?</h3>
+                <p class="text-sm text-white/50 mb-8 lowercase">this photo will be moved to deleted items and permanently removed after 30 days.</p>
+                
+                <div class="flex flex-col gap-3">
+                    <button @click="archive()" class="w-full py-4 bg-red-500 text-white rounded-2xl font-bold text-sm active:scale-95 transition-all">
+                        Delete
+                    </button>
+                    <button @click="showConfirm = false" class="w-full py-4 bg-white/5 text-white/70 rounded-2xl font-bold text-sm active:scale-95 transition-all">
+                        Cancel
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
+    </template>
 </div>
