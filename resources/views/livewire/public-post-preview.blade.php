@@ -38,7 +38,12 @@
                 if (!mapContainer || mapContainer._leaflet_id) return;
                 setTimeout(() => {
                     const map = L.map(mapContainer, { zoomControl: false, attributionControl: false }).setView([media.lat, media.lon], 13);
-                    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+                    const isDark = @js(in_array($theme, ['dark', 'midnight']));
+                    const tileUrl = isDark 
+                        ? 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png'
+                        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+                    
+                    L.tileLayer(tileUrl).addTo(map);
                     
                     const icon = L.divIcon({
                         className: 'custom-map-marker',
@@ -181,7 +186,7 @@
     <style>
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        .leaflet-container { background: #0f172a !important; border-radius: 2rem; }
+        .leaflet-container { background: var(--bg-primary) !important; border-radius: 2rem; }
         .custom-map-marker { filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6)); border: none !important; background: transparent !important; }
     </style>
 </div>
