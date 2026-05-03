@@ -132,10 +132,10 @@
                     </template>
                     <span x-text="isDownloading ? 'Preparing...' : 'Save'"></span>
                 </button>
-                <button x-show="isSelecting && selectedIds.length > 0"
+                <button x-show="selectedIds.length > 0"
                         wire:click="archiveSelected"
-                        @click="selectedIds = []; isSelecting = false;"
-                        class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
+                        wire:loading.attr="disabled"
+                        class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200 disabled:opacity-50">
                     Delete (<span x-text="selectedIds.length"></span>)
                 </button>
                 <button @click="isSelecting = !isSelecting; selectedIds = []; selectedUrls = []" 

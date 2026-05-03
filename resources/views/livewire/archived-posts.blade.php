@@ -62,13 +62,10 @@
             <div class="flex items-center gap-3">
                 <template x-if="isSelecting && selectedIds.length > 0">
                     <div class="flex items-center gap-3 animate-in fade-in slide-in-from-right-2 duration-200">
-                        <button @click="$wire.restoreSelected(selectedIds).then(() => { selectedIds = []; isSelecting = false; })" class="font-bold text-xs theme-accent">
+                        <button wire:click="restoreSelected" wire:loading.attr="disabled" class="font-bold text-xs theme-accent disabled:opacity-50">
                             Restore
                         </button>
-                        <button @click="$wire.deleteSelectedPermanently(selectedIds).then(() => {
-                                            selectedIds = [];
-                                            isSelecting = false;
-                                        })" class="font-bold text-xs text-red-500">
+                        <button wire:click="deleteSelectedPermanently" wire:loading.attr="disabled" class="font-bold text-xs text-red-500 disabled:opacity-50">
                             Delete Forever
                         </button>
                     </div>
