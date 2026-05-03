@@ -20,36 +20,84 @@
         </div>
     </div>
 
-    {{-- Anniversary Timer Card --}}
-    <div class="theme-card border theme-border rounded-[2.5rem] p-8 shadow-sm relative overflow-hidden group">
-        <div class="absolute -right-16 -top-16 w-64 h-64 theme-accent-bg opacity-5 rounded-full blur-3xl group-hover:opacity-10 transition-opacity"></div>
-        <div class="relative z-10 space-y-6">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h2 class="text-[10px] font-bold theme-text opacity-30 uppercase tracking-[0.2em] mb-2">Together Since</h2>
-                    <p class="text-xs font-bold theme-text lowercase opacity-60">{{ $togetherStats['anniversary_formatted'] }}</p>
+    {{-- Hero Section: Together Timer (Dynamic Alpine Counter) --}}
+    <div class="relative overflow-hidden theme-card border theme-border rounded-[2.5rem] p-8 shadow-sm text-center"
+         x-data="{ 
+            start: @js($togetherStats['timestamp']),
+            days: 0, hours: 0, mins: 0, secs: 0,
+            update() {
+                let now = new Date().getTime();
+                let diff = Math.abs(now - this.start);
+                this.days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                this.hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                this.mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                this.secs = Math.floor((diff % (1000 * 60)) / 1000);
+            }
+         }"
+         x-init="update(); setInterval(() => update(), 1000)">
+        
+        <div class="absolute -right-24 -top-24 w-48 h-48 bg-brand-500/5 rounded-full blur-3xl opacity-40"></div>
+        <div class="absolute -left-24 -bottom-24 w-48 h-48 theme-accent-bg opacity-5 rounded-full blur-3xl"></div>
+        
+        <div class="relative z-10 space-y-5">
+            <div class="flex justify-center items-center gap-6 md:gap-12">
+                @php $currentPartner = $partners->where('id', Auth::id())->first(); @endphp
+                <div class="flex flex-col items-center">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 theme-border overflow-hidden shadow-sm">
+                        @if($currentPartner?->profile_photo_path)
+                            <img src="{{ Storage::disk('public')->url($currentPartner->profile_photo_path) }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-current/5 flex items-center justify-center theme-text opacity-20 font-bold uppercase text-xs">{{ substr(Auth::user()->name, 0, 1) }}</div>
+                        @endif
+                    </div>
+                    <p class="text-[9px] font-bold mt-2 lowercase theme-text opacity-40">{{ Auth::user()->name }}</p>
                 </div>
-                <div class="text-right">
-                    <p class="text-4xl font-bold theme-text tracking-tighter leading-none">{{ $togetherStats['total_days'] }}</p>
-                    <p class="text-[10px] font-bold theme-accent uppercase tracking-widest mt-1">days of love</p>
+                
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 bg-brand-500/5 rounded-full flex items-center justify-center theme-accent animate-pulse">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </div>
+                </div>
+
+                @php $otherPartner = $partners->where('id', '!=', Auth::id())->first(); @endphp
+                <div class="flex flex-col items-center">
+                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 theme-border overflow-hidden shadow-sm">
+                        @if($otherPartner?->profile_photo_path)
+                            <img src="{{ Storage::disk('public')->url($otherPartner->profile_photo_path) }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-current/5 flex items-center justify-center theme-text opacity-20 font-bold uppercase text-xs">?</div>
+                        @endif
+                    </div>
+                    <p class="text-[9px] font-bold mt-2 lowercase theme-text opacity-40">{{ $otherPartner?->name ?? 'wait' }}</p>
                 </div>
             </div>
 
-            {{-- Milestone Progress --}}
-            @if($nextMilestone)
-            <div class="space-y-3 pt-4 border-t theme-border">
-                <div class="flex justify-between items-end">
-                    <div>
-                        <p class="text-[9px] font-bold theme-accent uppercase tracking-widest mb-1">{{ $nextMilestone->title }}</p>
-                        <p class="text-[11px] font-bold theme-text lowercase opacity-40">{{ $daysRemainingFormatted }}</p>
+            <div class="pt-2">
+                <div class="flex items-center justify-center gap-2 md:gap-4">
+                    <div class="text-center">
+                        <h1 class="text-3xl md:text-4xl font-bold tracking-tighter theme-text" x-text="days"></h1>
+                        <p class="text-[8px] font-bold theme-text opacity-20 uppercase tracking-widest">days</p>
                     </div>
-                    <p class="text-[10px] font-bold theme-text opacity-30">{{ round($milestoneProgress) }}%</p>
+                    <div class="text-3xl md:text-4xl font-bold theme-text opacity-10">:</div>
+                    <div class="text-center">
+                        <h1 class="text-3xl md:text-4xl font-bold tracking-tighter theme-text" x-text="hours"></h1>
+                        <p class="text-[8px] font-bold theme-text opacity-20 uppercase tracking-widest">hours</p>
+                    </div>
+                    <div class="text-3xl md:text-4xl font-bold theme-text opacity-10">:</div>
+                    <div class="text-center">
+                        <h1 class="text-3xl md:text-4xl font-bold tracking-tighter theme-text" x-text="mins"></h1>
+                        <p class="text-[8px] font-bold theme-text opacity-20 uppercase tracking-widest">mins</p>
+                    </div>
+                    <div class="text-3xl md:text-4xl font-bold theme-text opacity-10">:</div>
+                    <div class="text-center">
+                        <h1 class="text-3xl md:text-4xl font-bold tracking-tighter theme-accent" x-text="secs"></h1>
+                        <p class="text-[8px] font-bold theme-text opacity-20 uppercase tracking-widest">secs</p>
+                    </div>
                 </div>
-                <div class="h-1.5 w-full bg-current/5 rounded-full overflow-hidden">
-                    <div class="h-full theme-accent-bg shadow-[0_0_15px_rgba(var(--accent-color),0.4)]" style="width: {{ $milestoneProgress }}%"></div>
-                </div>
+                <p class="text-[9px] opacity-30 theme-text lowercase tracking-wide mt-4 font-medium">
+                    since {{ $togetherStats['anniversary_formatted'] }}
+                </p>
             </div>
-            @endif
         </div>
     </div>
 
