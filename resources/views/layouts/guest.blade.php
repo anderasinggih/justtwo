@@ -32,7 +32,7 @@
 
 @php
     $settings = \App\Models\PublicSetting::getSettings();
-    $theme = $settings->theme ?? 'light';
+    $theme = $theme ?? ($settings->theme ?? 'light');
     
     // Handle "mix" mode for auth pages by picking a random theme
     if ($theme === 'mix') {

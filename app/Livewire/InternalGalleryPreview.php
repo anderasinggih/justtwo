@@ -114,6 +114,6 @@ class InternalGalleryPreview extends Component
             'allMedia' => $this->allMedia,
             'initialMediaIndex' => $this->initialMediaIndex,
             'theme' => $this->theme,
-        ])->layout('layouts.guest');
+        ])->layout('layouts.guest', ['theme' => $this->theme]);
     }
 }
