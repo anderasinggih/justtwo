@@ -3,6 +3,7 @@
 namespace App\Livewire\Planner;
  
 use App\Models\Plan;
+use App\Models\Saving;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -17,6 +18,9 @@ class PlanForm extends Component
     public $total_budget = '';
     public $description = '';
     public $saving_id;
+    public $priority = 'medium';
+    public $category = '';
+    public $status = 'draft';
  
     public function mount($plan = null)
     {
@@ -28,18 +32,44 @@ class PlanForm extends Component
             $this->total_budget = $planModel->total_budget;
             $this->description = $planModel->description;
             $this->saving_id = $planModel->saving_id;
+            $this->priority = $planModel->priority ?? 'medium';
+            $this->category = $planModel->category;
+            $this->status = $planModel->status ?? 'draft';
         }
+    }
+
+    public function updatedSavingId($value)
+    {
+        if ($value) {
+            $saving = Saving::find($value);
+            if ($saving && $saving->target_amount > 0) {
+                $this->total_budget = $saving->target_amount;
+            }
+        }
+    }
+
+    public function rules()
+    {
+        return [
+            'title' => 'required|string|min:3|max:255',
+            'target_date' => 'nullable|date|after_or_equal:today',
+            'total_budget' => 'nullable|numeric|min:0',
+            'description' => 'nullable|string|max:500',
+            'saving_id' => 'nullable|exists:savings,id',
+            'priority' => 'required|in:low,medium,high',
+            'status' => 'required|in:draft,ongoing,completed,cancelled',
+            'category' => 'nullable|string|max:50',
+        ];
+    }
+
+    public function updated($propertyName)
+    {
+        $this->validateOnly($propertyName);
     }
  
     public function save()
     {
-        $this->validate([
-            'title' => 'required|string|max:255',
-            'target_date' => 'nullable|date',
-            'total_budget' => 'nullable|numeric|min:0',
-            'description' => 'nullable|string',
-            'saving_id' => 'nullable|exists:savings,id',
-        ]);
+        $this->validate();
  
         $data = [
             'relationship_id' => Auth::user()->relationship->id,
@@ -48,6 +78,9 @@ class PlanForm extends Component
             'target_date' => $this->target_date ?: null,
             'total_budget' => $this->total_budget ?: 0,
             'description' => $this->description,
+            'priority' => $this->priority,
+            'category' => $this->category,
+            'status' => $this->status,
         ];
  
         if ($this->planId) {

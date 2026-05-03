@@ -17,6 +17,8 @@ class Plan extends Model
         'cover_image',
         'description',
         'status',
+        'priority',
+        'category',
     ];
 
     public function savingGoal(): BelongsTo
