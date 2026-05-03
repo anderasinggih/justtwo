@@ -33,7 +33,9 @@
             background-color: {{ $bgColor }} !important;
             margin: 0;
             padding: 0;
-            min-height: 100%;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
         }
     </style>
     
@@ -48,7 +50,7 @@
 </head>
 
 <body x-data="{
-        currentTheme: '{{ $settings->theme ?? 'light' }}',
+        currentTheme: '{{ $currentTheme }}',
         themes: ['light', 'dark', 'rose', 'midnight', 'sky', 'mint', 'lavender', 'pink'],
         init() {
             if (this.currentTheme === 'mix') {

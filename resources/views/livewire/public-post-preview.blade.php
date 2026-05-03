@@ -125,8 +125,11 @@
         </div>
         <div class="w-10"></div>
     </nav>
-    <main class="flex-1 relative flex flex-col justify-start pt-4 md:pt-10 overflow-hidden">
-        <div class="relative w-full h-[65vh] md:h-[75vh] flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide" @scroll="onCarouselScroll($event)" x-ref="carousel">
+    <main class="flex-1 relative flex flex-col justify-start pt-2 md:pt-6 overflow-hidden">
+        <div class="relative w-full h-[75vh] md:h-[85vh] flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide" 
+             @scroll="onCarouselScroll($event)" 
+             @click="showInfo = false"
+             x-ref="carousel">
             @foreach($allMedia as $index => $m)
                 <div class="flex-none w-full h-full snap-center flex items-center justify-center relative" @dblclick="like({{ $m['post_id'] }})">
                     @if(str_contains($m['file_type'], 'video'))
