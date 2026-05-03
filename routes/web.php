@@ -28,6 +28,10 @@ Route::get('memory/new', \App\Livewire\CreatePost::class)
     ->middleware(['auth', 'verified', 'relationship'])
     ->name('memory.new');
 
+Route::get('memory/{post}/edit', \App\Livewire\CreatePost::class)
+    ->middleware(['auth', 'verified', 'relationship'])
+    ->name('memory.edit');
+
 Route::group(['middleware' => ['auth', 'verified', 'relationship']], function () {
     Route::get('planner', \App\Livewire\Planner\PlanList::class)->name('planner');
     Route::get('planner/create', \App\Livewire\Planner\PlanForm::class)->name('planner.create');

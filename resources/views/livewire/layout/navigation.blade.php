@@ -60,7 +60,7 @@ new class extends Component {
 
             <div class="relative z-10 flex-1 flex justify-center">
                 <a href="/memory/new" wire:navigate @click="setPage(2)"
-                    class="py-2.5 transition-opacity duration-500 {{ request()->routeIs('memories.create') ? 'opacity-100' : 'opacity-40 hover:opacity-100' }}">
+                    class="py-2.5 transition-opacity duration-500 {{ request()->routeIs('memory.new') ? 'opacity-100' : 'opacity-40 hover:opacity-100' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 </a>
             </div>
