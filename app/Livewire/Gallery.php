@@ -32,18 +32,13 @@ class Gallery extends Component
         $targetIds = $ids ?: $this->selectedMedia;
         if (empty($targetIds)) return;
 
-        $mediaItems = PostMedia::whereIn('id', $targetIds)->get();
+        $postIds = PostMedia::whereIn('id', $targetIds)->pluck('post_id')->unique();
         
-        $relationshipId = Auth::user()->relationship_id;
-        
-        foreach ($mediaItems as $media) {
-            $post = $media->post;
-            if ($post && $post->relationship_id === $relationshipId) {
-                $post->update([
-                    'is_archived' => true,
-                    'archived_at' => now(),
-                ]);
-            }
+        if ($postIds->isNotEmpty()) {
+            Post::whereIn('id', $postIds)->update([
+                'is_archived' => true,
+                'archived_at' => now(),
+            ]);
         }
 
         $this->isSelecting = false;
