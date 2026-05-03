@@ -1,129 +1,80 @@
-<div class="w-full pb-32 min-h-screen bg-black overflow-x-hidden" 
-     x-data="{ 
-        cols: window.innerWidth > 1024 ? 5 : (window.innerWidth > 768 ? 4 : 3), 
-        startDist: 0,
-        levels: [1, 3, 5, 13],
-        currentLevel: window.innerWidth > 1024 ? 2 : (window.innerWidth > 768 ? 2 : 1), 
-        isZooming: false,
-        zoomIn() {
-            if (this.currentLevel > 0) {
-                this.isZooming = true;
-                this.currentLevel--;
-                this.cols = this.levels[this.currentLevel];
-                setTimeout(() => { this.isZooming = false }, 800);
-            }
-        },
-        zoomOut() {
-            if (this.currentLevel < this.levels.length - 1) {
-                this.isZooming = true;
-                this.currentLevel++;
-                this.cols = this.levels[this.currentLevel];
-                setTimeout(() => { this.isZooming = false }, 800);
-            }
-        },
-        handleTouchStart(e) {
-            if (e.touches.length === 2) {
-                this.startDist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-            }
-        },
-        handleTouchMove(e) {
-            if (e.touches.length === 2 && this.startDist > 0) {
-                e.preventDefault();
-                let currentDist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-                let scale = currentDist / this.startDist;
-                
-                if (scale > 1.5) {
-                    this.zoomIn();
-                    this.startDist = currentDist;
-                } else if (scale < 0.6) {
-                    this.zoomOut();
-                    this.startDist = currentDist;
-                }
-            }
-        }
-     }"
-     @touchstart="handleTouchStart($event)"
-     @touchmove="handleTouchMove($event)">
-
-    <style>
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(var(--grid-cols), 1fr);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: grid-template-columns, gap, padding;
-        }
-        .gallery-item {
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: transform, opacity, width, height;
-        }
-    </style>
-    
+<div class="w-full pb-32 min-h-screen theme-bg overflow-x-hidden" wire:poll.60s>
     {{-- Header --}}
-    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-700"
-            :class="cols === 13 ? 'opacity-0 pointer-events-none' : 'bg-black/60 backdrop-blur-xl'">
-        <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
-            <div class="flex items-center gap-4">
-                <button class="font-bold text-xs theme-accent">Select</button>
+    <header class="sticky top-0 z-50 py-6 px-6 bg-current/[0.02] backdrop-blur-xl border-b theme-border">
+        <div class="flex items-center justify-between max-w-5xl mx-auto">
+            <div>
+                <h2 class="text-[10px] font-bold opacity-30 uppercase tracking-widest leading-none mb-1 theme-text">all memories</h2>
+                <h1 class="text-2xl font-bold tracking-tighter theme-text lowercase">Gallery</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="p-2.5 rounded-full bg-current/5 theme-text hover:bg-current/10 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                </button>
             </div>
         </div>
     </header>
 
-    {{-- Content Grid --}}
-    <main class="w-full">
+    {{-- Content --}}
+    <main class="max-w-5xl mx-auto px-4 mt-8">
         @forelse($groupedMedia as $monthYear => $mediaItems)
             @php
                 [$year, $month] = explode('-', $monthYear);
             @endphp
-            <section :class="cols === 13 ? 'mb-0' : 'mb-2'" class="transition-all duration-700">
-                <div class="px-4 transition-all duration-700 overflow-hidden" 
-                     :class="cols === 13 ? 'opacity-0 h-0 py-0' : 'opacity-100 py-2'">
-                    <h2 class="text-lg font-bold lowercase tracking-tight">{{ $month }}</h2>
-                    <p class="text-[9px] opacity-30 uppercase tracking-widest">{{ $year }}</p>
+            <section class="mb-12 relative">
+                {{-- Side Timeline Marker --}}
+                <div class="sticky top-24 float-left -ml-2 mb-4">
+                    <div class="flex flex-col border-l-2 theme-accent-border pl-4">
+                        <h2 class="text-xl font-bold theme-text lowercase tracking-tight">{{ $month }}</h2>
+                        <p class="text-[10px] font-bold opacity-20 uppercase tracking-[0.2em] theme-text">{{ $year }}</p>
+                    </div>
                 </div>
 
-                <div class="gallery-grid"
-                     :class="cols === 13 ? 'gap-0' : 'gap-[1px]'"
-                     :style="'--grid-cols: ' + cols">
+                <div class="clear-both"></div>
+
+                {{-- Masonry Grid --}}
+                <div class="columns-2 sm:columns-3 lg:columns-4 gap-4 space-y-4 pt-4">
                     @foreach($mediaItems as $media)
-                        <a href="{{ route('gallery.preview', $media->id) }}" wire:navigate 
-                           class="gallery-item relative aspect-square overflow-hidden bg-white/5">
-                            <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
-                                 class="w-full h-full object-cover"
-                                 loading="lazy">
-                            
-                            @if(str_contains($media->file_type, 'video'))
-                                <div class="absolute bottom-1 right-1 bg-black/40 backdrop-blur-md rounded px-0.5 py-0.5" x-show="cols < 5">
-                                    <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <div class="break-inside-avoid relative group">
+                            <a href="{{ route('gallery.preview', $media->id) }}" wire:navigate 
+                               class="block relative overflow-hidden rounded-2xl border theme-border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 bg-white/5">
+                                
+                                <img src="{{ Storage::disk('public')->url($media->file_path_original) }}" 
+                                     class="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
+                                     loading="lazy">
+                                
+                                {{-- Overlay info (hidden until hover on desktop, subtle on mobile) --}}
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                                    <p class="text-[10px] text-white/70 font-medium tracking-wide">
+                                        {{ $media->created_at->format('M d, Y') }}
+                                    </p>
                                 </div>
-                            @endif
-                        </a>
+
+                                @if(str_contains($media->file_type, 'video'))
+                                    <div class="absolute top-3 right-3 bg-black/40 backdrop-blur-md rounded-full p-2 text-white">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </div>
+                                @endif
+                            </a>
+                        </div>
                     @endforeach
                 </div>
             </section>
         @empty
             <div class="py-40 text-center space-y-4">
-                <p class="text-sm opacity-30 lowercase italic">no photos yet.</p>
+                <div class="w-20 h-20 mx-auto rounded-full bg-current/5 flex items-center justify-center opacity-20">
+                    <svg class="w-10 h-10 theme-text" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <p class="text-sm opacity-30 lowercase italic">no memories captured yet.</p>
             </div>
         @endforelse
 
         {{-- Library Stats --}}
-        <div class="py-12 text-center transition-opacity duration-700" :class="cols === 13 ? 'opacity-0' : 'opacity-100'">
-            <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest">
-                {{ $groupedMedia->flatten()->count() }} items • updated just now
-            </p>
+        <div class="py-20 text-center">
+            <div class="inline-block px-4 py-2 rounded-full bg-current/5 border theme-border">
+                <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest theme-text">
+                    {{ $groupedMedia->flatten()->count() }} memories preserved forever
+                </p>
+            </div>
         </div>
     </main>
 </div>
-
-
-
-
-
-
