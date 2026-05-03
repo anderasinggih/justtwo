@@ -148,14 +148,17 @@
                             </div>
 
                             {{-- Expandable Add Amount Form --}}
-                            <div x-show="showAdd" x-collapse x-cloak class="mt-4 pt-4 border-t theme-border relative z-10">
+                            <div x-show="showAdd" x-collapse x-cloak class="mt-4 pt-4 border-t theme-border relative z-10" 
+                                 x-data="{ rawAmount: @entangle('savingAmounts.' . $saving->id).live }">
                                 <div class="flex gap-2">
                                     <div class="relative flex-1">
-                                        <input type="number" 
-                                               wire:model="savingAmounts.{{ $saving->id }}"
-                                               placeholder="add to your dream..." 
-                                               class="w-full bg-white/5 border theme-border rounded-xl px-4 py-2.5 text-xs theme-text focus:ring-brand-200">
-                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-bold opacity-20 uppercase tracking-tighter">amount</span>
+                                        <input type="text" 
+                                               inputmode="numeric"
+                                               x-mask:dynamic="'Rp ' + $money($input, '.', ',')"
+                                               x-on:input="rawAmount = $event.target.value.replace(/[^\d]/g, '')"
+                                               x-bind:value="rawAmount"
+                                               placeholder="Rp 0" 
+                                               class="w-full bg-white/5 border theme-border rounded-xl px-4 py-2.5 text-xs theme-text focus:ring-brand-200 placeholder:text-[10px] placeholder:opacity-30">
                                     </div>
                                     <button wire:click="addSaving({{ $saving->id }})" 
                                             class="px-6 py-2.5 theme-accent-bg text-white rounded-xl text-[10px] font-bold shadow-lg shadow-brand-500/20 active:scale-95 transition-all">
