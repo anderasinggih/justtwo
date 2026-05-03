@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\Post;
 use App\Models\PostMedia;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -12,30 +12,39 @@ class Gallery extends Component
     public $isSelecting = false;
     public $selectedMedia = [];
 
-    public function archiveSelected($ids = null)
+    public function toggleSelection()
     {
-        $targetIds = $ids ?? $this->selectedMedia;
-        
-        if (empty($targetIds)) return;
-
-        // Get the Post IDs from the Media IDs to be more accurate
-        $postIds = PostMedia::whereIn('id', $targetIds)
-            ->pluck('post_id')
-            ->toArray();
-
-        if (empty($postIds)) return;
-
-        // Direct database update for speed and reliability
-        Post::whereIn('id', $postIds)
-            ->where('relationship_id', Auth::user()->relationship_id)
-            ->update([
-                'is_archived' => true,
-                'archived_at' => now(),
-            ]);
-
+        $this->isSelecting = !$this->isSelecting;
         $this->selectedMedia = [];
-        $this->isSelecting = false;
+    }
+
+    public function selectMedia($id)
+    {
+        if (in_array($id, $this->selectedMedia)) {
+            $this->selectedMedia = array_diff($this->selectedMedia, [$id]);
+        } else {
+            $this->selectedMedia[] = $id;
+        }
+    }
+
+    public function archiveSelected()
+    {
+        if (empty($this->selectedMedia)) return;
+
+        $mediaItems = PostMedia::whereIn('id', $this->selectedMedia)->get();
         
+        foreach ($mediaItems as $media) {
+            $post = $media->post;
+            if ($post && $post->user_id === Auth::id()) {
+                $post->update([
+                    'is_archived' => true,
+                    'archived_at' => now(),
+                ]);
+            }
+        }
+
+        $this->isSelecting = false;
+        $this->selectedMedia = [];
         $this->dispatch('media-archived');
     }
 
@@ -43,19 +52,17 @@ class Gallery extends Component
     {
         $relationship = Auth::user()->relationship;
         
-        if (!$relationship) {
-            return view('livewire.gallery', ['groupedMedia' => collect()])->layout('layouts.app');
-        }
-
         $media = PostMedia::whereHas('post', function($q) use ($relationship) {
             $q->where('relationship_id', $relationship->id)
               ->where('is_archived', false);
         })
         ->orderBy('captured_at', 'desc')
+        ->orderBy('created_at', 'desc')
         ->get();
 
         $groupedMedia = $media->groupBy(function($item) {
-            return $item->captured_at ? $item->captured_at->format('Y-F') : $item->created_at->format('Y-F');
+            $date = $item->captured_at ?? $item->created_at;
+            return $date->format('Y-F');
         });
 
         return view('livewire.gallery', [

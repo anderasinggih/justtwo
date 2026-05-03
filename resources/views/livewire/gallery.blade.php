@@ -1,37 +1,33 @@
-<div class="w-full min-h-screen bg-black text-white relative" 
+<div class="w-full pb-32 min-h-screen bg-black overflow-x-hidden text-white" 
      x-data="{ 
         cols: window.innerWidth > 1024 ? 5 : (window.innerWidth > 768 ? 4 : 3), 
         levels: [1, 3, 5, 13],
         currentLevel: window.innerWidth > 1024 ? 2 : (window.innerWidth > 768 ? 2 : 1), 
         
         isSelecting: @entangle('isSelecting'),
-        selectedIds: @entangle('selectedMedia'),
-        selectedUrls: [],
+        selectedIds: [],
         isDragging: false,
         lastDraggedId: null,
-        isDownloading: false,
 
-        toggleSelect(id, url) {
+        toggleSelect(id) {
             if (!this.isSelecting) return;
             if (this.selectedIds.includes(id)) {
                 this.selectedIds = this.selectedIds.filter(i => i !== id);
-                this.selectedUrls = this.selectedUrls.filter(u => u.id !== id);
             } else {
                 this.selectedIds.push(id);
-                this.selectedUrls.push({ id: id, url: url });
             }
         },
 
-        handleDragStart(id, url) {
+        handleDragStart(id) {
             if (!this.isSelecting) return;
             this.isDragging = true;
-            this.toggleSelect(id, url);
+            this.toggleSelect(id);
             this.lastDraggedId = id;
         },
 
-        handleDragOver(id, url) {
+        handleDragOver(id) {
             if (!this.isDragging || !this.isSelecting || this.lastDraggedId === id) return;
-            this.toggleSelect(id, url);
+            this.toggleSelect(id);
             this.lastDraggedId = id;
         },
 
@@ -40,51 +36,11 @@
             this.lastDraggedId = null;
         },
 
-        async downloadSelected() {
-            if (this.selectedUrls.length === 0) return;
-            this.isDownloading = true;
-            
-            try {
-                const files = [];
-                for (let item of this.selectedUrls) {
-                    const response = await fetch(item.url);
-                    const blob = await response.blob();
-                    const file = new File([blob], 'justtwo-' + item.id + '.jpg', { type: blob.type });
-                    files.push(file);
-                }
-
-                if (navigator.canShare && navigator.canShare({ files: files })) {
-                    await navigator.share({
-                        files: files,
-                        title: 'JustTwo Memories',
-                    });
-                } else {
-                    for (let file of files) {
-                        const url = window.URL.createObjectURL(file);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = file.name;
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                    }
-                }
-            } catch (e) {
-                console.error('Sharing failed', e);
-            } finally {
-                this.isDownloading = false;
-                this.isSelecting = false;
-                this.selectedIds = [];
-                this.selectedUrls = [];
-            }
-        },
-
         archive() {
             if (this.selectedIds.length === 0) return;
-            $wire.archiveSelected().then(() => {
-                this.selectedIds = [];
-                this.selectedUrls = [];
-                this.isSelecting = false;
-            });
+            $wire.set('selectedMedia', this.selectedIds);
+            $wire.archiveSelected();
+            this.selectedIds = [];
         }
      }"
      @mouseup.window="handleDragEnd()"
@@ -101,51 +57,35 @@
             -webkit-user-drag: none;
             touch-action: none;
         }
-        /* Memastikan header benar-benar fixed di kasta tertinggi */
-        .fixed-header {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100% !important;
-            z-index: 999 !important;
-        }
     </style>
     
     {{-- Header --}}
-    <header class="fixed-header py-3 px-4 bg-black/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300" 
-            x-show="cols !== 13" 
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 -translate-y-full"
+    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-300"
+            x-show="cols !== 13"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 -translate-y-2"
             x-transition:enter-end="opacity-100 translate-y-0"
-            x-transition:leave="transition ease-in duration-300"
+            x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 translate-y-0"
-            x-transition:leave-end="opacity-0 -translate-y-full">
+            x-transition:leave-end="opacity-0 -translate-y-2"
+            class="bg-black/60 backdrop-blur-xl border-b border-white/5">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
             <div class="flex items-center gap-3">
                 <button x-show="isSelecting && selectedIds.length > 0"
-                        @click="downloadSelected()"
-                        class="font-bold text-xs theme-accent flex items-center gap-1">
-                    <template x-if="!isDownloading">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    </template>
-                    <span x-text="isDownloading ? 'Preparing...' : 'Save'"></span>
-                </button>
-                <button x-show="selectedIds.length > 0"
-                        @click="if (confirm('Move ' + selectedIds.length + ' items to trash?')) $wire.archiveSelected(selectedIds)"
-                        class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200 disabled:opacity-50">
+                        @click="archive()" 
+                        class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
                     Delete (<span x-text="selectedIds.length"></span>)
                 </button>
-                <button @click="isSelecting = !isSelecting; selectedIds = []; selectedUrls = []" 
-                        class="font-bold text-xs theme-text opacity-50" 
+                <button @click="isSelecting = !isSelecting; selectedIds = []" 
+                        class="font-bold text-xs theme-accent" 
                         x-text="isSelecting ? 'Cancel' : 'Select'"></button>
             </div>
         </div>
     </header>
 
     {{-- Content Grid --}}
-    <main class="w-full pb-32" :class="cols !== 13 ? 'pt-16' : 'pt-0'">
+    <main class="w-full">
         @forelse($groupedMedia as $monthYear => $mediaItems)
             @php
                 [$year, $month] = explode('-', $monthYear);
@@ -156,40 +96,44 @@
                     <p class="text-[9px] opacity-30 uppercase tracking-widest text-white">{{ $year }}</p>
                 </div>
 
-                <div class="gallery-grid gap-[1px]" :style="'--grid-cols: ' + cols">
+                <div class="gallery-grid"
+                     :class="cols === 13 ? 'gap-0' : 'gap-[1px]'"
+                     :style="'--grid-cols: ' + cols">
                     @foreach($mediaItems as $media)
-                        <div wire:key="media-{{ $media->id }}" class="gallery-item relative aspect-square overflow-hidden bg-white/5 group"
-                             @mousedown="handleDragStart({{ $media->id }}, '{{ Storage::disk('public')->url($media->file_path_original) }}')"
-                             @mouseenter="handleDragOver({{ $media->id }}, '{{ Storage::disk('public')->url($media->file_path_original) }}')"
-                             @touchstart.passive="handleDragStart({{ $media->id }}, '{{ Storage::disk('public')->url($media->file_path_original) }}')"
+                        <div class="gallery-item relative aspect-square overflow-hidden bg-white/5 group"
+                             @mousedown="handleDragStart({{ $media->id }})"
+                             @mouseenter="handleDragOver({{ $media->id }})"
+                             @touchstart.passive="handleDragStart({{ $media->id }})"
                              @touchmove.passive="
                                 let touch = $event.touches[0];
                                 let el = document.elementFromPoint(touch.clientX, touch.clientY);
                                 let item = el?.closest('.gallery-item');
                                 if (item) {
                                     let id = parseInt(item.getAttribute('data-id'));
-                                    let url = item.getAttribute('data-url');
-                                    if (id) handleDragOver(id, url);
+                                    if (id) handleDragOver(id);
                                 }
                              "
-                             data-id="{{ $media->id }}"
-                             data-url="{{ Storage::disk('public')->url($media->file_path_original) }}">
+                             data-id="{{ $media->id }}">
                             
                             {{-- Selection Overlay --}}
-                            <div x-show="isSelecting" 
-                                 @click="toggleSelect({{ $media->id }}, '{{ Storage::disk('public')->url($media->file_path_original) }}')" 
-                                 class="absolute inset-0 z-30 transition-colors duration-150"
-                                 :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500/10' : 'bg-transparent'">
-                                
-                                <div class="absolute bottom-1.5 left-1.5 w-5 h-5 rounded-full border-2 transition-all duration-150 flex items-center justify-center"
-                                     :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500 border-brand-500 text-white' : 'border-white/30 bg-black/20'">
-                                    <template x-if="selectedIds.includes({{ $media->id }})">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                    </template>
+                            <template x-if="isSelecting">
+                                <div @click="toggleSelect({{ $media->id }})" 
+                                     class="absolute inset-0 z-30 transition-colors duration-150"
+                                     :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500/20' : 'bg-transparent'">
+                                    
+                                    {{-- Icon in Bottom Left --}}
+                                    <div class="absolute bottom-1.5 left-1.5 w-5 h-5 rounded-full border-2 transition-all duration-150 flex items-center justify-center"
+                                         :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500 border-brand-500 text-white' : 'border-white/30 bg-black/20'">
+                                        <template x-if="selectedIds.includes({{ $media->id }})">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                        </template>
+                                    </div>
                                 </div>
-                            </div>
+                            </template>
 
-                            <a x-show="!isSelecting" href="{{ route('gallery.preview', $media->id) }}" wire:navigate class="absolute inset-0 z-10"></a>
+                            <template x-if="!isSelecting">
+                                <a href="{{ route('gallery.preview', $media->id) }}" wire:navigate class="absolute inset-0 z-10"></a>
+                            </template>
 
                             <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
                                  class="w-full h-full object-cover pointer-events-none"

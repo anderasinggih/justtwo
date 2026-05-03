@@ -138,8 +138,8 @@
         async selectPhoto(index) {
             if (this.localItems.length === 0) return;
             if (this.cropper) {
-                const canvas = this.cropper.getCroppedCanvas({ width: 1440, height: 1800 });
-                this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.9);
+                const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
+                this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.7);
             }
             this.currentIndex = index;
             this.initCropper();
@@ -149,8 +149,8 @@
             this.isUploading = true;
             try {
                 if (this.localItems.length > 0 && this.cropper) {
-                    const canvas = this.cropper.getCroppedCanvas({ width: 1440, height: 1800 });
-                    this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.9);
+                    const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
+                    this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.7);
                 }
                 
                 const processImage = (fileOrUrl) => new Promise((resolve, reject) => {
@@ -165,7 +165,7 @@
                         try {
                             const canvas = document.createElement('canvas');
                             const ctx = canvas.getContext('2d');
-                            const maxDim = 2000;
+                            const maxDim = 800;
                             let w = img.width;
                             let h = img.height;
                             if (w > h) {
@@ -176,7 +176,7 @@
                             canvas.width = w;
                             canvas.height = h;
                             ctx.drawImage(img, 0, 0, w, h);
-                            resolve(canvas.toDataURL('image/jpeg', 0.9));
+                            resolve(canvas.toDataURL('image/jpeg', 0.6));
                         } catch (e) {
                             console.error('Canvas error', e);
                             resolve(null);
@@ -321,7 +321,7 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </a>
         </div>
-        <h2 class="text-sm font-bold theme-text lowercase" x-text="step == 2 ? (isEdit ? 'edit post' : 'new post') : 'share'"></h2>
+        <h2 class="text-sm font-bold theme-text lowercase" x-text="step == 2 ? (isEdit ? 'edit memory' : 'new memory') : 'create'"></h2>
         <template x-if="step == 2">
             <button @click="submitPost" :disabled="isUploading" 
                     class="text-sm font-bold theme-accent lowercase disabled:opacity-30"
@@ -334,9 +334,9 @@
     </header>
 
     <div class="max-w-4xl mx-auto px-1.5 sm:px-4">
-        <div x-show="step == 1" class="flex flex-col items-center justify-center py-8 px-6 text-center space-y-12">
+        <div x-show="step == 1" class="flex flex-col items-center justify-center py-12 px-6 text-center space-y-12">
             <div class="space-y-2">
-                <h3 class="text-2xl font-bold theme-text lowercase">share a moment</h3>
+                <h3 class="text-2xl font-bold theme-text lowercase">start something new</h3>
                 <p class="text-xs opacity-40 theme-text lowercase">capture memories, plan future, or start saving.</p>
             </div>
 

@@ -121,4 +121,5 @@
         })(document, window.navigator, 'standalone');
     </script>
 </body>
+
 </html>

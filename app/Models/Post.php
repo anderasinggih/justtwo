@@ -36,7 +36,6 @@ class Post extends Model
         'location',
         'is_pinned',
         'is_archived',
-        'archived_at',
         'is_public',
         'is_secret',
         'unlock_at',
@@ -46,7 +45,6 @@ class Post extends Model
     protected $casts = [
         'is_pinned' => 'boolean',
         'is_archived' => 'boolean',
-        'archived_at' => 'datetime',
         'is_public' => 'boolean',
         'is_secret' => 'boolean',
         'unlock_at' => 'datetime',

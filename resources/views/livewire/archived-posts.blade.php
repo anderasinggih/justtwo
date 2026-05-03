@@ -62,10 +62,10 @@
             <div class="flex items-center gap-3">
                 <template x-if="isSelecting && selectedIds.length > 0">
                     <div class="flex items-center gap-3 animate-in fade-in slide-in-from-right-2 duration-200">
-                        <button @click="if (confirm('Restore ' + selectedIds.length + ' items?')) $wire.restoreSelected(selectedIds)" class="font-bold text-xs theme-accent disabled:opacity-50">
+                        <button wire:click="restoreSelected" class="font-bold text-xs theme-accent">
                             Restore
                         </button>
-                        <button @click="if (confirm('Permanently delete these ' + selectedIds.length + ' items? This cannot be undone.')) $wire.deleteSelectedPermanently(selectedIds)" class="font-bold text-xs text-red-500 disabled:opacity-50">
+                        <button wire:click="deleteSelectedPermanently" class="font-bold text-xs text-red-500">
                             Delete Forever
                         </button>
                     </div>
@@ -97,7 +97,7 @@
 
                 <div class="gallery-grid gap-[1px]" :style="'--grid-cols: ' + cols">
                     @foreach($mediaItems as $media)
-                        <div wire:key="archived-{{ $media->id }}" class="gallery-item relative aspect-square overflow-hidden bg-white/5 group"
+                        <div class="gallery-item relative aspect-square overflow-hidden bg-white/5 group"
                              @mousedown="handleDragStart({{ $media->id }})"
                              @mouseenter="handleDragOver({{ $media->id }})"
                              @touchstart.passive="handleDragStart({{ $media->id }})"
