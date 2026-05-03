@@ -72,11 +72,39 @@
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
             <div class="flex items-center gap-3">
-                <button x-show="isSelecting && selectedIds.length > 0"
-                        @click="archive()" 
-                        class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
-                    Delete (<span x-text="selectedIds.length"></span>)
-                </button>
+                <template x-if="isSelecting && selectedIds.length > 0">
+                    <div class="flex items-center gap-3 animate-in fade-in slide-in-from-right-2 duration-200">
+                        {{-- Bulk Save --}}
+                        <button @click="
+                            let mediaItems = @js($groupedMedia->flatten());
+                            let selectedMedia = mediaItems.filter(m => selectedIds.includes(m.id));
+                            let files = [];
+                            
+                            Promise.all(selectedMedia.map(m => {
+                                let url = '{{ Storage::disk('public')->url('') }}' + (m.file_path_original);
+                                return fetch(url).then(res => res.blob()).then(blob => {
+                                    return new File([blob], 'justtwo-' + m.id + '.' + m.file_type.split('/')[1], { type: m.file_type });
+                                });
+                            })).then(readyFiles => {
+                                if (navigator.canShare && navigator.canShare({ files: readyFiles })) {
+                                    navigator.share({
+                                        files: readyFiles,
+                                        title: 'Save to Photos',
+                                    });
+                                } else {
+                                    alert('Your browser does not support bulk sharing. Try saving images individually.');
+                                }
+                            });
+                        " class="font-bold text-xs theme-accent">
+                            Save (<span x-text="selectedIds.length"></span>)
+                        </button>
+
+                        {{-- Bulk Delete --}}
+                        <button @click="archive()" class="font-bold text-xs text-red-500">
+                            Delete
+                        </button>
+                    </div>
+                </template>
                 <button @click="isSelecting = !isSelecting; selectedIds = []" 
                         class="font-bold text-xs theme-accent" 
                         x-text="isSelecting ? 'Cancel' : 'Select'"></button>
