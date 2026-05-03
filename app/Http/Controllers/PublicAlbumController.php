@@ -14,7 +14,7 @@ class PublicAlbumController extends Controller
         // Convert month name to number
         $monthNumber = date('m', strtotime($month));
 
-        $settings = PublicSetting::first();
+        $settings = PublicSetting::getSettings();
         $theme = $settings->theme ?? 'light';
 
         $posts = Post::where('is_public', true)
@@ -52,7 +52,7 @@ class PublicAlbumController extends Controller
 
     public function preview(Post $post)
     {
-        $settings = PublicSetting::first();
+        $settings = PublicSetting::getSettings();
         $theme = $settings->theme ?? 'light';
         
         $allMedia = $post->media->map(function ($m) {
