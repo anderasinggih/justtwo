@@ -106,19 +106,25 @@
         if (currentIndex >= allMedia.length) { currentIndex = Math.max(0, allMedia.length - 1); }
         $nextTick(() => { $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' }); scrollToThumb(currentIndex); });
      " @touchstart="handleTouchStart($event)" @touchend="handleTouchEnd($event)">
-    <nav class="p-4 md:p-6 flex items-center justify-between z-30">
-        <button onclick="history.back()" class="w-10 h-10 rounded-full {{ $iconBg }} backdrop-blur-xl border {{ $colors['border'] }} flex items-center justify-center transition-transform active:scale-90">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-        </button>
-        <div class="flex flex-col items-center {{ $overlayBg }} backdrop-blur-md px-6 py-1.5 rounded-full min-w-[150px] cursor-pointer" @click="showInfo = true; $nextTick(() => initMap())">
-            <template x-for="(media, index) in allMedia">
-                <div x-show="currentIndex === index" class="flex flex-col items-center text-center">
-                    <span class="text-[10px] md:text-xs font-bold leading-tight truncate max-w-[160px] md:max-w-[250px]" x-text="media.location || 'Captured Moment'"></span>
-                    <span class="text-[9px] md:text-[10px] opacity-60 leading-tight" x-text="media.date + ' • ' + media.time"></span>
-                </div>
-            </template>
+    <nav>
+    <header class="fixed top-0 inset-x-0 z-50 p-4 grid grid-cols-3 items-center pointer-events-none">
+        {{-- Left: Back --}}
+        <div class="flex justify-start pointer-events-auto">
+            <a href="{{ route('gallery') }}" wire:navigate class="w-11 h-11 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white transition-transform active:scale-90">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </a>
         </div>
-        <div class="flex items-center justify-center gap-12">
+
+        {{-- Center: Location --}}
+        <div class="flex justify-center pointer-events-auto">
+            <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-full px-5 py-2 text-center max-w-[180px]">
+                <h2 class="text-[10px] font-bold text-white lowercase tracking-tight truncate">{{ $location ?? 'captured moment' }}</h2>
+                <p class="text-[8px] text-white/50 lowercase leading-none mt-0.5">{{ $date }}</p>
+            </div>
+        </div>
+
+        {{-- Right: Actions --}}
+        <div class="flex justify-end items-center gap-2 pointer-events-auto">
             {{-- Save Button --}}
             <button @click="
                 let m = allMedia[currentIndex];
@@ -133,26 +139,27 @@
                                 title: 'Save to Photos',
                             });
                         } else {
-                            // Fallback for browsers that don't support file sharing
                             let a = document.createElement('a');
                             a.href = url;
                             a.download = 'justtwo-' + m.id;
                             a.click();
                         }
                     });
-            " class="w-11 h-11 shrink-0 aspect-square rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white transition-transform active:scale-90 z-40">
+            " class="w-11 h-11 shrink-0 aspect-square rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white transition-transform active:scale-90">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             </button>
 
             @foreach($allMedia as $index => $m)
                 @if(Auth::check() && $m['user_id'] === Auth::id())
-                    <button x-show="currentIndex === {{ $index }}" wire:click="archiveMedia({{ $m['id'] }})" class="w-11 h-11 shrink-0 aspect-square rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/20 flex items-center justify-center text-red-500 transition-transform active:scale-90 z-40">
+                    <button x-show="currentIndex === {{ $index }}" 
+                            wire:click="archiveMedia({{ $m['id'] }})" 
+                            class="w-11 h-11 shrink-0 aspect-square rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/20 flex items-center justify-center text-red-500 transition-transform active:scale-90">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 @endif
             @endforeach
         </div>
-    </nav>
+    </header></nav>
     <main class="flex-1 relative flex flex-col justify-start pt-4 md:pt-10 overflow-hidden">
         <div class="relative w-full h-[65vh] md:h-[75vh] flex items-center overflow-x-auto snap-x snap-mandatory scrollbar-hide" @scroll="onCarouselScroll($event)" x-ref="carousel">
             @foreach($allMedia as $index => $m)
