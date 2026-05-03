@@ -214,24 +214,26 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-2.5">
                     @forelse($upcomingPlans as $plan)
                         <a href="{{ route('planner.detail', $plan->id) }}" wire:navigate 
-                           class="theme-card border theme-border rounded-[1.5rem] p-4 shadow-sm group hover:shadow-md transition-all">
-                            <div class="flex items-center gap-3.5 mb-3">
-                                <div class="w-10 h-10 shrink-0 rounded-2xl bg-brand-500/5 flex items-center justify-center theme-accent text-lg group-hover:scale-110 transition-transform">
-                                    {{ $plan->icon }}
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <h4 class="text-sm font-bold theme-text lowercase tracking-tight truncate">{{ $plan->title }}</h4>
-                                        <span class="text-[9px] theme-accent font-bold uppercase tracking-widest">{{ round($plan->budget_progress) }}%</span>
+                           class="theme-card border theme-border rounded-[1.5rem] overflow-hidden shadow-sm group hover:shadow-md transition-all flex flex-col">
+                            <div class="p-4 flex-1">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-10 h-10 shrink-0 rounded-2xl bg-brand-500/5 flex items-center justify-center theme-accent text-lg group-hover:scale-110 transition-transform shadow-inner">
+                                        {{ $plan->icon }}
                                     </div>
-                                    <p class="text-[9px] opacity-30 theme-text lowercase mt-0.5">{{ $plan->target_date ? $plan->target_date->format('M d, Y') : 'anytime' }}</p>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h4 class="text-sm font-bold theme-text lowercase tracking-tight truncate">{{ $plan->title }}</h4>
+                                            <span class="text-[9px] theme-accent font-bold uppercase tracking-widest">{{ round($plan->budget_progress) }}%</span>
+                                        </div>
+                                        <p class="text-[9px] opacity-30 theme-text lowercase mt-0.5">{{ $plan->target_date ? $plan->target_date->format('M d, Y') : 'anytime' }}</p>
+                                    </div>
                                 </div>
                             </div>
                             
-                            {{-- Mini Gamified Bar for Plans --}}
-                            <div class="h-1.5 w-full bg-current/5 rounded-full overflow-hidden relative">
-                                <div class="h-full theme-accent-bg transition-all duration-1000 rounded-full" 
-                                     style="width: {{ $plan->budget_progress }}%; 
+                            {{-- Integrated Progress Bar at the bottom edge --}}
+                            <div class="h-1.5 w-full bg-current/[0.03] relative">
+                                <div class="h-full theme-accent-bg transition-all duration-1000" 
+                                     style="width: {{ max(2, $plan->budget_progress) }}%; 
                                             background: linear-gradient(90deg, var(--accent-color) 0%, #10b981 100%);">
                                 </div>
                             </div>
