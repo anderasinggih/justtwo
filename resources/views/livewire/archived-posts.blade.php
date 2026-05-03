@@ -5,6 +5,7 @@
         selectedIds: @entangle('selectedMedia'),
         isDragging: false,
         lastDraggedId: null,
+        showConfirm: false,
 
         toggleSelect(id) {
             if (!this.isSelecting) return;
@@ -31,6 +32,11 @@
         handleDragEnd() {
             this.isDragging = false;
             this.lastDraggedId = null;
+        },
+
+        deleteForever() {
+            $wire.deleteSelectedPermanently();
+            this.showConfirm = false;
         }
      }"
      @mouseup.window="handleDragEnd()"
@@ -65,7 +71,7 @@
                         <button wire:click="restoreSelected" class="font-bold text-xs theme-accent">
                             Restore
                         </button>
-                        <button wire:click="deleteSelectedPermanently" class="font-bold text-xs text-red-500">
+                        <button @click="showConfirm = true" class="font-bold text-xs text-red-500">
                             Delete Forever
                         </button>
                     </div>
@@ -151,4 +157,32 @@
             </div>
         @endforelse
     </main>
+
+    {{-- Premium Confirmation Modal --}}
+    <div x-show="showConfirm" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[100] flex items-center justify-center px-6 bg-black/80 backdrop-blur-md"
+         x-cloak>
+        <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] p-8 w-full max-w-sm text-center shadow-2xl animate-in zoom-in-95 duration-300">
+            <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Delete forever?</h3>
+            <p class="text-sm text-white/50 mb-8 lowercase">this action cannot be undone. selected items will be permanently removed.</p>
+            
+            <div class="flex flex-col gap-3">
+                <button @click="deleteForever()" class="w-full py-4 bg-red-500 text-white rounded-2xl font-bold text-sm active:scale-95 transition-all">
+                    Delete Permanently
+                </button>
+                <button @click="showConfirm = false" class="w-full py-4 bg-white/5 text-white/70 rounded-2xl font-bold text-sm active:scale-95 transition-all">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
