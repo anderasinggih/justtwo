@@ -59,12 +59,12 @@ class ArchivedPosts extends Component
     {
         $relationship = Auth::user()->relationship;
         
-        $media = PostMedia::whereHas('post', function($q) use ($relationship) {
-            $q->where('relationship_id', $relationship->id)
-              ->where('is_archived', true);
-        })
-        ->orderBy('archived_at', 'desc')
-        ->get();
+        $media = PostMedia::join('posts', 'post_media.post_id', '=', 'posts.id')
+            ->where('posts.relationship_id', $relationship->id)
+            ->where('posts.is_archived', true)
+            ->orderBy('posts.archived_at', 'desc')
+            ->select('post_media.*', 'posts.archived_at')
+            ->get();
 
         $groupedMedia = $media->groupBy(function($item) {
             $date = $item->archived_at ?? $item->created_at;
