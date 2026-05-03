@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="GalleryTwo">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
     <link rel="apple-touch-icon" href="{{ asset('images/auth-bg.png') }}">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -83,6 +83,11 @@
 
     @livewireScripts
     <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Error', err));
+        }
+
         // PWA Standalone Navigation Fix for iOS
         (function(document, navigator, standalone) {
             if ((standalone in navigator) && navigator[standalone]) {

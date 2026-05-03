@@ -8,9 +8,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GalleryTwo">
+    <meta name="apple-touch-fullscreen" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="/manifest.json" type="application/manifest+json">
-    <link rel="apple-touch-icon" href="/images/auth-bg.png">
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    <link rel="apple-touch-icon" href="{{ asset('images/auth-bg.png') }}">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -46,6 +47,33 @@
             {{ $slot }}
         </div>
     </div>
+    @livewireScripts
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Error', err));
+        }
+
+        // PWA Standalone Navigation Fix for iOS
+        (function(document, navigator, standalone) {
+            if ((standalone in navigator) && navigator[standalone]) {
+                var curnode, location = document.location, stop = /^(a|html)$/i;
+                document.addEventListener('click', function(e) {
+                    curnode = e.target;
+                    while (!(stop).test(curnode.nodeName)) {
+                        curnode = curnode.parentNode;
+                    }
+                    if ('href' in curnode && (curnode.href.indexOf('http') || ~curnode.href.indexOf(location.host)) && (!curnode.classList.contains('no-pwa-fix'))) {
+                        e.preventDefault();
+                        if (curnode.hasAttribute('wire:navigate')) {
+                            return;
+                        }
+                        window.location = curnode.href;
+                    }
+                }, false);
+            }
+        })(document, window.navigator, 'standalone');
+    </script>
 </body>
 
 </html>
