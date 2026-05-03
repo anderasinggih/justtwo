@@ -3,43 +3,76 @@
 namespace App\Livewire;
 
 use App\Models\Post;
+use App\Models\PostMedia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 class ArchivedPosts extends Component
 {
-    use WithPagination;
+    public $isSelecting = false;
+    public $selectedMedia = [];
 
-    public function restorePost($postId)
+    public function restoreSelected()
     {
-        $post = Post::findOrFail($postId);
-        if ($post->user_id === Auth::id() || $post->relationship_id === Auth::user()->relationship_id) {
-            $post->update(['is_archived' => false]);
-            $this->dispatch('postRestored');
+        if (empty($this->selectedMedia)) return;
+
+        $mediaItems = PostMedia::whereIn('id', $this->selectedMedia)->get();
+        foreach ($mediaItems as $media) {
+            $post = $media->post;
+            if ($post && ($post->user_id === Auth::id() || $post->relationship_id === Auth::user()->relationship_id)) {
+                $post->update(['is_archived' => false, 'archived_at' => null]);
+            }
         }
+
+        $this->isSelecting = false;
+        $this->selectedMedia = [];
+        $this->dispatch('media-restored');
     }
 
-    public function deletePost($postId)
+    public function deleteSelectedPermanently()
     {
-        $post = Post::findOrFail($postId);
-        if ($post->user_id === Auth::id()) {
-            $post->delete();
-            $this->dispatch('postDeleted');
-            session()->flash('success', 'memory deleted successfully.');
+        if (empty($this->selectedMedia)) return;
+
+        $mediaItems = PostMedia::whereIn('id', $this->selectedMedia)->get();
+        foreach ($mediaItems as $media) {
+            $post = $media->post;
+            if ($post && $post->user_id === Auth::id()) {
+                Storage::disk('public')->delete($media->file_path_original);
+                if ($media->file_path_thumbnail) {
+                    Storage::disk('public')->delete($media->file_path_thumbnail);
+                }
+                $media->delete();
+                
+                if ($post->media()->count() === 0) {
+                    $post->delete();
+                }
+            }
         }
+
+        $this->isSelecting = false;
+        $this->selectedMedia = [];
+        $this->dispatch('media-deleted-permanently');
     }
 
     public function render()
     {
-        $posts = Auth::user()->relationship->posts()
-            ->where('is_archived', true)
-            ->with(['user', 'media'])
-            ->latest()
-            ->paginate(12);
+        $relationship = Auth::user()->relationship;
+        
+        $media = PostMedia::whereHas('post', function($q) use ($relationship) {
+            $q->where('relationship_id', $relationship->id)
+              ->where('is_archived', true);
+        })
+        ->orderBy('archived_at', 'desc')
+        ->get();
+
+        $groupedMedia = $media->groupBy(function($item) {
+            $date = $item->archived_at ?? $item->created_at;
+            return $date->format('Y-F');
+        });
 
         return view('livewire.archived-posts', [
-            'posts' => $posts,
+            'groupedMedia' => $groupedMedia,
         ])->layout('layouts.app');
     }
 }

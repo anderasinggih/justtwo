@@ -73,9 +73,9 @@
             <h1 class="text-2xl font-bold tracking-tight text-white">Library</h1>
             <div class="flex items-center gap-3">
                 <template x-if="isSelecting && selectedIds.length > 0">
-                    <button @click="if(confirm('Archive ' + selectedIds.length + ' items?')) archive()" 
+                    <button @click="if(confirm('Delete ' + selectedIds.length + ' items?')) archive()" 
                             class="font-bold text-xs text-red-500 animate-in fade-in slide-in-from-right-2 duration-200">
-                        Archive (<span x-text="selectedIds.length"></span>)
+                        Delete (<span x-text="selectedIds.length"></span>)
                     </button>
                 </template>
                 <button @click="isSelecting = !isSelecting; selectedIds = []" 
