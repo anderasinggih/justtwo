@@ -38,7 +38,16 @@ class PublicAlbumController extends Controller
             ->shuffle()
             ->values()
             ->all();
-
+        return view('public.album-detail', [
+            'posts' => $posts,
+            'year' => $year,
+            'month' => $month,
+            'monthName' => $month,
+            'theme' => $theme,
+            'allMediaPaths' => $allMediaPaths,
+            'settings' => $settings,
+        ]);
+    }
     public function journey()
     {
         $settings = PublicSetting::getSettings();
