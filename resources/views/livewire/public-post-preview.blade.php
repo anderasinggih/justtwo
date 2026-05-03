@@ -118,7 +118,7 @@
                 </div>
             </template>
         </div>
-        <div class="relative w-10 h-10 flex items-center justify-center gap-12">
+        <div class="flex items-center justify-center gap-12">
             {{-- Save Button --}}
             <button @click="
                 let m = allMedia[currentIndex];
@@ -140,13 +140,13 @@
                             a.click();
                         }
                     });
-            " class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white transition-transform active:scale-90 z-40">
+            " class="w-11 h-11 shrink-0 aspect-square rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white transition-transform active:scale-90 z-40">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             </button>
 
             @foreach($allMedia as $index => $m)
                 @if(Auth::check() && $m['user_id'] === Auth::id())
-                    <button x-show="currentIndex === {{ $index }}" wire:click="archiveMedia({{ $m['id'] }})" class="w-10 h-10 rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/20 flex items-center justify-center text-red-500 transition-transform active:scale-90 z-40">
+                    <button x-show="currentIndex === {{ $index }}" wire:click="archiveMedia({{ $m['id'] }})" class="w-11 h-11 shrink-0 aspect-square rounded-full bg-red-500/10 backdrop-blur-xl border border-red-500/20 flex items-center justify-center text-red-500 transition-transform active:scale-90 z-40">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 @endif
