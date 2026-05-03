@@ -39,7 +39,7 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </a>
             <h1 class="text-xl md:text-4xl font-bold tracking-tighter lowercase">
-                {{ $settings->journey_title ?? 'all journey' }}
+                our journey
             </h1>
             <div class="w-10"></div>
         </nav>
