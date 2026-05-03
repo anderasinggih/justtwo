@@ -144,7 +144,8 @@
                             <div class="absolute top-1 right-1 px-1 py-0.5 bg-black/60 backdrop-blur-md rounded text-[7px] text-white/70 font-bold uppercase z-10">
                                 @php 
                                     $archivedAt = \Carbon\Carbon::parse($media->archived_at ?? $media->created_at);
-                                    $daysLeft = 30 - now()->diffInDays($archivedAt);
+                                    $expiryDate = $archivedAt->copy()->addDays(30);
+                                    $daysLeft = now()->diffInDays($expiryDate, false);
                                 @endphp
                                 {{ (int) max(0, $daysLeft) }}d left
                             </div>
