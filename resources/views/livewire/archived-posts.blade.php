@@ -1,4 +1,5 @@
-<div class="w-full pb-32 min-h-screen bg-black overflow-x-hidden text-white" 
+<div class="w-full pb-32 min-h-screen bg-black text-white" 
+     :class="{ 'overflow-hidden h-screen': showConfirm }"
      x-data="{ 
         cols: window.innerWidth > 1024 ? 5 : (window.innerWidth > 768 ? 4 : 3), 
         isSelecting: @entangle('isSelecting'),
