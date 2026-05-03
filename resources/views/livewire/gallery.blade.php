@@ -1,13 +1,63 @@
-<div class="w-full pb-32 min-h-screen bg-black text-white" :class="{ 'overflow-hidden h-screen': showConfirm }" x-data="{ 
+<div class="w-full pb-32 min-h-screen bg-black text-white" 
+     :class="{ 'overflow-hidden h-screen': showConfirm }"
+     x-data="{ 
         cols: window.innerWidth > 1024 ? 8 : (window.innerWidth > 768 ? 4 : 3), 
         levels: [1, 3, 5, 13],
-        currentLevel: window.innerWidth > 1024 ? 2 : (window.innerWidth > 768 ? 2 : 1), 
+        currentLevel: window.innerWidth > 1024 ? 1 : 1, // 0:1col, 1:3col, 2:5col, 3:13col
         
         isSelecting: @entangle('isSelecting'),
         selectedIds: [],
         isDragging: false,
         lastDraggedId: null,
         showConfirm: false,
+
+        // Pinch logic
+        initialDist: 0,
+        lastPinchTime: 0,
+
+        init() {
+            this.updateCols();
+        },
+
+        updateCols() {
+            this.cols = this.levels[this.currentLevel];
+        },
+
+        handleTouchStart(e) {
+            if (e.touches.length === 2) {
+                this.initialDist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+            }
+        },
+
+        handleTouchMove(e) {
+            if (e.touches.length === 2 && !this.isSelecting) {
+                let now = Date.now();
+                if (now - this.lastPinchTime < 250) return; // Throttling
+
+                let currentDist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+                
+                let diff = currentDist - this.initialDist;
+
+                if (Math.abs(diff) > 50) { // Threshold
+                    if (diff > 0 && this.currentLevel > 0) {
+                        this.currentLevel--; // Zoom In (Larger items)
+                        this.lastPinchTime = now;
+                        this.initialDist = currentDist;
+                    } else if (diff < 0 && this.currentLevel < this.levels.length - 1) {
+                        this.currentLevel++; // Zoom Out (Smaller items)
+                        this.lastPinchTime = now;
+                        this.initialDist = currentDist;
+                    }
+                    this.updateCols();
+                }
+            }
+        },
 
         toggleSelect(id) {
             if (!this.isSelecting) return;
@@ -43,7 +93,11 @@
             this.selectedIds = [];
             this.showConfirm = false;
         }
-     }" @mouseup.window="handleDragEnd()" @touchend.window="handleDragEnd()">
+     }"
+     @touchstart="handleTouchStart($event)"
+     @touchmove="handleTouchMove($event)"
+     @mouseup.window="handleDragEnd()"
+     @touchend.window="handleDragEnd()">
 
     <style>
         .gallery-grid {
@@ -60,9 +114,10 @@
             touch-action: none;
         }
     </style>
-
+    
     {{-- Header --}}
-    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-300  " x-show="cols !== 13"
+    <header class="sticky top-0 z-50 py-5 px-4 transition-all duration-300 bg-black/60 backdrop-blur-xl border-b border-white/5"
+        x-show="cols !== 13"
         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2"
         x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2">
@@ -120,21 +175,21 @@
                             @mousedown="handleDragStart({{ $media->id }})" @mouseenter="handleDragOver({{ $media->id }})"
                             @touchstart.passive="handleDragStart({{ $media->id }})"
                             @touchmove.passive="
-                                                                                                                                        let touch = $event.touches[0];
-                                                                                                                                        let el = document.elementFromPoint(touch.clientX, touch.clientY);
-                                                                                                                                        let item = el?.closest('.gallery-item');
-                                                                                                                                        if (item) {
-                                                                                                                                            let id = parseInt(item.getAttribute('data-id'));
-                                                                                                                                            if (id) handleDragOver(id);
-                                                                                                                                        }
-                                                                                                                                     " data-id="{{ $media->id }}">
-
+                                let touch = $event.touches[0];
+                                let el = document.elementFromPoint(touch.clientX, touch.clientY);
+                                let item = el?.closest('.gallery-item');
+                                if (item) {
+                                    let id = parseInt(item.getAttribute('data-id'));
+                                    if (id) handleDragOver(id);
+                                }
+                             " data-id="{{ $media->id }}">
+                            
                             {{-- Selection Overlay --}}
                             <template x-if="isSelecting">
                                 <div @click="toggleSelect({{ $media->id }})"
                                     class="absolute inset-0 z-30 transition-colors duration-150"
                                     :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500/20' : 'bg-transparent'">
-
+                                    
                                     <div class="absolute bottom-1.5 left-1.5 w-5 h-5 rounded-full border-2 transition-all duration-150 flex items-center justify-center"
                                         :class="selectedIds.includes({{ $media->id }}) ? 'bg-brand-500 border-brand-500 text-white' : 'border-white/30 bg-black/20'">
                                         <template x-if="selectedIds.includes({{ $media->id }})">
