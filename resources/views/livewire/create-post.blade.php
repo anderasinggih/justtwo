@@ -138,8 +138,8 @@
         async selectPhoto(index) {
             if (this.localItems.length === 0) return;
             if (this.cropper) {
-                const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
-                this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.7);
+                const canvas = this.cropper.getCroppedCanvas({ width: 1440, height: 1800 });
+                this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.9);
             }
             this.currentIndex = index;
             this.initCropper();
@@ -149,8 +149,8 @@
             this.isUploading = true;
             try {
                 if (this.localItems.length > 0 && this.cropper) {
-                    const canvas = this.cropper.getCroppedCanvas({ width: 1080, height: 1350 });
-                    this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.7);
+                    const canvas = this.cropper.getCroppedCanvas({ width: 1440, height: 1800 });
+                    this.localItems[this.currentIndex].crop = canvas.toDataURL('image/jpeg', 0.9);
                 }
                 
                 const processImage = (fileOrUrl) => new Promise((resolve, reject) => {
@@ -165,7 +165,7 @@
                         try {
                             const canvas = document.createElement('canvas');
                             const ctx = canvas.getContext('2d');
-                            const maxDim = 800;
+                            const maxDim = 2000;
                             let w = img.width;
                             let h = img.height;
                             if (w > h) {
@@ -176,7 +176,7 @@
                             canvas.width = w;
                             canvas.height = h;
                             ctx.drawImage(img, 0, 0, w, h);
-                            resolve(canvas.toDataURL('image/jpeg', 0.6));
+                            resolve(canvas.toDataURL('image/jpeg', 0.9));
                         } catch (e) {
                             console.error('Canvas error', e);
                             resolve(null);
