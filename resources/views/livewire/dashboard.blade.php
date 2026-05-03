@@ -163,75 +163,31 @@
         </div>
     </div>
 
-    {{-- Grid 2: Events & Wishlist --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {{-- Section: Our Next Big Event --}}
-        <div class="space-y-2.5">
-            @if($nextMilestone)
-                <div class="flex items-center justify-between px-2">
-                    <h2 class="text-[9px] font-bold lowercase tracking-tight theme-text opacity-50">next event</h2>
-                    <span class="text-[8px] font-bold theme-accent uppercase tracking-widest px-2 py-0.5 bg-brand-500/10 rounded-full">{{ $daysRemainingFormatted }}</span>
-                </div>
-
-                <div class="relative p-4 theme-card border theme-border rounded-2xl overflow-hidden group shadow-sm">
-                    <div class="relative z-10 flex items-center justify-between mb-3">
-                        <div>
-                            <h3 class="text-sm font-bold lowercase tracking-tight theme-text">{{ $nextMilestone->title }}</h3>
-                            <p class="text-[9px] opacity-30 theme-text lowercase">{{ $nextMilestone->event_date->format('M d, Y') }}</p>
-                        </div>
-                        <div class="w-8 h-8 theme-card rounded-xl shadow-sm flex items-center justify-center theme-accent border theme-border">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path></svg>
-                        </div>
-                    </div>
-
-                    <div class="relative h-1.5 w-full bg-white/5 rounded-full overflow-hidden border theme-border">
-                        <div class="absolute inset-y-0 left-0 theme-accent-bg transition-all duration-1000 ease-out rounded-full"
-                             style="width: {{ $milestoneProgress }}%"></div>
-                    </div>
-                </div>
-            @endif
-        </div>
-
-        {{-- Section: Our Wishlist --}}
-        <div class="theme-card border theme-border rounded-2xl p-4 shadow-sm space-y-4">
-            <div class="flex items-center justify-between px-1">
-                <h2 class="text-[9px] font-bold lowercase tracking-tight theme-text opacity-50">wishlist</h2>
-                <span class="text-[8px] opacity-30 theme-text uppercase tracking-widest font-bold">{{ $wishlistItems->where('is_completed', true)->count() }} finished</span>
+    {{-- Section: Our Next Big Event --}}
+    <div class="space-y-2.5">
+        @if($nextMilestone)
+            <div class="flex items-center justify-between px-2">
+                <h2 class="text-[9px] font-bold lowercase tracking-tight theme-text opacity-50">next event</h2>
+                <span class="text-[8px] font-bold theme-accent uppercase tracking-widest px-2 py-0.5 bg-brand-500/10 rounded-full">{{ $daysRemainingFormatted }}</span>
             </div>
 
-            <form wire:submit.prevent="addToWishlist" class="relative group">
-                <input wire:model="newWishlistTitle" placeholder="add a goal..."
-                    class="w-full bg-white/5 border theme-border rounded-xl pl-3 pr-10 py-2 text-[10px] focus:ring-brand-200 placeholder:text-gray-500 lowercase theme-text">
-                <button type="submit" class="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 theme-accent-bg text-white rounded-lg hover:scale-105 active:scale-95 transition-all shadow-md">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                </button>
-            </form>
+            <div class="relative p-4 theme-card border theme-border rounded-2xl overflow-hidden group shadow-sm">
+                <div class="relative z-10 flex items-center justify-between mb-3">
+                    <div>
+                        <h3 class="text-sm font-bold lowercase tracking-tight theme-text">{{ $nextMilestone->title }}</h3>
+                        <p class="text-[9px] opacity-30 theme-text lowercase">{{ $nextMilestone->event_date->format('M d, Y') }}</p>
+                    </div>
+                    <div class="w-8 h-8 theme-card rounded-xl shadow-sm flex items-center justify-center theme-accent border theme-border">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path></svg>
+                    </div>
+                </div>
 
-            <div class="space-y-1.5 max-h-40 overflow-y-auto scrollbar-hide">
-                @forelse($wishlistItems as $item)
-                    <div class="flex items-center gap-3 p-3 bg-white/5 rounded-xl group hover:bg-white/10 border theme-border transition-all">
-                        <button wire:click="toggleWishlist({{ $item->id }})" 
-                                class="shrink-0 w-5 h-5 rounded-full border flex items-center justify-center transition-all {{ $item->is_completed ? 'bg-green-500 border-green-500 text-white' : 'theme-border bg-transparent' }}">
-                            @if($item->is_completed)
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                            @endif
-                        </button>
-                        <div class="flex-1">
-                            <p class="text-[10px] font-bold lowercase transition-all {{ $item->is_completed ? 'opacity-20 line-through' : 'opacity-70' }} theme-text">
-                                {{ $item->title }}
-                            </p>
-                        </div>
-                        <button wire:click="deleteWishlist({{ $item->id }})" class="opacity-0 group-hover:opacity-100 theme-text opacity-30 hover:opacity-100 hover:text-red-400 transition-all p-1">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                    </div>
-                @empty
-                    <div class="py-6 text-center opacity-30">
-                        <p class="text-[9px] theme-text lowercase italic">dreaming together!</p>
-                    </div>
-                @endforelse
+                <div class="relative h-1.5 w-full bg-white/5 rounded-full overflow-hidden border theme-border">
+                    <div class="absolute inset-y-0 left-0 theme-accent-bg transition-all duration-1000 ease-out rounded-full"
+                         style="width: {{ $milestoneProgress }}%"></div>
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 
     {{-- Stats Row --}}
