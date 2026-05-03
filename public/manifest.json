@@ -1,10 +1,10 @@
 {
   "name": "Gallery For Two",
   "short_name": "GalleryTwo",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "description": "Private gallery for couples",
   "orientation": "portrait",
   "scope": "/",

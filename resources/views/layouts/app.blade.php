@@ -9,8 +9,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GalleryTwo">
+    <meta name="apple-touch-fullscreen" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="{{ asset('manifest.json') }}" type="application/manifest+json">
+    <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="{{ asset('images/auth-bg.png') }}">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -81,7 +82,30 @@
 
 
     @livewireScripts
-
+    <script>
+        // PWA Standalone Navigation Fix for iOS
+        (function(document, navigator, standalone) {
+            if ((standalone in navigator) && navigator[standalone]) {
+                var curnode, location = document.location, stop = /^(a|html)$/i;
+                document.addEventListener('click', function(e) {
+                    curnode = e.target;
+                    while (!(stop).test(curnode.nodeName)) {
+                        curnode = curnode.parentNode;
+                    }
+                    if ('href' in curnode && (curnode.href.indexOf('http') || ~curnode.href.indexOf(location.host)) && (!curnode.classList.contains('no-pwa-fix'))) {
+                        e.preventDefault();
+                        // Support Livewire Navigate
+                        if (curnode.hasAttribute('wire:navigate')) {
+                            // Let Livewire handle it, but if it fails to stay in standalone, 
+                            // we fall back to window.location
+                            return;
+                        }
+                        window.location = curnode.href;
+                    }
+                }, false);
+            }
+        })(document, window.navigator, 'standalone');
+    </script>
 </body>
 
 </html>

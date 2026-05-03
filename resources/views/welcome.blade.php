@@ -78,7 +78,7 @@
                     <a href="{{ route('dashboard') }}" wire:navigate
                         class="text-sm font-medium hover:text-brand-200 transition-colors lowercase">dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" wire:navigate
+                    <a href="/login" wire:navigate
                         class="text-sm font-medium hover:text-brand-200 transition-colors lowercase">login</a>
                 @endauth
             </div>
