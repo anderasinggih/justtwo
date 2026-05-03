@@ -112,9 +112,18 @@
         $nextTick(() => { $refs.carousel.scrollTo({ left: $refs.carousel.clientWidth * currentIndex, behavior: 'auto' }); scrollToThumb(currentIndex); });
      " @touchstart="handleTouchStart($event)" @touchend="handleTouchEnd($event)">
     <nav class="p-4 md:p-6 flex items-center justify-between z-30">
-        <button onclick="history.back()" class="w-10 h-10 rounded-full {{ $iconBg }} backdrop-blur-xl border {{ $colors['border'] }} flex items-center justify-center transition-transform active:scale-90">
+        @php
+            // Get the year and month from the current focused media to know where to go back
+            $currentMedia = $allMedia[$initialMediaIndex] ?? null;
+            $backUrl = route('welcome');
+            if ($currentMedia && isset($currentMedia['captured_at'])) {
+                $date = \Carbon\Carbon::parse($currentMedia['captured_at']);
+                $backUrl = route('public.album', ['year' => $date->format('Y'), 'month' => $date->format('F')]);
+            }
+        @endphp
+        <a href="{{ $backUrl }}" wire:navigate class="w-10 h-10 rounded-full {{ $iconBg }} backdrop-blur-xl border {{ $colors['border'] }} flex items-center justify-center transition-transform active:scale-90">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-        </button>
+        </a>
         <div class="flex flex-col items-center {{ $overlayBg }} backdrop-blur-md px-6 py-1.5 rounded-full min-w-[150px] cursor-pointer" @click="showInfo = true; $nextTick(() => initMap())">
             <template x-for="(media, index) in allMedia">
                 <div x-show="currentIndex === index" class="flex flex-col items-center text-center">
