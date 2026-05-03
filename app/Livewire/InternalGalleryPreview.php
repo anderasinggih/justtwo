@@ -17,12 +17,11 @@ class InternalGalleryPreview extends Component
     public function mount($media)
     {
         $targetMedia = \App\Models\PostMedia::findOrFail($media);
-        $relationship = Auth::user()->relationship;
-        $relationshipId = $relationship?->id;
+        $relationshipId = Auth::user()->relationshipMember?->relationship_id;
 
         // Security check - allow both partners in the relationship
         if ($targetMedia->post?->relationship_id !== $relationshipId && $targetMedia->post?->user_id !== Auth::id()) {
-            abort(403, "Access Denied.");
+            abort(403, "Access Denied. Rel: " . ($relationshipId ?? 'NULL') . " PostRel: " . ($targetMedia->post?->relationship_id ?? 'NULL'));
         }
 
         $this->targetId = $targetMedia->post_id;
@@ -85,11 +84,10 @@ class InternalGalleryPreview extends Component
     {
         $media = \App\Models\PostMedia::findOrFail($mediaId);
         $post = $media->post;
-        
-        $relationship = Auth::user()->relationship;
+        $relationshipId = Auth::user()->relationshipMember?->relationship_id;
         
         // Allow both partners
-        if ($post->relationship_id !== $relationship?->id) {
+        if ($post->relationship_id !== $relationshipId) {
             return;
         }
 

@@ -18,10 +18,11 @@ class Gallery extends Component
         if (empty($targetIds)) return;
 
         $mediaItems = PostMedia::whereIn('id', $targetIds)->get();
+        $relationshipId = Auth::user()->relationshipMember?->relationship_id;
         
         foreach ($mediaItems as $media) {
             $post = $media->post;
-            if ($post && $post->relationship_id === Auth::user()->relationship_id) {
+            if ($post && $post->relationship_id === $relationshipId) {
                 $post->update([
                     'is_archived' => true,
                     'archived_at' => now(),
@@ -37,10 +38,10 @@ class Gallery extends Component
 
     public function render()
     {
-        $relationship = Auth::user()->relationship;
+        $relationshipId = Auth::user()->relationshipMember?->relationship_id;
         
-        $media = PostMedia::whereHas('post', function($q) use ($relationship) {
-            $q->where('relationship_id', $relationship->id)
+        $media = PostMedia::whereHas('post', function($q) use ($relationshipId) {
+            $q->where('relationship_id', $relationshipId)
               ->where('is_archived', false);
         })
         ->orderBy('captured_at', 'desc')

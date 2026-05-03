@@ -19,9 +19,11 @@ class ArchivedPosts extends Component
         if (empty($targetIds)) return;
 
         $mediaItems = PostMedia::whereIn('id', $targetIds)->get();
+        $relationshipId = Auth::user()->relationshipMember?->relationship_id;
+
         foreach ($mediaItems as $media) {
             $post = $media->post;
-            if ($post && ($post->relationship_id === Auth::user()->relationship_id)) {
+            if ($post && ($post->relationship_id === $relationshipId)) {
                 $post->update(['is_archived' => false, 'archived_at' => null]);
             }
         }
@@ -37,9 +39,11 @@ class ArchivedPosts extends Component
         if (empty($targetIds)) return;
 
         $mediaItems = PostMedia::whereIn('id', $targetIds)->get();
+        $relationshipId = Auth::user()->relationshipMember?->relationship_id;
+
         foreach ($mediaItems as $media) {
             $post = $media->post;
-            if ($post && $post->relationship_id === Auth::user()->relationship_id) {
+            if ($post && $post->relationship_id === $relationshipId) {
                 Storage::disk('public')->delete($media->file_path_original);
                 if ($media->file_path_thumbnail) {
                     Storage::disk('public')->delete($media->file_path_thumbnail);
@@ -59,10 +63,10 @@ class ArchivedPosts extends Component
 
     public function render()
     {
-        $relationship = Auth::user()->relationship;
+        $relationshipId = Auth::user()->relationshipMember?->relationship_id;
         
         $media = PostMedia::join('posts', 'post_media.post_id', '=', 'posts.id')
-            ->where('posts.relationship_id', $relationship->id)
+            ->where('posts.relationship_id', $relationshipId)
             ->where('posts.is_archived', true)
             ->orderBy('posts.archived_at', 'desc')
             ->select('post_media.*', 'posts.archived_at')
