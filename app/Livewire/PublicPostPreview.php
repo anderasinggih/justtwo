@@ -129,6 +129,6 @@ class PublicPostPreview extends Component
     public function render()
     {
         return view('livewire.public-post-preview')
-            ->layout('layouts.public', ['theme' => $this->theme]);
+            ->layout('layouts.public-fullscreen', ['theme' => $this->theme]);
     }
 }
