@@ -1,4 +1,4 @@
-<div class="max-w-xl mx-auto pb-12" x-data="{ tab: 'posts' }">
+<div class="max-w-5xl mx-auto pb-32" x-data="{ tab: 'posts' }">
     {{-- IG Style Top Header --}}
     <header class="flex items-center justify-between px-4 h-14 sticky top-0 theme-bg z-30">
         <div class="w-10">
@@ -88,7 +88,7 @@
     </div>
 
     {{-- Post Grid (Posts Tab) --}}
-    <div x-show="tab === 'posts'" class="grid grid-cols-3 gap-0.5">
+    <div x-show="tab === 'posts'" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-0.5">
         @forelse($posts as $post)
             @foreach($post->media as $index => $item)
                 <a href="{{ route('timeline') }}?post={{ $post->id }}&index={{ $index }}" wire:navigate 
@@ -120,7 +120,7 @@
     </div>
 
     {{-- Bookmark Grid (Bookmarks Tab) --}}
-    <div x-show="tab === 'bookmarks'" x-cloak class="grid grid-cols-3 gap-0.5">
+    <div x-show="tab === 'bookmarks'" x-cloak class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-0.5">
         @forelse($bookmarkedPosts as $post)
             @foreach($post->media as $index => $item)
                 <a href="{{ route('timeline') }}?post={{ $post->id }}&index={{ $index }}" wire:navigate 

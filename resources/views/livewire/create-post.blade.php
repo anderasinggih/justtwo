@@ -347,7 +347,7 @@
         </template>
     </header>
 
-    <div class="max-w-xl mx-auto">
+    <div class="max-w-4xl mx-auto sm:px-6">
         {{-- Body --}}
         <div>
             {{-- Step 1: Select Type --}}
@@ -382,6 +382,18 @@
                             <p class="text-[10px] theme-text opacity-40 lowercase">lock a message for later.</p>
                         </div>
                     </button>
+
+                    {{-- Plan Something Shortcut --}}
+                    <a href="{{ route('planner.create') }}" wire:navigate
+                            class="w-full group relative flex items-center gap-4 p-5 bg-white/5 border theme-border rounded-3xl cursor-pointer hover:bg-emerald-500/5 hover:border-emerald-500/30 transition-all text-left">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-sm font-bold theme-text lowercase">plan something</p>
+                            <p class="text-[10px] theme-text opacity-40 lowercase">add a new trip or milestone.</p>
+                        </div>
+                    </a>
                 </div>
             </div>
 

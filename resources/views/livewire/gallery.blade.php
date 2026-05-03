@@ -1,9 +1,9 @@
 <div class="w-full pb-32 min-h-screen bg-black overflow-x-hidden" 
      x-data="{ 
-        cols: 3, 
+        cols: window.innerWidth > 1024 ? 5 : (window.innerWidth > 768 ? 4 : 3), 
         startDist: 0,
         levels: [1, 3, 5, 13],
-        currentLevel: 1,
+        currentLevel: window.innerWidth > 1024 ? 2 : (window.innerWidth > 768 ? 2 : 1), 
         isZooming: false,
         zoomIn() {
             if (this.currentLevel > 0) {

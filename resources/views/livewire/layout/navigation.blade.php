@@ -13,7 +13,7 @@ new class extends Component {
 
 <div class="contents">
     {{-- Bottom Navigation Bar --}}
-    <div class="fixed bottom-1 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md" wire:persist="main-nav">
+    <div class="fixed bottom-3 sm:bottom-8 left-1/2 -translate-x-1/2 z-50 w-[92%] sm:w-auto sm:min-w-[400px] max-w-md" wire:persist="main-nav">
         <nav x-data="{ 
                 active: @js(
                     request()->routeIs('dashboard') ? 0 : 
