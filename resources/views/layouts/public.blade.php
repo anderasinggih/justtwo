@@ -23,23 +23,20 @@
     <title>{{ $spaceName }} — {{ $settings->journey_title ?? 'Our Journey' }}</title>
     
     <style>
-        :root {
-            --app-height: 100%;
-        }
         html, body { 
             background-color: {{ $bgColor }} !important;
             margin: 0; 
             padding: 0; 
-            height: 100vh;
-            height: -webkit-fill-available;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
             width: 100%; 
             overflow-x: hidden;
-            position: fixed; /* Lock body to prevent scroll-bounce white gaps */
+            overscroll-behavior-y: none; /* Prevent vertical bounce/pull-to-refresh */
         }
         #app-root {
-            height: 100%;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
         }
