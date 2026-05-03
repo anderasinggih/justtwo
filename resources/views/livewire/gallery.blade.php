@@ -77,11 +77,9 @@
                         <div class="gallery-item relative aspect-square overflow-hidden bg-white/5 group cursor-pointer">
                             @if($isSelecting)
                                 <div wire:click="selectMedia({{ $media->id }})" 
-                                     class="absolute inset-0 z-20 transition-all flex items-center justify-center"
+                                     class="absolute inset-0 z-20 transition-all flex items-center justify-center {{ in_array($media->id, $selectedMedia) ? 'bg-brand-500/10' : '' }}"
                                      :class="cols < 5 ? 'p-2' : 'p-0.5'">
-                                    <div class="absolute inset-0 bg-brand-500/10 transition-opacity" :class="{{ in_array($media->id, $selectedMedia) ? 'opacity-100' : 'opacity-0' }}"></div>
-                                    <div class="relative w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center"
-                                         class="{{ in_array($media->id, $selectedMedia) ? 'bg-brand-500 border-brand-500 text-white' : 'border-white/30 bg-black/20' }}">
+                                    <div class="relative w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center {{ in_array($media->id, $selectedMedia) ? 'bg-brand-500 border-brand-500 text-white' : 'border-white/30 bg-black/20' }}">
                                         @if(in_array($media->id, $selectedMedia))
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                         @endif
@@ -92,8 +90,7 @@
                             @endif
 
                             <img src="{{ Storage::disk('public')->url($media->file_path_thumbnail ?? $media->file_path_original) }}" 
-                                 class="w-full h-full object-cover transition-transform duration-700"
-                                 :class="{{ $isSelecting && in_array($media->id, $selectedMedia) ? 'scale-75 rounded-2xl' : 'scale-100' }}"
+                                 class="w-full h-full object-cover transition-all duration-700 {{ $isSelecting && in_array($media->id, $selectedMedia) ? 'scale-75 rounded-2xl' : 'scale-100' }}"
                                  loading="lazy">
                             
                             @if(str_contains($media->file_type, 'video'))
