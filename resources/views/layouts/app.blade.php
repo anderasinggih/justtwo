@@ -51,7 +51,7 @@
         <livewire:layout.navigation />
 
         {{-- Main Content --}}
-        <main id="main-content" class="page-reveal">
+        <main id="main-content" style="opacity: 0;">
             {{ $slot }}
         </main>
 
@@ -162,10 +162,18 @@
             document.addEventListener('livewire:navigated', () => {
                 const direction = sessionStorage.getItem('navDirection');
                 const main = document.getElementById('main-content');
-                if (direction && main) {
-                    main.classList.remove('page-reveal');
-                    main.classList.add(direction === 'right' ? 'slide-from-right' : 'slide-from-left');
-                    sessionStorage.removeItem('navDirection');
+                if (main) {
+                    // Reset classes and force reflow to prevent flickering
+                    main.classList.remove('page-reveal', 'slide-from-right', 'slide-from-left');
+                    main.style.opacity = '0';
+                    void main.offsetWidth; 
+
+                    if (direction) {
+                        main.classList.add(direction === 'right' ? 'slide-from-right' : 'slide-from-left');
+                        sessionStorage.removeItem('navDirection');
+                    } else {
+                        main.classList.add('page-reveal');
+                    }
                 }
             });
 
