@@ -1,6 +1,6 @@
-<div class="max-w-xl mx-auto pb-32 pt-4 px-4">
+<div class="max-w-xl mx-auto pb-32 px-4">
     {{-- Header --}}
-    <header class="sticky top-0 z-10 py-6 px-4 bg-transparent">
+    <header class="sticky top-0 z-20 py-6 px-4 backdrop-blur-xl bg-white/5 dark:bg-black/5">
         <div class="flex items-center justify-between">
             <h1 class="text-3xl font-bold tracking-tight">Library</h1>
             <div class="flex items-center gap-4">
