@@ -9,7 +9,7 @@
                 <a href="{{ route('planner.create', ['plan' => $plan->id]) }}" wire:navigate class="p-2 rounded-full bg-current/5 theme-text hover:bg-current/10 transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                 </a>
-                <button @click="$dispatch('confirm', { 
+                <button @click="$store.confirm.open({ 
                         title: 'Delete Plan', 
                         message: 'Are you sure you want to delete this plan? This will also delete all itineraries and expenses inside.', 
                         onConfirm: () => { $wire.deletePlan() } 

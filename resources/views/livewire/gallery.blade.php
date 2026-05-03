@@ -133,7 +133,7 @@
                     <span x-text="isDownloading ? 'Preparing...' : 'Save'"></span>
                 </button>
                 <button x-show="isSelecting && selectedIds.length > 0"
-                        @click="$dispatch('confirm', { 
+                        @click="$store.confirm.open({ 
                                     title: 'Delete Items', 
                                     message: 'Move ' + selectedIds.length + ' items to trash? They will be deleted forever in 30 days.', 
                                     onConfirm: () => { 

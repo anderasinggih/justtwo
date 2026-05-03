@@ -120,60 +120,80 @@
             }
         })(document, window.navigator, 'standalone');
     </script>
-    {{-- Global Custom Confirmation Modal --}}
-    <div x-data="{ 
-            show: false, 
-            title: '', 
-            message: '', 
-            confirmCallback: null,
-            trigger(data) {
-                this.title = data.title || 'Are you sure?';
-                this.message = data.message || '';
-                this.confirmCallback = data.onConfirm;
-                this.show = true;
-            },
-            confirm() {
-                if (this.confirmCallback) this.confirmCallback();
-                this.show = false;
-            }
-         }"
-         @confirm.window="trigger($event.detail)"
-         class="relative z-[9999]"
-         x-show="show"
-         x-cloak>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('confirm', {
+                show: false,
+                title: '',
+                message: '',
+                onConfirm: null,
+                
+                open(data) {
+                    this.title = data.title || 'Are you sure?';
+                    this.message = data.message || '';
+                    this.onConfirm = data.onConfirm;
+                    this.show = true;
+                },
+                
+                execute() {
+                    if (this.onConfirm) {
+                        this.onConfirm();
+                    }
+                    this.show = false;
+                },
+
+                close() {
+                    this.show = false;
+                    this.onConfirm = null;
+                }
+            });
+
+            // Fallback for window.dispatch
+            window.addEventListener('confirm', (e) => {
+                Alpine.store('confirm').open(e.detail);
+            });
+        });
+    </script>
+
+    {{-- Global Confirmation Modal --}}
+    <div x-data x-show="$store.confirm.show" 
+         class="fixed inset-0 z-[9999] flex items-center justify-center p-6" x-cloak>
         
         {{-- Backdrop --}}
-        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" 
-             x-show="show" 
-             x-transition:enter="ease-out duration-300" 
-             x-transition:enter-start="opacity-0" 
-             x-transition:enter-end="opacity-100" 
-             x-transition:leave="ease-in duration-200" 
-             x-transition:leave-start="opacity-100" 
-             x-transition:leave-end="opacity-0"></div>
-
-        {{-- Modal Content --}}
-        <div class="fixed inset-0 z-10 flex items-center justify-center p-6 text-center">
-            <div class="w-full max-w-xs theme-card border theme-border rounded-[2.5rem] p-8 shadow-2xl space-y-6"
-                 x-show="show"
-                 x-transition:enter="ease-out duration-300"
-                 x-transition:enter-start="opacity-0 scale-95 translate-y-4"
-                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                 x-transition:leave="ease-in duration-200"
-                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                 x-transition:leave-end="opacity-0 scale-95 translate-y-4">
-                
-                <div class="space-y-2">
-                    <h3 class="text-xl font-bold theme-text lowercase tracking-tighter" x-text="title"></h3>
-                    <p class="text-xs theme-text opacity-40 lowercase leading-relaxed" x-text="message"></p>
+        <div x-show="$store.confirm.show" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="$store.confirm.close()"
+             class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+        
+        {{-- Modal Card --}}
+        <div x-show="$store.confirm.show" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-90 translate-y-4"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+             x-transition:leave-end="opacity-0 scale-90 translate-y-4"
+             class="relative w-full max-w-sm bg-zinc-900 border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden">
+            
+            <div class="space-y-6">
+                <div class="space-y-2 text-center">
+                    <h3 class="text-xl font-bold text-white lowercase tracking-tight" x-text="$store.confirm.title"></h3>
+                    <p class="text-sm text-zinc-400 lowercase leading-relaxed" x-text="$store.confirm.message"></p>
                 </div>
-
-                <div class="flex flex-col gap-2">
-                    <button @click="confirm()" class="w-full py-4 theme-accent-bg text-white rounded-3xl font-bold text-sm active:scale-95 transition-all shadow-lg shadow-brand-500/20">
-                        Yes, do it
+                
+                <div class="flex flex-col gap-2 pt-2">
+                    <button @click="$store.confirm.execute()" 
+                            class="w-full py-4 bg-white text-black rounded-2xl font-bold text-sm active:scale-95 transition-transform lowercase">
+                        yes, do it
                     </button>
-                    <button @click="show = false" class="w-full py-4 bg-white/5 theme-text rounded-3xl font-bold text-sm active:scale-95 transition-all">
-                        Cancel
+                    <button @click="$store.confirm.close()" 
+                            class="w-full py-4 bg-zinc-800 text-white rounded-2xl font-bold text-sm active:scale-95 transition-transform lowercase">
+                        cancel
                     </button>
                 </div>
             </div>
