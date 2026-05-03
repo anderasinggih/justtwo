@@ -100,7 +100,7 @@
 
                 <div class="gallery-grid gap-[1px]" :style="'--grid-cols: ' + cols">
                     @foreach($mediaItems as $media)
-                        <div class="gallery-item relative aspect-square overflow-hidden bg-white/5 group"
+                        <div wire:key="archived-{{ $media->id }}" class="gallery-item relative aspect-square overflow-hidden bg-white/5 group"
                              @mousedown="handleDragStart({{ $media->id }})"
                              @mouseenter="handleDragOver({{ $media->id }})"
                              @touchstart.passive="handleDragStart({{ $media->id }})"

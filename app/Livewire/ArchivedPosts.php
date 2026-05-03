@@ -18,17 +18,16 @@ class ArchivedPosts extends Component
         $targetIds = $ids ?? $this->selectedMedia;
         if (empty($targetIds)) return;
 
-        $mediaItems = PostMedia::whereIn('id', $targetIds)->get();
-        foreach ($mediaItems as $media) {
-            $post = $media->post;
-            if ($post && ($post->relationship_id === Auth::user()->relationship_id)) {
-                $post->update(['is_archived' => false, 'archived_at' => null]);
-            }
+        $postIds = PostMedia::whereIn('id', $targetIds)->pluck('post_id')->toArray();
+        
+        if (!empty($postIds)) {
+            Post::whereIn('id', $postIds)
+                ->where('relationship_id', Auth::user()->relationship_id)
+                ->update(['is_archived' => false, 'archived_at' => null]);
         }
 
         $this->isSelecting = false;
         $this->selectedMedia = [];
-        $this->dispatch('media-restored');
     }
 
     public function deleteSelectedPermanently($ids = null)
@@ -37,15 +36,18 @@ class ArchivedPosts extends Component
         if (empty($targetIds)) return;
 
         $mediaItems = PostMedia::whereIn('id', $targetIds)->get();
+        
         foreach ($mediaItems as $media) {
             $post = $media->post;
             if ($post && $post->relationship_id === Auth::user()->relationship_id) {
+                // Delete files
                 Storage::disk('public')->delete($media->file_path_original);
                 if ($media->file_path_thumbnail) {
                     Storage::disk('public')->delete($media->file_path_thumbnail);
                 }
                 $media->delete();
                 
+                // If post has no more media, delete post
                 if ($post->media()->count() === 0) {
                     $post->delete();
                 }
@@ -54,13 +56,16 @@ class ArchivedPosts extends Component
 
         $this->isSelecting = false;
         $this->selectedMedia = [];
-        $this->dispatch('media-deleted-permanently');
     }
 
     public function render()
     {
         $relationship = Auth::user()->relationship;
         
+        if (!$relationship) {
+            return view('livewire.archived-posts', ['groupedMedia' => collect()])->layout('layouts.app');
+        }
+
         $media = PostMedia::join('posts', 'post_media.post_id', '=', 'posts.id')
             ->where('posts.relationship_id', $relationship->id)
             ->where('posts.is_archived', true)

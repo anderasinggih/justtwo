@@ -161,7 +161,7 @@
 
                 <div class="gallery-grid gap-[1px]" :style="'--grid-cols: ' + cols">
                     @foreach($mediaItems as $media)
-                        <div class="gallery-item relative aspect-square overflow-hidden bg-white/5 group"
+                        <div wire:key="media-{{ $media->id }}" class="gallery-item relative aspect-square overflow-hidden bg-white/5 group"
                              @mousedown="handleDragStart({{ $media->id }}, '{{ Storage::disk('public')->url($media->file_path_original) }}')"
                              @mouseenter="handleDragOver({{ $media->id }}, '{{ Storage::disk('public')->url($media->file_path_original) }}')"
                              @touchstart.passive="handleDragStart({{ $media->id }}, '{{ Storage::disk('public')->url($media->file_path_original) }}')"
